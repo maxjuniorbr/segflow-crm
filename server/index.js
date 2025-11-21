@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'production') {
 // Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+        // Server running on port ${PORT}
     });
 }
 

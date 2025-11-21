@@ -8,7 +8,7 @@ const pool = new pg.Pool({
 });
 
 pool.on('connect', () => {
-    // console.log('Connected to the PostgreSQL database');
+    // Connected to the PostgreSQL database
 });
 
 export default pool;
