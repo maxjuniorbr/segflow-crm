@@ -161,7 +161,7 @@ export const DocumentForm: React.FC = () => {
               >
                 <option value="">Selecione um Cliente</option>
                 {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.cpf})</option>
+                  <option key={c.id} value={c.id}>{c.name} ({c.personType === 'Jurídica' ? (c.cnpj || '') : (c.cpf || '')})</option>
                 ))}
               </select>
             </div>
