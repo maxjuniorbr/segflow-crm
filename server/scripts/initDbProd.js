@@ -18,6 +18,7 @@ const initDbProd = async () => {
       await client.query('DROP TABLE IF EXISTS documents CASCADE');
       await client.query('DROP TABLE IF EXISTS clients CASCADE');
       await client.query('DROP TABLE IF EXISTS users CASCADE');
+      console.log("Tables dropped successfully.");
     }
 
     await client.query(`
