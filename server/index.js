@@ -39,6 +39,10 @@ app.use('/api', routes);
 
 // Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
+    if (!process.env.JWT_SECRET) {
+        console.error('FATAL ERROR: JWT_SECRET is not defined.');
+        process.exit(1);
+    }
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
