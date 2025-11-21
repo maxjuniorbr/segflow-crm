@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
 import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
+import { ClientAutocomplete } from '../components/ClientAutocomplete';
 import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
 
 export const DocumentForm: React.FC = () => {
@@ -168,20 +169,13 @@ export const DocumentForm: React.FC = () => {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {/* Client Selection */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Cliente</label>
-              <select
-                name="clientId"
+              <ClientAutocomplete
+                clients={clients}
                 value={formData.clientId}
-                onChange={handleChange}
+                onChange={(clientId) => setFormData(prev => ({ ...prev, clientId }))}
                 required
-                className="bg-white text-slate-900 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 disabled={!!preselectedClientId && !id}
-              >
-                <option value="">Selecione um Cliente</option>
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.personType === 'Jurídica' ? (c.cnpj || '') : (c.cpf || '')})</option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* Basic Info */}
