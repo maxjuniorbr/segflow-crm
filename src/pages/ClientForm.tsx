@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { externalService } from '../services/external';
 import { Client } from '../types';
-import { Card, Input, Button, Select } from '../components/UIComponents';
+import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
 import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
 import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../utils/formatters';
 
@@ -15,6 +15,7 @@ export const ClientForm: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [calculatedAge, setCalculatedAge] = useState('');
+  const [error, setError] = useState('');
 
   const streetInputRef = useRef<HTMLInputElement>(null);
   const numberInputRef = useRef<HTMLInputElement>(null);
@@ -89,6 +90,10 @@ export const ClientForm: React.FC = () => {
           setCalculatedAge(calculateAge(rest.birthDate || ''));
         }
         setLoading(false);
+      }).catch(err => {
+        console.error(err);
+        setError("Erro ao carregar dados do cliente.");
+        setLoading(false);
       });
     }
   }, [id]);
@@ -111,9 +116,6 @@ export const ClientForm: React.FC = () => {
         ...prev,
         address: { ...prev.address, [field]: value }
       }));
-
-      // Removed logic that auto-unlocked fields when length < 8
-      // This prevents fields from unlocking with stale data while typing
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -131,8 +133,6 @@ export const ClientForm: React.FC = () => {
             ...prev,
             address: {
               ...prev.address,
-              // IMPORTANT: Use empty string fallback instead of keeping previous value
-              // This ensures if the new CEP is generic (no street), the old street is cleared
               street: addressData.street || '',
               neighborhood: addressData.neighborhood || '',
               city: addressData.city || '',
@@ -159,7 +159,6 @@ export const ClientForm: React.FC = () => {
           }, 100);
 
         } else {
-          // CEP not found or error: Clear address fields and unlock everything
           setFormData(prev => ({
             ...prev,
             address: {
@@ -174,7 +173,6 @@ export const ClientForm: React.FC = () => {
           streetInputRef.current?.focus();
         }
       } catch (error) {
-        // On error, also clear and unlock
         setFormData(prev => ({
           ...prev,
           address: {
@@ -200,6 +198,7 @@ export const ClientForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError('');
     try {
       const clientToSave: Client = {
         id: id || Math.random().toString(36).substr(2, 9),
@@ -210,7 +209,8 @@ export const ClientForm: React.FC = () => {
       navigate(id ? `/clients/${id}` : '/clients');
     } catch (error: any) {
       console.error("Error saving client:", error);
-      alert(`Erro ao salvar cliente: ${error.message || 'Erro desconhecido'}`);
+      setError(error.message || 'Erro desconhecido ao salvar cliente.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -224,7 +224,11 @@ export const ClientForm: React.FC = () => {
     { value: 'União Estável', label: 'União Estável' },
   ];
 
-  if (loading) return <div className="p-8 text-center text-slate-500">Carregando...</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -239,6 +243,12 @@ export const ClientForm: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {error && (
+        <Alert variant="error">
+          {error}
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
 

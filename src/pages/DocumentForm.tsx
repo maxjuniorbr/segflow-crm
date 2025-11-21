@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
-import { Card, Input, Button, Select } from '../components/UIComponents';
-import { ChevronLeft, Save, Trash2, Paperclip } from 'lucide-react';
+import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
+import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
 
 export const DocumentForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +15,7 @@ export const DocumentForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
+  const [error, setError] = useState('');
 
   const emptyDocument: Omit<Document, 'id'> = {
     clientId: preselectedClientId || '',
@@ -33,22 +34,28 @@ export const DocumentForm: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const clientsData = await storageService.getClients();
-      setClients(clientsData);
+      try {
+        const clientsData = await storageService.getClients();
+        setClients(clientsData);
 
-      if (id) {
-        const d = await storageService.getDocumentById(id);
-        if (d) {
-          const { id: pid, ...rest } = d;
-          setFormData({
-            ...emptyDocument,
-            ...rest,
-            startDate: rest.startDate ? rest.startDate.split('T')[0] : '',
-            endDate: rest.endDate ? rest.endDate.split('T')[0] : ''
-          });
+        if (id) {
+          const d = await storageService.getDocumentById(id);
+          if (d) {
+            const { id: pid, ...rest } = d;
+            setFormData({
+              ...emptyDocument,
+              ...rest,
+              startDate: rest.startDate ? rest.startDate.split('T')[0] : '',
+              endDate: rest.endDate ? rest.endDate.split('T')[0] : ''
+            });
+          }
         }
+      } catch (err) {
+        console.error(err);
+        setError("Erro ao carregar dados.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     init();
   }, [id]);
@@ -66,9 +73,11 @@ export const DocumentForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      alert("A data de início não pode ser posterior à data de fim.");
+      setError("A data de início não pode ser posterior à data de fim.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -84,9 +93,10 @@ export const DocumentForm: React.FC = () => {
       } else {
         navigate('/documents');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert("Erro ao salvar documento");
+      setError(e.message || "Erro ao salvar documento");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -127,7 +137,11 @@ export const DocumentForm: React.FC = () => {
     { value: 'Mitsui Sumitomo', label: 'Mitsui Sumitomo' },
   ];
 
-  if (loading) return <div className="p-8 text-center">Carregando...</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -144,6 +158,10 @@ export const DocumentForm: React.FC = () => {
           </Button>
         )}
       </div>
+
+      {error && (
+        <Alert variant="error">{error}</Alert>
+      )}
 
       <form onSubmit={handleSubmit}>
         <Card>

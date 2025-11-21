@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
 import { Card } from '../components/UIComponents';
-import { Users, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { Users, FileText, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
@@ -69,7 +69,11 @@ export const Dashboard: React.FC = () => {
     loadData();
   }, []);
 
-  if (loading) return <div className="p-8 text-center">Carregando dashboard...</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
 
   const statCards = [
     { title: 'Total de Clientes', value: stats.totalClients, icon: Users, color: 'bg-blue-500' },
