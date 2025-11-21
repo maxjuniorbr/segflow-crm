@@ -9,6 +9,16 @@ const getHeaders = () => {
     return headers;
 };
 
+// Handle unauthorized/session expired responses
+const handleUnauthorized = () => {
+    // Clear authentication data
+    localStorage.removeItem('segflow_active_session');
+    localStorage.removeItem('token');
+
+    // Redirect to login page
+    window.location.href = '#/login';
+};
+
 export const api = {
     get: async (endpoint: string) => {
         const headers = getHeaders();
@@ -16,6 +26,13 @@ export const api = {
             method: 'GET',
             headers,
         });
+
+        // Check for session expiration
+        if (response.status === 401 || response.status === 403) {
+            handleUnauthorized();
+            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+        }
+
         if (!response.ok) {
             const error = await response.json();
             const errorMessage = typeof error.error === 'string'
@@ -33,6 +50,13 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify(data),
         });
+
+        // Check for session expiration
+        if (response.status === 401 || response.status === 403) {
+            handleUnauthorized();
+            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+        }
+
         if (!response.ok) {
             const error = await response.json();
             const errorMessage = typeof error.error === 'string'
@@ -49,6 +73,13 @@ export const api = {
             headers: getHeaders(),
             body: JSON.stringify(data),
         });
+
+        // Check for session expiration
+        if (response.status === 401 || response.status === 403) {
+            handleUnauthorized();
+            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+        }
+
         if (!response.ok) {
             const error = await response.json();
             const errorMessage = typeof error.error === 'string'
@@ -64,6 +95,13 @@ export const api = {
             method: 'DELETE',
             headers: getHeaders(),
         });
+
+        // Check for session expiration
+        if (response.status === 401 || response.status === 403) {
+            handleUnauthorized();
+            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+        }
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || `API Error: ${response.statusText}`);

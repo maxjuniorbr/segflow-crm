@@ -5,6 +5,10 @@ import { Card } from '../components/UIComponents';
 import { Users, FileText, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+interface DocumentWithClient extends Document {
+  clientName?: string;
+}
+
 export const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
     totalClients: 0,
@@ -12,7 +16,7 @@ export const Dashboard: React.FC = () => {
     pendingProposals: 0,
     expiringSoon: 0
   });
-  const [recentDocuments, setRecentDocuments] = useState<Document[]>([]);
+  const [recentDocuments, setRecentDocuments] = useState<DocumentWithClient[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +26,12 @@ export const Dashboard: React.FC = () => {
           storageService.getClients(),
           storageService.getDocuments()
         ]);
-        // setClients and setDocuments are not defined in state, and not needed for stats calculation
+
+        // Create a map of clientId to client name for easy lookup
+        const clientMap = new Map<string, string>();
+        clients.forEach(client => {
+          clientMap.set(client.id, client.name);
+        });
 
         const now = new Date();
         const thirtyDaysFromNow = new Date();
@@ -50,14 +59,11 @@ export const Dashboard: React.FC = () => {
             return end >= now;
           })
           .sort((a, b) => new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime())
-          .slice(0, 5);
-
-        setStats({
-          totalClients: clients.length,
-          activeProposals: active,
-          pendingProposals: pending,
-          expiringSoon: expiring
-        });
+          .slice(0, 5)
+          .map(doc => ({
+            ...doc,
+            clientName: clientMap.get(doc.clientId) || 'Cliente não encontrado'
+          }));
 
         setRecentDocuments(upcomingExpirations);
       } catch (error) {
@@ -112,7 +118,8 @@ export const Dashboard: React.FC = () => {
               {recentDocuments.map(doc => (
                 <div key={doc.id} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
                   <div>
-                    <p className="font-medium text-slate-900">{doc.type} - {doc.company}</p>
+                    <p className="font-medium text-slate-900">{doc.clientName}</p>
+                    <p className="text-sm text-slate-600">{doc.type} - {doc.company}</p>
                     <p className="text-sm text-slate-500">
                       Vence em: {doc.endDate ? new Date(doc.endDate).toLocaleDateString('pt-BR') : '-'}
                     </p>
