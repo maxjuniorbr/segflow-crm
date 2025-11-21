@@ -6,7 +6,7 @@ import { externalService } from '../services/external';
 import { Client } from '../types';
 import { Card, Input, Button, Select } from '../components/UIComponents';
 import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
-import { maskCPF, maskPhone, maskCEP } from '../utils/formatters';
+import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../utils/formatters';
 
 export const ClientForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +21,9 @@ export const ClientForm: React.FC = () => {
 
   const emptyClient: Omit<Client, 'id' | 'createdAt'> = {
     name: '',
+    personType: 'Física',
     cpf: '',
+    cnpj: '',
     rg: '',
     rgDispatchDate: '',
     rgIssuer: '',
@@ -68,13 +70,23 @@ export const ClientForm: React.FC = () => {
       storageService.getClientById(id).then(client => {
         if (client) {
           const { id, createdAt, ...rest } = client;
-          // Set default marital status if null
+          if (!rest.personType) rest.personType = 'Física';
           if (!rest.maritalStatus) rest.maritalStatus = 'Solteiro(a)';
-          // Format dates to YYYY-MM-DD for input type="date"
+
+          // Sanitize nulls to empty strings for controlled inputs
+          rest.cpf = rest.cpf || '';
+          rest.cnpj = rest.cnpj || '';
+          rest.rg = rest.rg || '';
+          rest.rgIssuer = rest.rgIssuer || '';
+          rest.email = rest.email || '';
+          rest.phone = rest.phone || '';
+          rest.notes = rest.notes || '';
+
           rest.birthDate = rest.birthDate ? rest.birthDate.substring(0, 10) : '';
           rest.rgDispatchDate = rest.rgDispatchDate ? rest.rgDispatchDate.substring(0, 10) : '';
+
           setFormData(rest);
-          setCalculatedAge(calculateAge(rest.birthDate));
+          setCalculatedAge(calculateAge(rest.birthDate || ''));
         }
         setLoading(false);
       });
@@ -85,6 +97,7 @@ export const ClientForm: React.FC = () => {
     let { name, value } = e.target;
 
     if (name === 'cpf') value = maskCPF(value);
+    if (name === 'cnpj') value = maskCNPJ(value);
     if (name === 'phone') value = maskPhone(value);
     if (name === 'addr.zipCode') value = maskCEP(value);
 
@@ -195,8 +208,9 @@ export const ClientForm: React.FC = () => {
       };
       await storageService.saveClient(clientToSave);
       navigate(id ? `/clients/${id}` : '/clients');
-    } catch (error) {
-      alert("Erro ao salvar cliente");
+    } catch (error: any) {
+      console.error("Error saving client:", error);
+      alert(`Erro ao salvar cliente: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setSaving(false);
     }
@@ -228,43 +242,69 @@ export const ClientForm: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
 
-        {/* Section: Identificação Civil */}
+        <Card title="Tipo de Pessoa">
+          <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
+            <div className="sm:col-span-6">
+              <Select
+                label="Tipo de Pessoa *"
+                name="personType"
+                value={formData.personType}
+                onChange={handleChange}
+                options={[
+                  { value: 'Física', label: 'Pessoa Física' },
+                  { value: 'Jurídica', label: 'Pessoa Jurídica' }
+                ]}
+                required
+              />
+            </div>
+          </div>
+        </Card>
+
         <Card title="Documentação e Identificação">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
               <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required />
             </div>
-            <div className="sm:col-span-3">
-              <Input label="CPF *" name="cpf" value={formData.cpf} onChange={handleChange} required maxLength={14} />
-            </div>
-            <div className="sm:col-span-3">
-              <Select
-                label="Estado Civil *"
-                name="maritalStatus"
-                value={formData.maritalStatus}
-                onChange={handleChange}
-                options={maritalStatusOptions}
-                required
-              />
-            </div>
 
-            <div className="sm:col-span-3">
-              <Input label="RG" name="rg" value={formData.rg} onChange={handleChange} />
-            </div>
-            <div className="sm:col-span-3">
-              <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer} onChange={handleChange} placeholder="ex: SSP/SP" />
-            </div>
-            <div className="sm:col-span-3">
-              <Input type="date" label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate} onChange={handleChange} />
-            </div>
-            <div className="sm:col-span-3"></div> {/* Spacer */}
+            {formData.personType === 'Física' ? (
+              <>
+                <div className="sm:col-span-3">
+                  <Input label="CPF *" name="cpf" value={formData.cpf || ''} onChange={handleChange} required maxLength={14} />
+                </div>
+                <div className="sm:col-span-3">
+                  <Select
+                    label="Estado Civil *"
+                    name="maritalStatus"
+                    value={formData.maritalStatus || 'Solteiro(a)'}
+                    onChange={handleChange}
+                    options={maritalStatusOptions}
+                    required
+                  />
+                </div>
 
-            <div className="sm:col-span-3">
-              <Input type="date" label="Data de Nascimento *" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
-            </div>
-            <div className="sm:col-span-2">
-              <Input label="Idade" value={calculatedAge} readOnly className="bg-slate-50" />
-            </div>
+                <div className="sm:col-span-3">
+                  <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} />
+                </div>
+                <div className="sm:col-span-3">
+                  <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" />
+                </div>
+                <div className="sm:col-span-3">
+                  <Input type="date" label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate || ''} onChange={handleChange} />
+                </div>
+                <div className="sm:col-span-3"></div>
+
+                <div className="sm:col-span-3">
+                  <Input type="date" label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange} required />
+                </div>
+                <div className="sm:col-span-2">
+                  <Input label="Idade" value={calculatedAge} readOnly className="bg-slate-50" />
+                </div>
+              </>
+            ) : (
+              <div className="sm:col-span-6">
+                <Input label="CNPJ *" name="cnpj" value={formData.cnpj || ''} onChange={handleChange} required maxLength={18} />
+              </div>
+            )}
           </div>
         </Card>
 

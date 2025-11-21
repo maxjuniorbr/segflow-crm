@@ -70,7 +70,9 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS clients (
         id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
+        personType VARCHAR(20) DEFAULT 'Física',
         cpf VARCHAR(20),
+        cnpj VARCHAR(20),
         rg VARCHAR(20),
         rgDispatchDate DATE,
         rgIssuer VARCHAR(50),
@@ -101,7 +103,26 @@ const createTables = async () => {
       );
     `);
 
-    console.log("Tables created successfully.");
+    // Helper to add column if not exists
+    const addColumnIfNotExists = async (tableName, columnName, columnDef) => {
+      const checkRes = await client.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = $1 AND column_name = $2
+      `, [tableName, columnName]);
+
+      if (checkRes.rowCount === 0) {
+        console.log(`Adding missing column ${columnName} to ${tableName}...`);
+        await client.query(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnDef}`);
+        console.log(`Column ${columnName} added.`);
+      }
+    };
+
+    // Ensure new columns exist (Auto-migration)
+    await addColumnIfNotExists('clients', 'personType', "VARCHAR(20) DEFAULT 'Física'");
+    await addColumnIfNotExists('clients', 'cnpj', "VARCHAR(20)");
+
+    console.log("Tables created/verified successfully.");
     console.log("\nDatabase initialization complete.");
     console.log("You can now register your first user via the /api/register endpoint.");
 

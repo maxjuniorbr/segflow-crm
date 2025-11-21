@@ -6,7 +6,9 @@ export class Client {
     constructor({
         id,
         name,
+        personType = 'Física',
         cpf,
+        cnpj,
         rg,
         rgDispatchDate,
         rgIssuer,
@@ -20,7 +22,9 @@ export class Client {
     }) {
         this.id = id;
         this.name = name;
+        this.personType = personType;
         this.cpf = cpf;
+        this.cnpj = cnpj;
         this.rg = rg;
         this.rgDispatchDate = rgDispatchDate;
         this.rgIssuer = rgIssuer;
@@ -40,7 +44,9 @@ export class Client {
         return new Client({
             id: row.id,
             name: row.name,
+            personType: row.persontype || row.personType || 'Física',
             cpf: row.cpf,
+            cnpj: row.cnpj,
             rg: row.rg,
             rgDispatchDate: row.rgdispatchdate || row.rgDispatchDate,
             rgIssuer: row.rgissuer || row.rgIssuer,
@@ -61,7 +67,9 @@ export class Client {
         return {
             id: this.id,
             name: this.name,
+            personType: this.personType,
             cpf: this.cpf,
+            cnpj: this.cnpj,
             rg: this.rg,
             rgDispatchDate: this.rgDispatchDate,
             rgIssuer: this.rgIssuer,

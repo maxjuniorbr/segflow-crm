@@ -102,7 +102,9 @@ export const DocumentList: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-slate-900">{client?.name || 'Cliente Removido'}</div>
-                      <div className="text-sm text-slate-500">{client?.cpf || '-'}</div>
+                      <div className="text-sm text-slate-500">
+                        {client?.personType === 'Jurídica' ? (client?.cnpj || '-') : (client?.cpf || '-')}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-slate-900">{d.company}</div>

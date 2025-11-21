@@ -11,16 +11,18 @@ export const loginSchema = z.object({
 });
 
 export const clientSchema = z.object({
-    id: z.string().optional(), // UUID is usually generated on frontend or backend
+    id: z.string().optional(),
     name: z.string().min(1),
-    cpf: z.string().optional(),
-    rg: z.string().optional(),
-    rgDispatchDate: z.string().optional(),
-    rgIssuer: z.string().optional(),
-    birthDate: z.string().optional(),
-    maritalStatus: z.string().optional(),
-    email: z.string().email().optional().or(z.literal('')),
-    phone: z.string().optional(),
+    personType: z.enum(['Física', 'Jurídica']).default('Física'),
+    cpf: z.string().nullable().optional(),
+    cnpj: z.string().nullable().optional(),
+    rg: z.string().nullable().optional(),
+    rgDispatchDate: z.string().nullable().optional(),
+    rgIssuer: z.string().nullable().optional(),
+    birthDate: z.string().nullable().optional(),
+    maritalStatus: z.string().nullable().optional(),
+    email: z.string().email().optional().or(z.literal('')).or(z.null()),
+    phone: z.string().nullable().optional(),
     address: z.object({
         street: z.string().optional(),
         number: z.string().optional(),
@@ -29,9 +31,27 @@ export const clientSchema = z.object({
         city: z.string().optional(),
         state: z.string().optional(),
         zipCode: z.string().optional(),
-    }).optional(),
+    }).nullable().optional(),
     createdAt: z.string().optional(),
-    notes: z.string().optional(),
+    notes: z.string().nullable().optional(),
+}).superRefine((data, ctx) => {
+    if (data.personType === 'Física') {
+        if (!data.cpf) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['cpf'],
+                message: 'CPF é obrigatório para Pessoa Física',
+            });
+        }
+    } else if (data.personType === 'Jurídica') {
+        if (!data.cnpj) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['cnpj'],
+                message: 'CNPJ é obrigatório para Pessoa Jurídica',
+            });
+        }
+    }
 });
 
 export const documentSchema = z.object({

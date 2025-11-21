@@ -22,8 +22,7 @@ export const Dashboard: React.FC = () => {
           storageService.getClients(),
           storageService.getDocuments()
         ]);
-        console.log('Dashboard loaded clients:', clients);
-        console.log('Dashboard loaded documents:', documents);
+        // setClients and setDocuments are not defined in state, and not needed for stats calculation
 
         const now = new Date();
         const thirtyDaysFromNow = new Date();

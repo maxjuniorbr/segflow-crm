@@ -51,6 +51,12 @@ export const ClientDetail: React.FC = () => {
             <ChevronLeft className="w-6 h-6" />
           </button>
           <h1 className="text-2xl font-bold text-slate-900">{client.name}</h1>
+          <span className={`ml-3 px-3 py-1 text-xs font-semibold rounded-full ${client.personType === 'Física'
+            ? 'bg-blue-100 text-blue-800'
+            : 'bg-purple-100 text-purple-800'
+            }`}>
+            {client.personType === 'Física' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+          </span>
         </div>
         <div className="flex space-x-3">
           <Link to={`/clients/edit/${client.id}`}>
@@ -70,26 +76,35 @@ export const ClientDetail: React.FC = () => {
           <Card>
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Informações Pessoais</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-slate-500">CPF</p>
-                <p className="font-medium">{client.cpf}</p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">RG</p>
-                <p className="font-medium">{client.rg} - {client.rgIssuer}</p>
-                <p className="text-xs text-slate-400">Expedição: {client.rgDispatchDate ? client.rgDispatchDate.split('T')[0].split('-').reverse().join('/') : '-'}</p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Data de Nascimento</p>
-                <p className="font-medium flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 text-slate-400" />
-                  {client.birthDate ? client.birthDate.split('T')[0].split('-').reverse().join('/') : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Estado Civil</p>
-                <p className="font-medium">{client.maritalStatus}</p>
-              </div>
+              {client.personType === 'Física' ? (
+                <>
+                  <div>
+                    <p className="text-sm text-slate-500">CPF</p>
+                    <p className="font-medium">{client.cpf}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">RG</p>
+                    <p className="font-medium">{client.rg} - {client.rgIssuer}</p>
+                    <p className="text-xs text-slate-400">Expedição: {client.rgDispatchDate ? client.rgDispatchDate.split('T')[0].split('-').reverse().join('/') : '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Data de Nascimento</p>
+                    <p className="font-medium flex items-center">
+                      <Calendar className="w-4 h-4 mr-2 text-slate-400" />
+                      {client.birthDate ? client.birthDate.split('T')[0].split('-').reverse().join('/') : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">Estado Civil</p>
+                    <p className="font-medium">{client.maritalStatus}</p>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <p className="text-sm text-slate-500">CNPJ</p>
+                  <p className="font-medium">{client.cnpj}</p>
+                </div>
+              )}
             </div>
 
             <h3 className="text-lg font-semibold text-slate-900 mt-8 mb-4">Contato</h3>
@@ -114,13 +129,19 @@ export const ClientDetail: React.FC = () => {
             <div className="flex items-start">
               <MapPin className="w-5 h-5 mr-2 text-slate-400 mt-0.5" />
               <div>
-                <p className="font-medium">
-                  {client.address.street}, {client.address.number} {client.address.complement && `- ${client.address.complement}`}
-                </p>
-                <p className="text-slate-600">
-                  {client.address.neighborhood} - {client.address.city}/{client.address.state}
-                </p>
-                <p className="text-slate-500 text-sm">CEP: {client.address.zipCode}</p>
+                {client.address ? (
+                  <>
+                    <p className="font-medium">
+                      {client.address.street}, {client.address.number} {client.address.complement && `- ${client.address.complement}`}
+                    </p>
+                    <p className="text-slate-600">
+                      {client.address.neighborhood} - {client.address.city}/{client.address.state}
+                    </p>
+                    <p className="text-slate-500 text-sm">CEP: {client.address.zipCode}</p>
+                  </>
+                ) : (
+                  <p className="text-slate-500">Endereço não cadastrado</p>
+                )}
               </div>
             </div>
           </Card>

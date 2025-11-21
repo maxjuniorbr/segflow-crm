@@ -12,18 +12,18 @@ const getHeaders = () => {
 export const api = {
     get: async (endpoint: string) => {
         const headers = getHeaders();
-        console.log('API GET', endpoint, 'headers:', headers);
         const response = await fetch(`${API_URL}${endpoint}`, {
             method: 'GET',
             headers,
         });
-        console.log('API GET response status:', response.status);
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || `API Error: ${response.statusText}`);
+            const errorMessage = typeof error.error === 'string'
+                ? error.error
+                : JSON.stringify(error.error);
+            throw new Error(errorMessage || `API Error: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log('API GET data:', data);
         return data;
     },
 
@@ -35,7 +35,10 @@ export const api = {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || `API Error: ${response.statusText}`);
+            const errorMessage = typeof error.error === 'string'
+                ? error.error
+                : JSON.stringify(error.error);
+            throw new Error(errorMessage || `API Error: ${response.statusText}`);
         }
         return response.json();
     },
@@ -48,7 +51,10 @@ export const api = {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || `API Error: ${response.statusText}`);
+            const errorMessage = typeof error.error === 'string'
+                ? error.error
+                : JSON.stringify(error.error);
+            throw new Error(errorMessage || `API Error: ${response.statusText}`);
         }
         return response.json();
     },

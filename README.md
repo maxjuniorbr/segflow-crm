@@ -54,8 +54,10 @@ segflow-crm/
 ### Cliente (Client)
 - `id`: Identificador único
 - `fullName`: Nome completo
-- `cpf`: CPF
-- `rg`: RG com data de expedição e órgão emissor
+- `personType`: Tipo de pessoa (Física ou Jurídica)
+- `cpf`: CPF (para Pessoa Física)
+- `cnpj`: CNPJ (para Pessoa Jurídica)
+- `rg`: RG com data de expedição e órgão emissor (para Pessoa Física)
 - `birthDate`: Data de nascimento
 - `maritalStatus`: Estado civil
 - `email`: Email
@@ -150,7 +152,7 @@ segflow-crm/
    ```bash
    npm run dev
    ```
-   - Frontend: http://localhost:3000
+   - Frontend: http://localhost:5173
    - Backend: http://localhost:3001
 
 ## ☁️ Deploy no Render

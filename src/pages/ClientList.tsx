@@ -101,7 +101,9 @@ export const ClientList: React.FC = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{client.name}</div>
-                          <div className="text-sm text-gray-500">{client.cpf}</div>
+                          <div className="text-sm text-gray-500">
+                            {client.personType === 'Jurídica' ? client.cnpj : client.cpf}
+                          </div>
                         </div>
                       </div>
                     </td>

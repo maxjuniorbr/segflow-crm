@@ -17,12 +17,14 @@ export enum InsuranceType {
 export interface Client {
   id: string;
   name: string;
-  cpf: string;
-  rg: string;
-  rgDispatchDate: string;
-  rgIssuer: string;
-  birthDate: string;
-  maritalStatus: string;
+  personType: 'Física' | 'Jurídica';
+  cpf?: string;
+  cnpj?: string;
+  rg?: string;
+  rgDispatchDate?: string;
+  rgIssuer?: string;
+  birthDate?: string;
+  maritalStatus?: string;
   email: string;
   phone: string;
   address: {
