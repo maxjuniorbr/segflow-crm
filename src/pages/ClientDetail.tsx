@@ -5,6 +5,18 @@ import { Client, Document } from '../types';
 import { Card, Button } from '../components/UIComponents';
 import { ChevronLeft, Edit, Trash2, Mail, Phone, MapPin, Calendar, FileText, Plus } from 'lucide-react';
 
+const getDocumentTypeLabel = (type: string) => {
+  const typeMap: { [key: string]: string } = {
+    'Auto': 'Automóvel',
+    'Life': 'Vida',
+    'Residential': 'Residencial',
+    'Corporate': 'Empresarial',
+    'Health': 'Saúde',
+    'Travel': 'Viagem',
+  };
+  return typeMap[type] || type;
+};
+
 export const ClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -173,7 +185,7 @@ export const ClientDetail: React.FC = () => {
                               'bg-yellow-100 text-yellow-800'}`}>
                           {doc.status}
                         </span>
-                        <span className="font-medium text-slate-900">{doc.type}</span>
+                        <span className="font-medium text-slate-900">{getDocumentTypeLabel(doc.type)}</span>
                       </div>
                       <p className="text-sm text-slate-600 mt-1">{doc.company} - {doc.documentNumber}</p>
                       <p className="text-xs text-slate-400 mt-1">

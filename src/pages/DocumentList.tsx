@@ -5,6 +5,18 @@ import { Document, Client } from '../types';
 import { Card, Input, Button } from '../components/UIComponents';
 import { Plus, Search, FileText } from 'lucide-react';
 
+const getDocumentTypeLabel = (type: string) => {
+  const typeMap: { [key: string]: string } = {
+    'Auto': 'Automóvel',
+    'Life': 'Vida',
+    'Residential': 'Residencial',
+    'Corporate': 'Empresarial',
+    'Health': 'Saúde',
+    'Travel': 'Viagem',
+  };
+  return typeMap[type] || type;
+};
+
 export const DocumentList: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -107,7 +119,7 @@ export const DocumentList: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-slate-900">{d.company}</div>
+                      <div className="text-sm text-slate-900">{getDocumentTypeLabel(d.type)} - {d.company}</div>
                       <div className="text-sm text-slate-500">{d.documentNumber}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
