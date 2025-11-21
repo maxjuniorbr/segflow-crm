@@ -43,7 +43,23 @@ export const Dashboard: React.FC = () => {
           expiringSoon: expiring
         });
 
-        setRecentDocuments(documents.slice(0, 5));
+        const upcomingExpirations = documents
+          .filter(doc => {
+            if (!doc.endDate || doc.status === 'Cancelado') return false;
+            const end = new Date(doc.endDate);
+            return end >= now;
+          })
+          .sort((a, b) => new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime())
+          .slice(0, 5);
+
+        setStats({
+          totalClients: clients.length,
+          activeProposals: active,
+          pendingProposals: pending,
+          expiringSoon: expiring
+        });
+
+        setRecentDocuments(upcomingExpirations);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -84,16 +100,18 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Últimas Propostas/Apólices</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Próximos Vencimentos</h3>
           {recentDocuments.length === 0 ? (
-            <p className="text-slate-500">Nenhuma proposta recente.</p>
+            <p className="text-slate-500">Nenhuma apólice a vencer em breve.</p>
           ) : (
             <div className="space-y-4">
               {recentDocuments.map(doc => (
                 <div key={doc.id} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
                   <div>
                     <p className="font-medium text-slate-900">{doc.type} - {doc.company}</p>
-                    <p className="text-sm text-slate-500">Status: {doc.status}</p>
+                    <p className="text-sm text-slate-500">
+                      Vence em: {doc.endDate ? new Date(doc.endDate).toLocaleDateString('pt-BR') : '-'}
+                    </p>
                   </div>
                   <Link to={`/documents/edit/${doc.id}`} className="text-sm text-blue-600 hover:underline">
                     Ver
