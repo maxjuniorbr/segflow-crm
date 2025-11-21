@@ -35,6 +35,7 @@ export const ClientList: React.FC = () => {
     const filtered = clients.filter(client =>
       client.name?.toLowerCase().includes(term) ||
       client.cpf?.includes(term) ||
+      client.cnpj?.includes(term) ||
       client.email?.toLowerCase().includes(term)
     );
     setFilteredClients(filtered);
@@ -63,7 +64,7 @@ export const ClientList: React.FC = () => {
           <input
             type="text"
             className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-            placeholder="Buscar por nome, CPF ou email..."
+            placeholder="Buscar por nome, documento ou email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -85,7 +86,7 @@ export const ClientList: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome / CPF</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome / Documento</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localização</th>
                   <th scope="col" className="relative px-6 py-3"><span className="sr-only">Editar</span></th>
