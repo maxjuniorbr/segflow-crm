@@ -23,3 +23,4 @@ coverage/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+server/scripts/seedDbLocal.js

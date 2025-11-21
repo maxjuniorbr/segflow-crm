@@ -13,10 +13,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// CORS Configuration
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
+    'http://localhost:3001',
     process.env.RENDER_EXTERNAL_URL // Render sets this automatically
 ];
 
@@ -40,7 +40,7 @@ app.use('/api', routes);
 // Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
-        // Server running on port ${PORT}
+        console.log(`Server running on port ${PORT}`);
     });
 }
 

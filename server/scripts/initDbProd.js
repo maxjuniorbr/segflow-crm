@@ -4,96 +4,77 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const initDbProd = async () => {
-    const pool = new pg.Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });
+  const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
-    try {
-        console.log('Conectando ao PostgreSQL...');
-        const client = await pool.connect();
-        console.log('✓ Conectado ao banco de dados');
+  try {
+    const client = await pool.connect();
 
-        console.log('Criando tabelas...');
+    if (process.env.RESET_DB === 'true') {
+      await client.query('DROP TABLE IF EXISTS documents CASCADE');
+      await client.query('DROP TABLE IF EXISTS clients CASCADE');
+      await client.query('DROP TABLE IF EXISTS users CASCADE');
+    }
 
-        await client.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-        console.log('✓ Tabela users criada/verificada');
 
-        await client.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS clients (
-        id VARCHAR(50) PRIMARY KEY,
+        id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
+        persontype VARCHAR(20) DEFAULT 'Física',
+        cpf VARCHAR(20),
+        cnpj VARCHAR(20),
+        rg VARCHAR(20),
+        rgdispatchdate DATE,
+        rgissuer VARCHAR(50),
+        birthdate DATE,
+        maritalstatus VARCHAR(50),
         email VARCHAR(255),
         phone VARCHAR(50),
-        cpf_cnpj VARCHAR(50),
-        person_type VARCHAR(20),
         address JSONB,
         notes TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+        createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-        console.log('✓ Tabela clients criada/verificada');
 
-        await client.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS documents (
-        id VARCHAR(50) PRIMARY KEY,
-        client_id VARCHAR(50) REFERENCES clients(id) ON DELETE CASCADE,
-        type VARCHAR(50) NOT NULL,
-        company VARCHAR(255),
-        document_number VARCHAR(255),
-        start_date DATE,
-        end_date DATE,
+        id VARCHAR(255) PRIMARY KEY,
+        clientid VARCHAR(255) REFERENCES clients(id) ON DELETE CASCADE,
+        type VARCHAR(50),
+        company VARCHAR(100),
+        documentnumber VARCHAR(100),
+        startdate DATE,
+        enddate DATE,
         status VARCHAR(50),
+        attachmentname VARCHAR(255),
         notes TEXT,
-        attachment_name VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+        createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-        console.log('✓ Tabela documents criada/verificada');
 
-        await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_clients_user_id ON clients(user_id);
-    `);
-        console.log('✓ Índice idx_clients_user_id criado/verificado');
+    console.log("Database initialization complete.");
 
-        await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_documents_client_id ON documents(client_id);
-    `);
-        console.log('✓ Índice idx_documents_client_id criado/verificado');
-
-        await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_documents_user_id ON documents(user_id);
-    `);
-        console.log('✓ Índice idx_documents_user_id criado/verificado');
-
-        client.release();
-        console.log('\n✅ Inicialização concluída com sucesso!');
-
-    } catch (err) {
-        console.error('❌ Erro durante inicialização:', err);
-        throw err;
-    } finally {
-        await pool.end();
-    }
+    client.release();
+  } catch (err) {
+    console.error("Error initializing database:", err);
+    process.exit(1);
+  } finally {
+    await pool.end();
+  }
 };
 
-initDbProd()
-    .then(() => {
-        console.log('Script finalizado');
-        process.exit(0);
-    })
-    .catch((err) => {
-        console.error('Falha na inicialização:', err);
-        process.exit(1);
-    });
+initDbProd();

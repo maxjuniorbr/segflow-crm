@@ -50,7 +50,7 @@ export const createClient = async (req, res) => {
 
     try {
         await pool.query(
-            `INSERT INTO clients (id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, address, notes) 
+            `INSERT INTO clients (id, name, persontype, cpf, cnpj, rg, rgdispatchdate, rgissuer, birthdate, maritalstatus, email, phone, address, notes) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
             [id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes]
         );
@@ -76,7 +76,7 @@ export const updateClient = async (req, res) => {
 
     try {
         await pool.query(
-            `UPDATE clients SET name=$1, personType=$2, cpf=$3, cnpj=$4, rg=$5, rgDispatchDate=$6, rgIssuer=$7, birthDate=$8, maritalStatus=$9, email=$10, phone=$11, address=$12, notes=$13 WHERE id=$14`,
+            `UPDATE clients SET name=$1, persontype=$2, cpf=$3, cnpj=$4, rg=$5, rgdispatchdate=$6, rgissuer=$7, birthdate=$8, maritalstatus=$9, email=$10, phone=$11, address=$12, notes=$13 WHERE id=$14`,
             [name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes, req.params.id]
         );
         res.json({ message: 'Cliente atualizado' });
@@ -89,7 +89,7 @@ export const deleteClient = async (req, res) => {
     try {
         // Check for active proposals
         const proposalsCheck = await pool.query(
-            "SELECT count(*) as count FROM documents WHERE clientId = $1 AND status != 'Cancelado'",
+            "SELECT count(*) as count FROM documents WHERE clientid = $1 AND status != 'Cancelado'",
             [req.params.id]
         );
 
