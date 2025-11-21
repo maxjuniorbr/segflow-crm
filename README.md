@@ -1,9 +1,14 @@
 # SegFlow CRM
 
-- **Gerenciamento de Propostas**: Criação, edição e acompanhamento de propostas de seguros
-- **Dashboard Analítico**: Visão geral com estatísticas de clientes, apólices vigentes e propostas pendentes
-- **Tipos de Seguro**: Suporte a múltiplos tipos (Auto, Vida, Residencial, Empresarial, Saúde, Viagem)
-- **Status de Propostas**: Controle de status (Proposta, Apólice, Cancelado)
+Um sistema completo de gerenciamento de clientes e propostas de seguros, desenvolvido com tecnologias modernas para oferecer uma experiência intuitiva e eficiente.
+
+## ✨ Funcionalidades
+
+- **Gerenciamento de Clientes**: Cadastro completo de pessoas físicas e jurídicas
+- **Gerenciamento de Propostas/Apólices**: Criação, edição e acompanhamento de documentos de seguros
+- **Dashboard Analítico**: Visão geral com estatísticas de clientes e documentos
+- **Tipos de Seguro**: Suporte a múltiplos tipos (Automóvel, Vida, Residencial, Empresarial, Saúde, Viagem)
+- **Status de Documentos**: Controle de status (Proposta, Apólice, Cancelado)
 - **Interface Responsiva**: Design moderno e adaptável a diferentes dispositivos
 
 ## 🏗️ Arquitetura e Tecnologias
@@ -53,36 +58,40 @@ segflow-crm/
 
 ### Cliente (Client)
 - `id`: Identificador único
-- `fullName`: Nome completo
+- `name`: Nome completo
 - `personType`: Tipo de pessoa (Física ou Jurídica)
 - `cpf`: CPF (para Pessoa Física)
 - `cnpj`: CNPJ (para Pessoa Jurídica)
-- `rg`: RG com data de expedição e órgão emissor (para Pessoa Física)
-- `birthDate`: Data de nascimento
-- `maritalStatus`: Estado civil
+- `rg`: RG (para Pessoa Física)
+- `rgDispatchDate`: Data de expedição do RG
+- `rgIssuer`: Órgão expedidor do RG
+- `birthDate`: Data de nascimento (Pessoa Física)
+- `maritalStatus`: Estado civil (Pessoa Física)
 - `email`: Email
 - `phone`: Telefone
 - `address`: Endereço completo (rua, número, complemento, bairro, cidade, estado, CEP)
 - `notes`: Observações adicionais
 - `createdAt`: Data de criação
 
-### Proposta (Proposal)
+### Documento (Document)
 - `id`: Identificador único
 - `clientId`: Referência ao cliente
-- `type`: Tipo de seguro (Auto, Vida, Residencial, etc.)
+- `type`: Tipo de seguro (Auto, Life, Residential, Corporate, Health, Travel)
 - `company`: Companhia seguradora
-- `policyNumber`: Número da apólice
+- `documentNumber`: Número da proposta/apólice
 - `startDate`: Data de início
 - `endDate`: Data de término
 - `status`: Status (Proposta, Apólice, Cancelado)
 - `attachmentName`: Nome do anexo (opcional)
 - `notes`: Observações
+- `createdAt`: Data de criação
 
 ### Usuário (User)
+- `id`: Identificador único
 - `email`: Email do usuário
 - `username`: Nome de usuário
 - `password`: Senha (hashada)
-- `token`: Token JWT (temporário)
+- `createdAt`: Data de criação
 
 ## 🔌 API Endpoints
 
@@ -97,11 +106,11 @@ segflow-crm/
 - `PUT /api/clients/:id` - Atualizar cliente
 - `DELETE /api/clients/:id` - Excluir cliente
 
-### Propostas (Protegidos por JWT)
-- `GET /api/proposals` - Listar todas as propostas
-- `POST /api/proposals` - Criar nova proposta
-- `PUT /api/proposals/:id` - Atualizar proposta
-- `DELETE /api/proposals/:id` - Excluir proposta
+### Documentos (Protegidos por JWT)
+- `GET /api/documents` - Listar todos os documentos
+- `POST /api/documents` - Criar novo documento
+- `PUT /api/documents/:id` - Atualizar documento
+- `DELETE /api/documents/:id` - Excluir documento
 
 ## 🛠️ Instalação e Execução Local
 
@@ -113,7 +122,7 @@ segflow-crm/
 
 1. **Clone o repositório**:
    ```bash
-   git clone <seu-repo>
+   git clone https://github.com/maxjuniorbr/segflow-crm.git
    cd segflow-crm
    ```
 
@@ -184,9 +193,9 @@ O projeto está configurado para deploy simplificado no Render:
 
 ## 📈 Roadmap
 
+- [x] Suporte a upload de anexos (nome do arquivo)
 - [ ] Implementar gráficos no dashboard
 - [ ] Adicionar notificações por email
-- [ ] Suporte a upload de anexos
 - [ ] Relatórios avançados
 - [ ] Integração com APIs de seguradoras
 - [ ] Aplicativo móvel
