@@ -153,7 +153,7 @@ segflow-crm/
 4. **Inicialize o banco de dados**:
    ```bash
    cd server
-   node scripts/initDb.js
+   node scripts/initDbLocal.js
    cd ..
    ```
 
