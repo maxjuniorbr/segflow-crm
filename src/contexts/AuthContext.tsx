@@ -25,8 +25,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       try {
-        const API_URL = import.meta.env.VITE_API_URL || '/api';
-        const response = await fetch(`${API_URL}/auth/validate`, {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/auth/validate`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
