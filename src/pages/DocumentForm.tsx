@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
 import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ClientAutocomplete } from '../components/ClientAutocomplete';
 import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
 
@@ -15,6 +15,7 @@ export const DocumentForm: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [error, setError] = useState('');
 
@@ -105,10 +106,9 @@ export const DocumentForm: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (window.confirm("Excluir este documento permanentemente?")) {
-      await storageService.deleteDocument(id);
-      navigate('/documents');
-    }
+    await storageService.deleteDocument(id);
+    navigate('/documents');
+    setShowDeleteDialog(false);
   };
 
   const typeOptions = [
@@ -146,6 +146,17 @@ export const DocumentForm: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+        title="Excluir Documento"
+        message="Tem certeza que deseja excluir este documento permanentemente? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
@@ -154,7 +165,7 @@ export const DocumentForm: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
         </div>
         {id && (
-          <Button variant="danger" onClick={handleDelete} type="button">
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button">
             <Trash2 className="w-4 h-4 mr-2" /> Excluir
           </Button>
         )}

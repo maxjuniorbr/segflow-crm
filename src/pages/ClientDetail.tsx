@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
 import { Card, Button } from '../components/UIComponents';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useToast } from '../contexts/ToastContext';
 import { ChevronLeft, Edit, Trash2, Mail, Phone, MapPin, Calendar, FileText, Plus } from 'lucide-react';
 
 const getDocumentTypeLabel = (type: string) => {
@@ -20,9 +22,11 @@ const getDocumentTypeLabel = (type: string) => {
 export const ClientDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [client, setClient] = useState<Client | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,13 +45,13 @@ export const ClientDetail: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    if (window.confirm("Tem certeza que deseja excluir este cliente? Todas as propostas associadas também serão excluídas.")) {
-      try {
-        await storageService.deleteClient(id);
-        navigate('/clients');
-      } catch (error) {
-        alert("Erro ao excluir cliente. Verifique se existem propostas ativas.");
-      }
+    try {
+      await storageService.deleteClient(id);
+      navigate('/clients');
+    } catch (error) {
+      showToast("Erro ao excluir cliente. Verifique se existem propostas ativas.", "error");
+    } finally {
+      setShowDeleteDialog(false);
     }
   };
 
@@ -56,6 +60,17 @@ export const ClientDetail: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+        title="Excluir Cliente"
+        message={`Tem certeza que deseja excluir ${client.name}? Todas as propostas associadas também serão excluídas. Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center">
@@ -76,7 +91,7 @@ export const ClientDetail: React.FC = () => {
               <Edit className="w-4 h-4 mr-2" /> Editar
             </Button>
           </Link>
-          <Button variant="danger" onClick={handleDelete}>
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)}>
             <Trash2 className="w-4 h-4 mr-2" /> Excluir
           </Button>
         </div>
