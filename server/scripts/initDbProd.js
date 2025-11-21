@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const RESET_DB = true;
+
 const initDbProd = async () => {
   const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
@@ -14,7 +16,7 @@ const initDbProd = async () => {
   try {
     const client = await pool.connect();
 
-    if (process.env.RESET_DB === 'true') {
+    if (RESET_DB) {
       await client.query('DROP TABLE IF EXISTS documents CASCADE');
       await client.query('DROP TABLE IF EXISTS clients CASCADE');
       await client.query('DROP TABLE IF EXISTS users CASCADE');
