@@ -56,3 +56,25 @@ export const login = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+export const validate = async (req, res) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+        return res.status(401).json({ valid: false, error: 'Token não fornecido' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        res.json({
+            valid: true,
+            user: {
+                id: decoded.id,
+                email: decoded.email
+            }
+        });
+    } catch (err) {
+        res.status(401).json({ valid: false, error: 'Token inválido ou expirado' });
+    }
+};

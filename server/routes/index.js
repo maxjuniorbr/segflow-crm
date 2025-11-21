@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login } from '../controllers/authController.js';
+import { register, login, validate as validateToken } from '../controllers/authController.js';
 import { getClients, getClientById, createClient, updateClient, deleteClient } from '../controllers/clientController.js';
 import { getDocuments, createDocument, updateDocument, deleteDocument } from '../controllers/documentController.js';
 import { authMiddleware, validate } from '../middleware/index.js';
@@ -10,6 +10,7 @@ const router = express.Router();
 // Auth
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
+router.get('/auth/validate', validateToken);
 
 // Clients
 router.get('/clients', authMiddleware, getClients);

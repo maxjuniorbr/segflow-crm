@@ -15,11 +15,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('segflow_active_session');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const validateSession = async () => {
+      const storedUser = localStorage.getItem('segflow_active_session');
+      const token = localStorage.getItem('token');
+
+      if (!storedUser || !token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${API_URL}/auth/validate`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          localStorage.removeItem('segflow_active_session');
+          localStorage.removeItem('token');
+        }
+      } catch (error) {
+        localStorage.removeItem('segflow_active_session');
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    validateSession();
   }, []);
 
   const login = (userData: User) => {
