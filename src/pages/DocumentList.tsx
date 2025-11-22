@@ -66,7 +66,10 @@ export const DocumentList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Propostas/Apólices</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Propostas/Apólices</h1>
+          <p className="mt-1 text-sm text-slate-500">Gerencie propostas e apólices de seguros.</p>
+        </div>
         <Link to="/documents/new">
           <Button className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />

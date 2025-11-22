@@ -64,11 +64,7 @@ export const getDocumentById = async (req, res) => {
 export const createDocument = async (req, res) => {
     let { id, clientId, type, company, documentNumber, startDate, endDate, status, attachmentName, notes } = req.body;
 
-    // Convert empty strings to null for optional fields
-    if (!company || company === '') company = null;
     if (!documentNumber || documentNumber === '') documentNumber = null;
-    if (startDate === '') startDate = null;
-    if (endDate === '') endDate = null;
     if (!attachmentName || attachmentName === '') attachmentName = null;
     if (!notes || notes === '') notes = null;
 
@@ -87,11 +83,7 @@ export const createDocument = async (req, res) => {
 export const updateDocument = async (req, res) => {
     let { clientId, type, company, documentNumber, startDate, endDate, status, attachmentName, notes } = req.body;
 
-    // Convert empty strings to null for optional fields
-    if (!company || company === '') company = null;
     if (!documentNumber || documentNumber === '') documentNumber = null;
-    if (startDate === '') startDate = null;
-    if (endDate === '') endDate = null;
     if (!attachmentName || attachmentName === '') attachmentName = null;
     if (!notes || notes === '') notes = null;
 

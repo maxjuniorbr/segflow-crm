@@ -39,18 +39,17 @@ export const clientSchema = z.object({
     email: z.string()
         .email('Email inválido')
         .max(254, 'Email deve ter no máximo 254 caracteres')
-        .optional()
-        .or(z.literal(''))
-        .or(z.null()),
-    phone: z.string().nullable().optional(),
+        .min(1, 'Email é obrigatório'),
+    phone: z.string()
+        .min(1, 'Telefone é obrigatório'),
     address: z.object({
-        street: z.string().optional(),
-        number: z.string().optional(),
+        street: z.string().min(1, 'Rua é obrigatória'),
+        number: z.string().min(1, 'Número é obrigatório'),
         complement: z.string().optional(),
-        neighborhood: z.string().optional(),
-        city: z.string().optional(),
-        state: z.string().optional(),
-        zipCode: z.string().optional(),
+        neighborhood: z.string().min(1, 'Bairro é obrigatório'),
+        city: z.string().min(1, 'Cidade é obrigatória'),
+        state: z.string().min(1, 'Estado é obrigatório'),
+        zipCode: z.string().min(1, 'CEP é obrigatório'),
     }).nullable().optional(),
     createdAt: z.string().optional(),
     notes: z.string()
@@ -98,16 +97,21 @@ export const documentSchema = z.object({
         .min(1, 'Cliente é obrigatório'),
     type: z.string()
         .min(1, 'Tipo é obrigatório'),
-    company: z.string().optional(),
+    company: z.string()
+        .min(1, 'Seguradora é obrigatória'),
     documentNumber: z.string()
         .max(30, 'Número deve ter no máximo 30 caracteres')
+        .nullable()
         .optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
+    startDate: z.string()
+        .min(1, 'Data de início é obrigatória'),
+    endDate: z.string()
+        .min(1, 'Data de fim é obrigatória'),
     status: z.string()
         .min(1, 'Status é obrigatório'),
-    attachmentName: z.string().optional(),
+    attachmentName: z.string().nullable().optional(),
     notes: z.string()
         .max(1000, 'Observações devem ter no máximo 1000 caracteres')
+        .nullable()
         .optional(),
 });

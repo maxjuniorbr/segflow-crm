@@ -53,8 +53,16 @@ describe('Client Person Type Integration Tests', () => {
             id: 'test-fail-pf-' + Date.now(),
             name: 'João Sem CPF',
             personType: 'Física',
-            // cpf missing
-            email: 'joao_nocpf@example.com'
+            email: 'joao_nocpf@example.com',
+            phone: '11999999999',
+            address: {
+                street: 'Rua Teste',
+                number: '123',
+                neighborhood: 'Centro',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01310-100'
+            }
         };
 
         const res = await request(app)
@@ -75,7 +83,15 @@ describe('Client Person Type Integration Tests', () => {
             personType: 'Jurídica',
             cnpj: '11.222.333/0001-81', // Valid CNPJ for testing
             email: 'contato@empresa.com',
-            phone: '1133334444'
+            phone: '1133334444',
+            address: {
+                street: 'Av Teste',
+                number: '456',
+                neighborhood: 'Centro',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01310-100'
+            }
         };
 
         const res = await request(app)
@@ -91,8 +107,16 @@ describe('Client Person Type Integration Tests', () => {
             id: 'test-fail-pj-' + Date.now(),
             name: 'Empresa Sem CNPJ',
             personType: 'Jurídica',
-            // cnpj missing
-            email: 'fail@empresa.com'
+            email: 'fail@empresa.com',
+            phone: '1133334444',
+            address: {
+                street: 'Rua Fail',
+                number: '999',
+                neighborhood: 'Fail',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01310-100'
+            }
         };
 
         const res = await request(app)
@@ -111,7 +135,16 @@ describe('Client Person Type Integration Tests', () => {
             name: 'Empresa Minimalista',
             personType: 'Jurídica',
             cnpj: '06.990.590/0001-23', // Valid CNPJ for testing
-            email: 'min@empresa.com'
+            email: 'semcnpj@empresa.com',
+            phone: '1133334444',
+            address: {
+                street: 'Rua Empresa',
+                number: '789',
+                neighborhood: 'Comercial',
+                city: 'São Paulo',
+                state: 'SP',
+                zipCode: '01310-100'
+            }
         };
 
         const res = await request(app)

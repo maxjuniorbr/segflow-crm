@@ -195,7 +195,10 @@ export const DocumentForm: React.FC = () => {
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
+            <p className="text-sm text-slate-500 mt-1">{id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}</p>
+          </div>
         </div>
         {id && (
           <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
