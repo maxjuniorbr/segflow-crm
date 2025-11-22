@@ -148,11 +148,11 @@ export const ClientDetail: React.FC = () => {
 
             <h3 className="text-lg font-semibold text-slate-900 mt-8 mb-4">Contato</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-slate-500">Email</p>
-                <p className="font-medium flex items-center">
-                  <Mail className="w-4 h-4 mr-2 text-slate-400" />
-                  {client.email}
+                <p className="font-medium flex items-center" title={client.email}>
+                  <Mail className="w-4 h-4 mr-2 text-slate-400 flex-shrink-0" />
+                  <span className="truncate">{client.email}</span>
                 </p>
               </div>
               <div>
