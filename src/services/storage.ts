@@ -2,37 +2,37 @@ import { Client, Document, User } from '../types';
 import { api } from './api';
 
 export const storageService = {
-  // --- Init / Seeding ---
-  initialize: () => {
-    // No client-side seeding needed anymore, handled by backend
+  async init() {
+    return;
   },
 
-  // --- Auth/Users ---
-  registerUser: async (user: { email: string, password: string }): Promise<void> => {
-    await api.post('/api/register', user);
+  async register(user: { email: string; password: string; username?: string }) {
+    try {
+      await api.post('/api/register', user);
+    } catch (error) {
+      console.error("Registration failed", error);
+      throw error;
+    }
   },
 
   validateUser: async (email: string, password: string): Promise<User | null> => {
     try {
-      const response = await api.post('/api/login', { email, password });
-      // Backend retorna { token, user: { email, username, isAuthenticated } }
-      // Precisamos mesclar o token com o objeto user
-      if (response.token && response.user) {
+      const data = await api.post('/api/login', { email, password });
+      if (data && data.token && data.user) {
         return {
-          ...response.user,
-          token: response.token
+          ...data.user,
+          token: data.token,
+          isAuthenticated: true
         };
       }
-      return response;
+      return null;
     } catch (error) {
       console.error("Login failed", error);
       return null;
     }
   },
 
-  // --- Clients ---
-
-  getClients: async (): Promise<Client[]> => {
+  async getClients(): Promise<Client[]> {
     return api.get('/api/clients');
   },
 
@@ -44,23 +44,14 @@ export const storageService = {
     }
   },
 
-  saveClient: async (client: Client): Promise<void> => {
-    // Check if update or create based on ID existence
-
+  async saveClient(client: Client, isNew: boolean = false): Promise<Client> {
     try {
-      // Try to fetch the client first to determine if it's an update or create
-      let exists = false;
-      try {
-        await api.get(`/api/clients/${client.id}`);
-        exists = true;
-      } catch (e) {
-        exists = false;
-      }
-
-      if (exists) {
-        await api.put(`/api/clients/${client.id}`, client);
+      if (!isNew && client.id) {
+        const response = await api.put(`/api/clients/${client.id}`, client);
+        return response;  // ← Removido .data
       } else {
-        await api.post('/api/clients', client);
+        const response = await api.post('/api/clients', client);
+        return response;  // ← Removido .data
       }
     } catch (error) {
       console.error('Error saving client:', error);
@@ -81,8 +72,7 @@ export const storageService = {
 
 
 
-  // --- Documents ---
-  getDocuments: async (): Promise<Document[]> => {
+  async getDocuments(): Promise<Document[]> {
     try {
       return await api.get('/api/documents');
     } catch (error) {
@@ -93,24 +83,22 @@ export const storageService = {
 
   getDocumentById: async (id: string): Promise<Document | undefined> => {
     try {
-      const documents = await api.get('/api/documents');
-      return documents.find((d: Document) => d.id === id);
+      const response = await api.get(`/api/documents/${id}`);
+      return response; // Assuming API returns the document directly
     } catch (error) {
       console.error('Error fetching document:', error);
       return undefined;
     }
   },
 
-  saveDocument: async (document: Document): Promise<void> => {
+  async saveDocument(doc: Document, isNew: boolean = false): Promise<Document> {
     try {
-      // Check if exists (simple check, ideally backend handles upsert or we check ID)
-      const all = await api.get('/api/documents');
-      const exists = all.some((d: Document) => d.id === document.id);
-
-      if (exists) {
-        await api.put(`/api/documents/${document.id}`, document);
+      if (!isNew && doc.id) {
+        const response = await api.put(`/api/documents/${doc.id}`, doc);
+        return response;  // ← Removido .data
       } else {
-        await api.post('/api/documents', document);
+        const response = await api.post('/api/documents', doc);
+        return response;  // ← Removido .data
       }
     } catch (error) {
       console.error('Error saving document:', error);

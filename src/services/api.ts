@@ -9,13 +9,9 @@ const getHeaders = () => {
     return headers;
 };
 
-// Handle unauthorized/session expired responses
 const handleUnauthorized = () => {
-    // Clear authentication data
     localStorage.removeItem('segflow_active_session');
     localStorage.removeItem('token');
-
-    // Redirect to login page
     window.location.href = '#/login';
 };
 
@@ -27,10 +23,9 @@ export const api = {
             headers,
         });
 
-        // Check for session expiration
         if (response.status === 401 || response.status === 403) {
             handleUnauthorized();
-            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            throw new Error('Sessão expirada');
         }
 
         if (!response.ok) {
@@ -51,10 +46,9 @@ export const api = {
             body: JSON.stringify(data),
         });
 
-        // Check for session expiration
         if (response.status === 401 || response.status === 403) {
             handleUnauthorized();
-            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            throw new Error('Sessão expirada');
         }
 
         if (!response.ok) {
@@ -74,10 +68,9 @@ export const api = {
             body: JSON.stringify(data),
         });
 
-        // Check for session expiration
         if (response.status === 401 || response.status === 403) {
             handleUnauthorized();
-            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            throw new Error('Sessão expirada');
         }
 
         if (!response.ok) {
@@ -96,10 +89,9 @@ export const api = {
             headers: getHeaders(),
         });
 
-        // Check for session expiration
         if (response.status === 401 || response.status === 403) {
             handleUnauthorized();
-            throw new Error('Sessão expirada. Por favor, faça login novamente.');
+            throw new Error('Sessão expirada');
         }
 
         if (!response.ok) {
