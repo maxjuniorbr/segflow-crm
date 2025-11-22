@@ -81,6 +81,8 @@ export const DocumentList: React.FC = () => {
             <Search className="h-5 w-5 text-slate-400" />
           </div>
           <Input
+            id="search-documents"
+            name="search-documents"
             placeholder="Buscar por cliente, número ou seguradora..."
             className="pl-10"
             value={searchTerm}

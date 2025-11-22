@@ -240,6 +240,7 @@ export const DocumentForm: React.FC = () => {
                 onChange={handleChange}
                 options={companyOptions}
                 required
+                autoComplete="off"
               />
             </div>
 
@@ -250,6 +251,7 @@ export const DocumentForm: React.FC = () => {
                 value={formData.documentNumber || ''}
                 onChange={handleChange}
                 placeholder="Opcional"
+                autoComplete="off"
               />
             </div>
 
@@ -261,6 +263,7 @@ export const DocumentForm: React.FC = () => {
                 value={formData.startDate}
                 onChange={handleChange as any}
                 required
+                autoComplete="off"
               />
             </div>
 
@@ -271,6 +274,7 @@ export const DocumentForm: React.FC = () => {
                 value={formData.endDate}
                 onChange={handleChange as any}
                 required
+                autoComplete="off"
               />
             </div>
 
@@ -287,14 +291,14 @@ export const DocumentForm: React.FC = () => {
 
             {/* Anexo */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Anexo (PDF/Imagem)</label>
+              <label htmlFor="file-upload" className="block text-sm font-medium text-slate-700 mb-1.5">Anexo (PDF/Imagem)</label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-slate-50 hover:bg-blue-50">
                 <div className="space-y-1 text-center">
                   <Paperclip className="mx-auto h-12 w-12 text-slate-400" />
                   <div className="flex text-sm text-slate-600">
                     <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                       <span>Upload de arquivo</span>
-                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} />
+                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} autoComplete="off" />
                     </label>
                     <p className="pl-1">ou arraste e solte</p>
                   </div>
@@ -311,13 +315,15 @@ export const DocumentForm: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Observações</label>
+              <label htmlFor="notes" className="block text-sm font-medium text-slate-700 mb-1.5">Observações</label>
               <textarea
+                id="notes"
                 rows={3}
                 name="notes"
                 className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
                 value={formData.notes || ''}
                 onChange={handleChange}
+                autoComplete="off"
               />
             </div>
           </div>

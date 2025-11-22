@@ -77,6 +77,8 @@ export const Register: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
+              id="email"
+              name="email"
               label="Email"
               type="email"
               placeholder="seu@email.com"
@@ -85,6 +87,8 @@ export const Register: React.FC = () => {
               required
             />
             <Input
+              id="password"
+              name="password"
               label="Senha"
               type="password"
               placeholder="Mínimo 6 caracteres"
@@ -93,6 +97,8 @@ export const Register: React.FC = () => {
               required
             />
             <Input
+              id="confirm-password"
+              name="confirm-password"
               label="Confirmar Senha"
               type="password"
               placeholder="Repita a senha"

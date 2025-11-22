@@ -122,9 +122,15 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
 
     return (
         <div ref={wrapperRef} className="relative">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-                Cliente {required && <span className="text-red-500">*</span>}
-            </label>
+            {selectedClient ? (
+                <span className="block text-sm font-medium text-slate-700 mb-1">
+                    Cliente {required && <span className="text-red-500">*</span>}
+                </span>
+            ) : (
+                <label htmlFor="client-search" className="block text-sm font-medium text-slate-700 mb-1">
+                    Cliente {required && <span className="text-red-500">*</span>}
+                </label>
+            )}
 
             {selectedClient ? (
                 <div className="flex items-center justify-between bg-blue-50 border border-blue-300 rounded-md px-3 py-2">
@@ -154,6 +160,9 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                         </div>
                         <input
                             type="text"
+                            id="client-search"
+                            name="client-search"
+                            autoComplete="off"
                             value={searchTerm}
                             onChange={handleInputChange}
                             disabled={disabled}

@@ -71,6 +71,8 @@ export const ClientList: React.FC = () => {
             </div>
             <input
               type="text"
+              id="search-clients"
+              name="search-clients"
               className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
               placeholder="Buscar por nome, documento ou email..."
               value={searchTerm}
@@ -78,6 +80,8 @@ export const ClientList: React.FC = () => {
             />
           </div>
           <select
+            id="person-type-filter"
+            name="person-type-filter"
             value={personTypeFilter}
             onChange={(e) => setPersonTypeFilter(e.target.value as any)}
             className="px-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"

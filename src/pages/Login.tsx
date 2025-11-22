@@ -44,7 +44,7 @@ export const Login: React.FC = () => {
           </div>
           <h2 className="text-center text-2xl font-bold text-slate-900 mb-2">SegFlow</h2>
           <p className="text-center text-slate-600 mb-8">Acesse sua conta</p>
-          
+
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center">
               <AlertCircle className="w-4 h-4 mr-2" />
@@ -54,6 +54,8 @@ export const Login: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
+              id="email"
+              name="email"
               label="Email"
               type="email"
               placeholder="seu@email.com"
@@ -62,6 +64,8 @@ export const Login: React.FC = () => {
               required
             />
             <Input
+              id="password"
+              name="password"
               label="Senha"
               type="password"
               placeholder="Sua senha"
@@ -69,7 +73,7 @@ export const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            
+
             <Button type="submit" className="w-full" isLoading={loading}>
               Entrar
             </Button>

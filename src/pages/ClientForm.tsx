@@ -315,7 +315,7 @@ export const ClientForm: React.FC = () => {
                   <DateInput label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange as any} required />
                 </div>
                 <div className="sm:col-span-2">
-                  <Input label="Idade" value={calculatedAge} readOnly className="bg-slate-50" />
+                  <Input label="Idade" name="age" id="age" value={calculatedAge} readOnly className="bg-slate-50" />
                 </div>
               </>
             ) : (
@@ -340,9 +340,10 @@ export const ClientForm: React.FC = () => {
         <Card title="Endereço">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-3">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">CEP *</label>
+              <label htmlFor="zipCode" className="block text-sm font-medium text-slate-700 mb-1.5">CEP *</label>
               <div className="flex rounded-md shadow-sm">
                 <input
+                  id="zipCode"
                   name="addr.zipCode"
                   value={formData.address.zipCode}
                   onChange={handleChange}
@@ -424,8 +425,9 @@ export const ClientForm: React.FC = () => {
         </Card>
 
         <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Observações Adicionais</label>
+          <label htmlFor="notes" className="block text-sm font-medium text-slate-700 mb-1.5">Observações Adicionais</label>
           <textarea
+            id="notes"
             rows={3}
             name="notes"
             className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
