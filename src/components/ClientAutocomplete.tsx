@@ -171,13 +171,13 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
 
             {/* Dropdown with results */}
             {isOpen && filteredClients.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-50 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg max-h-60 overflow-auto">
                     {filteredClients.map(client => (
                         <button
                             key={client.id}
                             type="button"
                             onClick={() => handleSelectClient(client)}
-                            className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
+                            className="w-full text-left px-4 py-4 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
                         >
                             <p className="font-medium text-slate-900">{client.name}</p>
                             <p className="text-sm text-slate-600">

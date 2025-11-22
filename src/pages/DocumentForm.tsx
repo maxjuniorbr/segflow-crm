@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
-import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
+import { Card, Input, Button, Select, Alert, DateInput } from '../components/UIComponents';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ClientAutocomplete } from '../components/ClientAutocomplete';
 import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
@@ -178,7 +178,7 @@ export const DocumentForm: React.FC = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 pb-24 sm:pb-0">
       <ConfirmDialog
         isOpen={showDeleteDialog}
         onConfirm={handleDelete}
@@ -218,95 +218,118 @@ export const DocumentForm: React.FC = () => {
                 value={formData.clientId}
                 onChange={(clientId) => setFormData(prev => ({ ...prev, clientId }))}
                 required
-                disabled={!!preselectedClientId && !id}
               />
             </div>
 
             {/* Basic Info */}
-            <Select
-              label="Tipo de Seguro *"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              options={typeOptions}
-              required
-            />
-            <Select
-              label="Status *"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              options={statusOptions}
-              required
-            />
+            <div>
+              <Select
+                label="Tipo de Seguro *"
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                options={typeOptions}
+                required
+              />
+            </div>
+            <div>
+              <Select
+                label="Seguradora *"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                options={companyOptions}
+                required
+              />
+            </div>
 
-            <Select
-              label="Seguradora *"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              options={companyOptions}
-              required
-            />
-
-            <Input label="Número Proposta/Apólice *" name="documentNumber" value={formData.documentNumber} onChange={handleChange} required />
+            <div className="sm:col-span-2">
+              <Input
+                label="Número da Proposta/Apólice"
+                name="documentNumber"
+                value={formData.documentNumber || ''}
+                onChange={handleChange}
+                placeholder="Opcional"
+              />
+            </div>
 
             {/* Vigência */}
-            <div className="sm:col-span-2 pt-2">
-              <h4 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-100 pb-1">Vigência</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <Input type="date" label="Início *" name="startDate" value={formData.startDate} onChange={handleChange} required />
-                <Input type="date" label="Fim *" name="endDate" value={formData.endDate} onChange={handleChange} required />
-              </div>
+            <div>
+              <DateInput
+                label="Início de Vigência *"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange as any}
+                required
+              />
+            </div>
+
+            <div>
+              <DateInput
+                label="Fim de Vigência *"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange as any}
+                required
+              />
+            </div>
+
+            <div>
+              <Select
+                label="Status *"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                options={statusOptions}
+                required
+              />
             </div>
 
             {/* Anexo */}
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Anexar Apólice (PDF/Imagem)</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md hover:bg-slate-50 transition-colors">
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Anexo (PDF/Imagem)</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-slate-50 hover:bg-blue-50">
                 <div className="space-y-1 text-center">
-                  {formData.attachmentName ? (
-                    <div className="flex items-center justify-center text-blue-600">
-                      <Paperclip className="w-6 h-6 mr-2" />
-                      <span className="font-medium">{formData.attachmentName}</span>
-                      <button type="button" onClick={() => setFormData({ ...formData, attachmentName: '' })} className="ml-2 text-red-500 text-sm hover:underline">(Remover)</button>
-                    </div>
-                  ) : (
-                    <>
-                      <Paperclip className="mx-auto h-12 w-12 text-slate-400" />
-                      <div className="flex text-sm text-slate-600 justify-center">
-                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                          <span>Upload de arquivo</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".pdf,image/*" />
-                        </label>
-                      </div>
-                      <p className="text-xs text-slate-500">PDF, PNG, JPG até 10MB</p>
-                    </>
+                  <Paperclip className="mx-auto h-12 w-12 text-slate-400" />
+                  <div className="flex text-sm text-slate-600">
+                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Upload de arquivo</span>
+                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} />
+                    </label>
+                    <p className="pl-1">ou arraste e solte</p>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    PNG, JPG, PDF até 10MB
+                  </p>
+                  {formData.attachmentName && (
+                    <p className="text-sm text-green-600 font-medium mt-2">
+                      Selecionado: {formData.attachmentName}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Observações</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Observações</label>
               <textarea
-                name="notes"
                 rows={3}
-                className="bg-white text-slate-900 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-slate-300 rounded-md p-2 border"
-                value={formData.notes}
+                name="notes"
+                className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
+                value={formData.notes || ''}
                 onChange={handleChange}
               />
             </div>
           </div>
-
-          <div className="mt-6 flex justify-end space-x-3">
-            <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
-            <Button type="submit" isLoading={saving}>
-              <Save className="w-4 h-4 mr-2" />
-              Salvar Documento
-            </Button>
-          </div>
         </Card>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
+          <Button type="submit" isLoading={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            Salvar Documento
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -17,7 +17,6 @@ export const ClientList: React.FC = () => {
     const loadClients = async () => {
       try {
         const data = await storageService.getClients();
-        // Sort by newest first
         const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setClients(sorted);
         setFilteredClients(sorted);
@@ -133,7 +132,7 @@ export const ClientList: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{client.email}</div>
+                      <div className="text-sm text-gray-900 max-w-[200px] truncate" title={client.email}>{client.email}</div>
                       <div className="text-sm text-gray-500">{client.phone}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

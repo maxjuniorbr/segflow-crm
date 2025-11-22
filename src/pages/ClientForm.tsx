@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { externalService } from '../services/external';
 import { Client } from '../types';
-import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
+import { Card, Input, Button, Select, Alert, DateInput } from '../components/UIComponents';
 import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
 import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../utils/formatters';
 import { useToast } from '../contexts/ToastContext';
@@ -21,8 +20,6 @@ export const ClientForm: React.FC = () => {
 
   const streetInputRef = useRef<HTMLInputElement>(null);
   const numberInputRef = useRef<HTMLInputElement>(null);
-
-  // ... (rest of state initialization)
 
   const emptyClient: Omit<Client, 'id' | 'createdAt'> = {
     name: '',
@@ -211,10 +208,8 @@ export const ClientForm: React.FC = () => {
       };
       await storageService.saveClient(clientToSave, !id);
 
-      // Feedback via Toast
       showToast(id ? 'Cliente atualizado com sucesso!' : 'Cliente criado com sucesso!', 'success');
 
-      // Redirecionar
       navigate(id ? `/clients/${id}` : '/clients');
     } catch (error: any) {
       console.error("Error saving client:", error);
@@ -226,8 +221,6 @@ export const ClientForm: React.FC = () => {
     }
   };
 
-  // ... (rest of render)
-
   const maritalStatusOptions = [
     { value: 'Solteiro(a)', label: 'Solteiro(a)' },
     { value: 'Casado(a)', label: 'Casado(a)' },
@@ -236,8 +229,14 @@ export const ClientForm: React.FC = () => {
     { value: 'União Estável', label: 'União Estável' },
   ];
 
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto pb-24 sm:pb-0">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
@@ -258,8 +257,6 @@ export const ClientForm: React.FC = () => {
           )}
         </Alert>
       )}
-
-
 
       <form onSubmit={handleSubmit} className="space-y-8">
 
@@ -310,12 +307,12 @@ export const ClientForm: React.FC = () => {
                   <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" />
                 </div>
                 <div className="sm:col-span-3">
-                  <Input type="date" label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate || ''} onChange={handleChange} />
+                  <DateInput label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate || ''} onChange={handleChange as any} />
                 </div>
                 <div className="sm:col-span-3"></div>
 
                 <div className="sm:col-span-3">
-                  <Input type="date" label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange} required />
+                  <DateInput label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange as any} required />
                 </div>
                 <div className="sm:col-span-2">
                   <Input label="Idade" value={calculatedAge} readOnly className="bg-slate-50" />
@@ -329,7 +326,6 @@ export const ClientForm: React.FC = () => {
           </div>
         </Card>
 
-        {/* Section: Contato */}
         <Card title="Contatos">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
@@ -341,7 +337,6 @@ export const ClientForm: React.FC = () => {
           </div>
         </Card>
 
-        {/* Section: Endereço */}
         <Card title="Endereço">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-3">
@@ -364,6 +359,7 @@ export const ClientForm: React.FC = () => {
                   {cepLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 </button>
               </div>
+              {cepLoading && <p className="text-xs text-blue-600 mt-1">Buscando endereço...</p>}
             </div>
 
             <div className="sm:col-span-6">
@@ -438,7 +434,7 @@ export const ClientForm: React.FC = () => {
           />
         </div>
 
-        <div className="flex justify-end space-x-4 pt-4 border-t border-slate-200">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
           <Button type="submit" isLoading={saving}>
             <Save className="w-4 h-4 mr-2" />

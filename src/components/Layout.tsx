@@ -38,8 +38,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <ShieldCheck className="w-8 h-8 text-blue-600" />
           <span>SegFlow</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-600">
-          {isMobileMenuOpen ? <X /> : <Menu />}
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-600 p-2 -mr-2">
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 

@@ -80,6 +80,79 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = 'Input';
 
+// --- DateInput ---
+interface DateInputProps extends Omit<InputProps, 'onChange' | 'value'> {
+  value: string;
+  onChange: (e: { target: { name: string; value: string } }) => void;
+}
+
+export const DateInput: React.FC<DateInputProps> = ({ label, error, value, onChange, name, ...props }) => {
+  const [displayValue, setDisplayValue] = React.useState('');
+
+  React.useEffect(() => {
+    if (value) {
+      // Convert YYYY-MM-DD to DD/MM/YYYY for display if valid
+      const [y, m, d] = value.split('-');
+      if (y && m && d) {
+        setDisplayValue(`${d}/${m}/${y}`);
+      } else {
+        setDisplayValue(value);
+      }
+    } else {
+      setDisplayValue('');
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, '');
+
+    // Mask DD/MM/YYYY
+    if (val.length > 8) val = val.substring(0, 8);
+
+    let formatted = val;
+    if (val.length > 2) {
+      formatted = val.substring(0, 2) + '/' + val.substring(2);
+    }
+    if (val.length > 4) {
+      formatted = formatted.substring(0, 5) + '/' + formatted.substring(5);
+    }
+
+    setDisplayValue(formatted);
+
+    // If complete, convert to YYYY-MM-DD and trigger onChange
+    if (val.length === 8) {
+      const day = val.substring(0, 2);
+      const month = val.substring(2, 4);
+      const year = val.substring(4, 8);
+
+      // Basic validation
+      const numDay = parseInt(day);
+      const numMonth = parseInt(month);
+      const numYear = parseInt(year);
+
+      if (numMonth >= 1 && numMonth <= 12 && numDay >= 1 && numDay <= 31 && numYear > 1900) {
+        onChange({ target: { name: name || '', value: `${year}-${month}-${day}` } });
+      }
+    } else if (val.length === 0) {
+      onChange({ target: { name: name || '', value: '' } });
+    }
+  };
+
+  return (
+    <Input
+      label={label}
+      error={error}
+      name={name}
+      value={displayValue}
+      onChange={handleChange}
+      placeholder="DD/MM/AAAA"
+      maxLength={10}
+      inputMode="numeric"
+      {...props}
+    />
+  );
+};
+
 // --- Select ---
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
