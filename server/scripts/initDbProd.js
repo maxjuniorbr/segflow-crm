@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const RESET_DB = true;
+const RESET_DB = false;
 
 const initDbProd = async () => {
   const pool = new pg.Pool({
