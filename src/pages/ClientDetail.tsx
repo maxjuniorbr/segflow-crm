@@ -55,6 +55,18 @@ export const ClientDetail: React.FC = () => {
     }
   };
 
+  const handleDeleteDocument = async (docId: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta proposta/apólice?')) {
+      try {
+        await storageService.deleteDocument(docId);
+        setDocuments(documents.filter(d => d.id !== docId));
+        showToast("Documento excluído com sucesso!", "success");
+      } catch (error) {
+        showToast("Erro ao excluir documento.", "error");
+      }
+    }
+  };
+
   if (loading) return <div className="p-8 text-center">Carregando...</div>;
   if (!client) return <div className="p-8 text-center">Cliente não encontrado</div>;
 
@@ -72,7 +84,7 @@ export const ClientDetail: React.FC = () => {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate('/clients')} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
             <ChevronLeft className="w-6 h-6" />
@@ -85,13 +97,13 @@ export const ClientDetail: React.FC = () => {
             {client.personType === 'Física' ? 'Pessoa Física' : 'Pessoa Jurídica'}
           </span>
         </div>
-        <div className="flex space-x-3">
-          <Link to={`/clients/edit/${client.id}`}>
-            <Button variant="outline">
+        <div className="flex space-x-3 w-full sm:w-auto">
+          <Link to={`/clients/edit/${client.id}`} className="flex-1 sm:flex-none">
+            <Button variant="outline" className="w-full sm:w-auto">
               <Edit className="w-4 h-4 mr-2" /> Editar
             </Button>
           </Link>
-          <Button variant="danger" onClick={() => setShowDeleteDialog(true)}>
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} className="flex-1 sm:flex-none w-full sm:w-auto">
             <Trash2 className="w-4 h-4 mr-2" /> Excluir
           </Button>
         </div>
@@ -176,7 +188,7 @@ export const ClientDetail: React.FC = () => {
           <Card>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900">Propostas/Apólices</h3>
-              <Link to={`/documents/new?clientId=${client.id}`}>
+              <Link to={`/documents/new?clientId=${client.id}`} state={{ from: `/clients/${client.id}` }}>
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-1" /> Nova
                 </Button>
@@ -207,9 +219,18 @@ export const ClientDetail: React.FC = () => {
                         Vigência: {doc.startDate ? doc.startDate.split('T')[0].split('-').reverse().join('/') : '-'} até {doc.endDate ? doc.endDate.split('T')[0].split('-').reverse().join('/') : '-'}
                       </p>
                     </div>
-                    <Link to={`/documents/edit/${doc.id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                      Ver Detalhes
-                    </Link>
+                    <div className="flex items-center space-x-3">
+                      <Link to={`/documents/edit/${doc.id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteDocument(doc.id)}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                        title="Excluir documento"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

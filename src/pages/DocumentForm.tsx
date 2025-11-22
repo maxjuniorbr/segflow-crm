@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Client, Document } from '../types';
 import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { ClientAutocomplete } from '../components/ClientAutocomplete';
 import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 
 export const DocumentForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,11 +14,15 @@ export const DocumentForm: React.FC = () => {
   const preselectedClientId = searchParams.get('clientId');
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [error, setError] = useState('');
+
+  // ... (rest of state)
 
   const emptyDocument: Omit<Document, 'id'> = {
     clientId: preselectedClientId || '',
@@ -64,6 +69,21 @@ export const DocumentForm: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     let { name, value } = e.target;
+
+    // Automação de vigência: se mudou a data de início, calcular fim automaticamente (+1 ano)
+    if (name === 'startDate' && value) {
+      const startDate = new Date(value);
+      const endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        endDate: endDate.toISOString().split('T')[0]
+      }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -89,15 +109,20 @@ export const DocumentForm: React.FC = () => {
         id: id || Math.random().toString(36).substr(2, 9),
         ...formData
       };
-      await storageService.saveDocument(document);
-      if (formData.clientId) {
-        navigate(`/clients/${formData.clientId}`);
-      } else {
-        navigate('/documents');
-      }
+      await storageService.saveDocument(document, !id);
+
+      // Feedback via Toast
+      showToast(id ? 'Documento atualizado com sucesso!' : 'Documento criado com sucesso!', 'success');
+
+      // Redirecionamento inteligente baseado na origem
+      const originPath = location.state?.from ||
+        (formData.clientId ? `/clients/${formData.clientId}` : '/documents');
+
+      navigate(originPath);
     } catch (e: any) {
       console.error(e);
       setError(e.message || "Erro ao salvar documento");
+      showToast("Erro ao salvar documento.", "error");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
@@ -106,10 +131,18 @@ export const DocumentForm: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    await storageService.deleteDocument(id);
-    navigate('/documents');
-    setShowDeleteDialog(false);
+    try {
+      await storageService.deleteDocument(id);
+      showToast("Documento excluído com sucesso!", "success");
+      navigate('/documents');
+    } catch (error) {
+      showToast("Erro ao excluir documento.", "error");
+    } finally {
+      setShowDeleteDialog(false);
+    }
   };
+
+  // ... (options arrays)
 
   const typeOptions = [
     { value: 'Auto', label: 'Automóvel' },
@@ -157,7 +190,7 @@ export const DocumentForm: React.FC = () => {
         variant="danger"
       />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
             <ChevronLeft className="w-6 h-6" />
@@ -165,7 +198,7 @@ export const DocumentForm: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
         </div>
         {id && (
-          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button">
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
             <Trash2 className="w-4 h-4 mr-2" /> Excluir
           </Button>
         )}
@@ -191,36 +224,39 @@ export const DocumentForm: React.FC = () => {
 
             {/* Basic Info */}
             <Select
-              label="Tipo de Seguro"
+              label="Tipo de Seguro *"
               name="type"
               value={formData.type}
               onChange={handleChange}
               options={typeOptions}
+              required
             />
             <Select
-              label="Status"
+              label="Status *"
               name="status"
               value={formData.status}
               onChange={handleChange}
               options={statusOptions}
+              required
             />
 
             <Select
-              label="Seguradora"
+              label="Seguradora *"
               name="company"
               value={formData.company}
               onChange={handleChange}
               options={companyOptions}
+              required
             />
 
-            <Input label="Proposta/Apólice" name="documentNumber" value={formData.documentNumber} onChange={handleChange} required />
+            <Input label="Número Proposta/Apólice *" name="documentNumber" value={formData.documentNumber} onChange={handleChange} required />
 
             {/* Vigência */}
             <div className="sm:col-span-2 pt-2">
               <h4 className="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-100 pb-1">Vigência</h4>
               <div className="grid grid-cols-2 gap-4">
-                <Input type="date" label="Início" name="startDate" value={formData.startDate} onChange={handleChange} required />
-                <Input type="date" label="Fim" name="endDate" value={formData.endDate} onChange={handleChange} required />
+                <Input type="date" label="Início *" name="startDate" value={formData.startDate} onChange={handleChange} required />
+                <Input type="date" label="Fim *" name="endDate" value={formData.endDate} onChange={handleChange} required />
               </div>
             </div>
 

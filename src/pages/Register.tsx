@@ -16,7 +16,7 @@ export const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (password !== confirmPassword) {
       setError('As senhas não conferem.');
       return;
@@ -30,7 +30,7 @@ export const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      await storageService.registerUser({ email, password });
+      await storageService.register({ email, password });
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
@@ -67,7 +67,7 @@ export const Register: React.FC = () => {
           </div>
           <h2 className="text-center text-2xl font-bold text-slate-900 mb-2">Criar Conta</h2>
           <p className="text-center text-slate-600 mb-8">Cadastre-se no SegFlow</p>
-          
+
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center">
               <AlertCircle className="w-4 h-4 mr-2" />
@@ -92,7 +92,7 @@ export const Register: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-             <Input
+            <Input
               label="Confirmar Senha"
               type="password"
               placeholder="Repita a senha"
@@ -100,7 +100,7 @@ export const Register: React.FC = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-            
+
             <Button type="submit" className="w-full" isLoading={loading}>
               Cadastrar
             </Button>

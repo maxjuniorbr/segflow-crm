@@ -7,10 +7,12 @@ import { Client } from '../types';
 import { Card, Input, Button, Select, Alert } from '../components/UIComponents';
 import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
 import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../utils/formatters';
+import { useToast } from '../contexts/ToastContext';
 
 export const ClientForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
@@ -19,6 +21,8 @@ export const ClientForm: React.FC = () => {
 
   const streetInputRef = useRef<HTMLInputElement>(null);
   const numberInputRef = useRef<HTMLInputElement>(null);
+
+  // ... (rest of state initialization)
 
   const emptyClient: Omit<Client, 'id' | 'createdAt'> = {
     name: '',
@@ -205,16 +209,24 @@ export const ClientForm: React.FC = () => {
         createdAt: id ? (await storageService.getClientById(id))?.createdAt || new Date().toISOString() : new Date().toISOString(),
         ...formData
       };
-      await storageService.saveClient(clientToSave);
+      await storageService.saveClient(clientToSave, !id);
+
+      // Feedback via Toast
+      showToast(id ? 'Cliente atualizado com sucesso!' : 'Cliente criado com sucesso!', 'success');
+
+      // Redirecionar
       navigate(id ? `/clients/${id}` : '/clients');
     } catch (error: any) {
       console.error("Error saving client:", error);
       setError(error.message || 'Erro desconhecido ao salvar cliente.');
+      showToast("Erro ao salvar cliente.", "error");
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
   };
+
+  // ... (rest of render)
 
   const maritalStatusOptions = [
     { value: 'Solteiro(a)', label: 'Solteiro(a)' },
@@ -224,15 +236,9 @@ export const ClientForm: React.FC = () => {
     { value: 'União Estável', label: 'União Estável' },
   ];
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
             <ChevronLeft className="w-6 h-6" />
@@ -247,8 +253,13 @@ export const ClientForm: React.FC = () => {
       {error && (
         <Alert variant="error">
           {error}
+          {error.includes('email') && (
+            <p className="mt-2 text-sm">Verifique se o email já não está cadastrado.</p>
+          )}
         </Alert>
       )}
+
+
 
       <form onSubmit={handleSubmit} className="space-y-8">
 

@@ -65,10 +65,10 @@ export const DocumentList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900">Propostas/Apólices</h1>
         <Link to="/documents/new">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Nova Proposta
           </Button>
@@ -113,8 +113,10 @@ export const DocumentList: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-slate-900">{client?.name || 'Cliente Removido'}</div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm font-medium text-gray-900 max-w-[200px] truncate" title={client?.name || 'Cliente Removido'}>
+                        {client?.name || 'Cliente Removido'}
+                      </div>
+                      <div className="text-sm text-gray-500">
                         {client?.personType === 'Jurídica' ? (client?.cnpj || '-') : (client?.cpf || '-')}
                       </div>
                     </td>

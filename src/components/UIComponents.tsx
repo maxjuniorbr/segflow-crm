@@ -1,19 +1,21 @@
-
 import React from 'react';
 
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 // --- Alert ---
-export const Alert: React.FC<{ children: React.ReactNode; variant?: 'error' | 'warning' | 'info' }> = ({ children, variant = 'error' }) => {
+export const Alert: React.FC<{ children: React.ReactNode; variant?: 'error' | 'warning' | 'info' | 'success' }> = ({ children, variant = 'error' }) => {
   const styles = {
     error: "bg-red-50 border-red-200 text-red-700",
     warning: "bg-yellow-50 border-yellow-200 text-yellow-700",
-    info: "bg-blue-50 border-blue-200 text-blue-700"
+    info: "bg-blue-50 border-blue-200 text-blue-700",
+    success: "bg-green-50 border-green-200 text-green-700"
   };
+
+  const Icon = variant === 'success' ? CheckCircle : AlertCircle;
 
   return (
     <div className={`p-4 rounded-md border flex items-start ${styles[variant]}`}>
-      <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
+      <Icon className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
       <div className="text-sm">{children}</div>
     </div>
   );
@@ -52,17 +54,21 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = '', ...props }, ref) => {
+  ({ label, error, className = '', id, name, ...props }, ref) => {
     const isReadOnly = props.readOnly || props.disabled;
+    const inputId = id || name; // Fallback to name if id is not provided
 
     const bgClass = isReadOnly ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-white text-slate-900';
     const borderClass = error ? 'border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500';
 
     return (
       <div className="w-full">
-        {label && <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>}
+        {label && <label htmlFor={inputId} className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>}
         <input
           ref={ref}
+          id={inputId}
+          name={name}
+          autoComplete={props.autoComplete || 'off'}
           className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 sm:text-sm transition-colors ${bgClass} ${borderClass} ${className}`}
           {...props}
         />
@@ -81,11 +87,15 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: { value: string; label: string }[];
 }
 
-export const Select: React.FC<SelectProps> = ({ label, error, options, className = '', ...props }) => {
+export const Select: React.FC<SelectProps> = ({ label, error, options, className = '', id, name, ...props }) => {
+  const selectId = id || name;
+
   return (
     <div className="w-full">
-      {label && <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>}
+      {label && <label htmlFor={selectId} className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>}
       <select
+        id={selectId}
+        name={name}
         className={`bg-white block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${error ? 'border-red-300 text-red-900' : 'border-slate-300 text-slate-900'} ${className}`}
         {...props}
       >
