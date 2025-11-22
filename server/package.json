@@ -8,6 +8,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "init-db-prod": "node scripts/initDbProd.js",
+    "seed:prod": "node scripts/seedDbProd.js",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"

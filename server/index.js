@@ -34,6 +34,14 @@ app.use(cors({
 
 app.use(express.json());
 
+// Development request logging
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/api', (req, res, next) => {
+        console.log(`📨 ${req.method} ${req.path}`);
+        next();
+    });
+}
+
 // API Routes
 app.use('/api', routes);
 

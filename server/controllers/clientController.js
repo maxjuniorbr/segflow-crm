@@ -1,4 +1,12 @@
 import pool from '../config/db.js';
+
+const handleError = (res, err, context) => {
+    console.error(`Error in ${context}:`, err);
+    const message = process.env.NODE_ENV === 'production'
+        ? 'Erro ao processar requisição'
+        : err.message;
+    res.status(500).json({ error: message });
+};
 import { Client } from '../src/domain/entities/Client.js';
 
 export const getClients = async (req, res) => {
@@ -11,8 +19,7 @@ export const getClients = async (req, res) => {
 
         res.json(clients);
     } catch (err) {
-        console.error('getClients error:', err);
-        res.status(500).json({ error: 'Failed to fetch clients' });
+        handleError(res, err, 'getClients');
     }
 };
 
@@ -30,7 +37,7 @@ export const getClientById = async (req, res) => {
 
         res.json(client);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch client' });
+        handleError(res, err, 'getClientById');
     }
 };
 
@@ -41,9 +48,16 @@ export const createClient = async (req, res) => {
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
 
-    // Convert empty strings to null for optional date fields
+    // Convert empty strings to null for optional fields
     if (rgDispatchDate === '') rgDispatchDate = null;
     if (birthDate === '') birthDate = null;
+    if (!cpf || cpf === '') cpf = null;
+    if (!cnpj || cnpj === '') cnpj = null;
+    if (!rg || rg === '') rg = null;
+    if (!rgIssuer || rgIssuer === '') rgIssuer = null;
+    if (!email || email === '') email = null;
+    if (!phone || phone === '') phone = null;
+    if (!notes || notes === '') notes = null;
 
     // Convert address object to JSON string for PostgreSQL
     const addressJson = address ? JSON.stringify(address) : null;
@@ -56,7 +70,7 @@ export const createClient = async (req, res) => {
         );
         res.status(201).json({ message: 'Cliente criado' });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to create client' });
+        handleError(res, err, 'createClient');
     }
 };
 
@@ -67,9 +81,16 @@ export const updateClient = async (req, res) => {
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
 
-    // Convert empty strings to null for optional date fields
+    // Convert empty strings to null for optional fields
     if (rgDispatchDate === '') rgDispatchDate = null;
     if (birthDate === '') birthDate = null;
+    if (!cpf || cpf === '') cpf = null;
+    if (!cnpj || cnpj === '') cnpj = null;
+    if (!rg || rg === '') rg = null;
+    if (!rgIssuer || rgIssuer === '') rgIssuer = null;
+    if (!email || email === '') email = null;
+    if (!phone || phone === '') phone = null;
+    if (!notes || notes === '') notes = null;
 
     // Convert address object to JSON string for PostgreSQL
     const addressJson = address ? JSON.stringify(address) : null;
@@ -79,9 +100,9 @@ export const updateClient = async (req, res) => {
             `UPDATE clients SET name=$1, persontype=$2, cpf=$3, cnpj=$4, rg=$5, rgdispatchdate=$6, rgissuer=$7, birthdate=$8, maritalstatus=$9, email=$10, phone=$11, address=$12, notes=$13 WHERE id=$14`,
             [name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes, req.params.id]
         );
-        res.json({ message: 'Cliente atualizado' });
+        res.json({ message: 'Cliente atualizado com sucesso' });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to update client' });
+        handleError(res, err, 'updateClient');
     }
 };
 
@@ -100,6 +121,6 @@ export const deleteClient = async (req, res) => {
         await pool.query('DELETE FROM clients WHERE id = $1', [req.params.id]);
         res.json({ message: 'Cliente excluído' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        handleError(res, err, 'deleteClient');
     }
 };

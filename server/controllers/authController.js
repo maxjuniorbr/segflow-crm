@@ -2,6 +2,14 @@ import pool from '../config/db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+const handleError = (res, err, context) => {
+    console.error(`Error in ${context}:`, err);
+    const message = process.env.NODE_ENV === 'production'
+        ? 'Erro ao processar requisição'
+        : err.message;
+    res.status(500).json({ error: message });
+};
+
 export const register = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -19,9 +27,9 @@ export const register = async (req, res) => {
             [email, hashedPassword, username]
         );
 
-        res.status(201).json({ message: 'Usuário criado com sucesso' });
+        res.status(201).json({ message: 'Usuário registrado com sucesso' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        handleError(res, err, 'register');
     }
 };
 
@@ -53,7 +61,7 @@ export const login = async (req, res) => {
             }
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        handleError(res, err, 'login');
     }
 };
 

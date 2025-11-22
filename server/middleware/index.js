@@ -1,26 +1,26 @@
 import jwt from 'jsonwebtoken';
 
 export const authMiddleware = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ error: 'Acesso negado. Token não fornecido.' });
+        return res.status(401).json({ error: 'Token não fornecido.' });
     }
-
     try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = verified;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
         next();
     } catch (err) {
-        res.status(400).json({ error: 'Token inválido.' });
+        return res.status(401).json({ error: 'Token inválido.' });
     }
 };
 
-export const validate = (schema) => (req, res, next) => {
-    try {
-        schema.parse(req.body);
-        next();
-    } catch (err) {
-        return res.status(400).json({ error: err.errors });
-    }
+export const validate = (schema) => {
+    return (req, res, next) => {
+        try {
+            schema.parse(req.body);
+            next();
+        } catch (err) {
+            return res.status(400).json({ error: err.errors });
+        }
+    };
 };
