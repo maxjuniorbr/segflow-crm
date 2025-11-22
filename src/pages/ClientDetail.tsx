@@ -155,11 +155,11 @@ export const ClientDetail: React.FC = () => {
                   <span className="truncate">{client.email}</span>
                 </p>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-slate-500">Telefone</p>
                 <p className="font-medium flex items-center">
-                  <Phone className="w-4 h-4 mr-2 text-slate-400" />
-                  {client.phone}
+                  <Phone className="w-4 h-4 mr-2 text-slate-400 flex-shrink-0" />
+                  <span className="truncate">{client.phone}</span>
                 </p>
               </div>
             </div>
