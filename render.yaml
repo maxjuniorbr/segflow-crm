@@ -1,0 +1,46 @@
+version: "1"
+projects:
+  - name: "SegFlow"
+    environments:
+      - name: "Production"
+
+        services:
+          # Backend
+          - type: "web"
+            name: "segflow-crm-back"
+            runtime: "node"
+            repo: "https://github.com/maxjuniorbr/segflow-crm"
+            plan: "free"
+            envVars:
+              - key: "JWT_SECRET"
+                sync: false
+              - key: "DATABASE_URL"
+                sync: false
+            region: "oregon"
+            buildCommand: "npm install && npm run init-db-prod"
+            startCommand: "npm start"
+            autoDeployTrigger: "commit"
+            rootDir: "server"
+
+          # Frontend
+          - type: "web"
+            name: "segflow-crm-front"
+            runtime: "static"
+            repo: "https://github.com/maxjuniorbr/segflow-crm"
+            envVars:
+              - key: "VITE_API_URL"
+                sync: false
+            buildCommand: "npm install; npm run build"
+            staticPublishPath: "dist"
+            autoDeployTrigger: "commit"
+
+        databases:
+          - name: "segflow-db"
+            databaseName: "segflow_db"
+            user: "segflow_db_user"
+            plan: "free"
+            region: "oregon"
+            ipAllowList:
+              - source: "0.0.0.0/0"
+                description: "everywhere"
+            postgresMajorVersion: "18"
