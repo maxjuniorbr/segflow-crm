@@ -83,7 +83,6 @@ export const ClientDetail: React.FC = () => {
         variant="danger"
       />
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate('/clients')} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
@@ -110,7 +109,6 @@ export const ClientDetail: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Client Info */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Informações Pessoais</h3>
@@ -238,7 +236,6 @@ export const ClientDetail: React.FC = () => {
           </Card>
         </div>
 
-        {/* Sidebar Info (Notes, etc) */}
         <div className="space-y-6">
           <Card>
             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">Observações</h3>

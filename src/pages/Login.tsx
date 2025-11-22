@@ -62,6 +62,7 @@ export const Login: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              maxLength={254}
             />
             <Input
               id="password"

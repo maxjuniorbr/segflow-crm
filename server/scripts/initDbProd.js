@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const RESET_DB = false;
+const RESET_DB = true;
 
 const initDbProd = async () => {
   const pool = new pg.Pool({
@@ -17,16 +17,19 @@ const initDbProd = async () => {
     const client = await pool.connect();
 
     if (RESET_DB) {
+      console.log('🔄 RESET_DB is true. Dropping all tables...');
       await client.query('DROP TABLE IF EXISTS documents CASCADE');
       await client.query('DROP TABLE IF EXISTS clients CASCADE');
       await client.query('DROP TABLE IF EXISTS users CASCADE');
-      console.log("Tables dropped successfully.");
+      console.log("✅ Tables dropped successfully.");
     }
+
+    console.log("Creating tables...");
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(254) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         username VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -38,19 +41,32 @@ const initDbProd = async () => {
         id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         persontype VARCHAR(20) DEFAULT 'Física',
-        cpf VARCHAR(20),
-        cnpj VARCHAR(20),
-        rg VARCHAR(20),
+        cpf VARCHAR(14),
+        cnpj VARCHAR(18),
+        rg VARCHAR(12),
         rgdispatchdate DATE,
         rgissuer VARCHAR(50),
         birthdate DATE,
         maritalstatus VARCHAR(50),
-        email VARCHAR(255),
+        email VARCHAR(254),
         phone VARCHAR(50),
         address JSONB,
-        notes TEXT,
+        notes VARCHAR(1000),
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    console.log("Creating unique constraints...");
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS unique_cpf 
+      ON clients (cpf) 
+      WHERE cpf IS NOT NULL AND cpf != '';
+    `);
+
+    await client.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS unique_cnpj 
+      ON clients (cnpj) 
+      WHERE cnpj IS NOT NULL AND cnpj != '';
     `);
 
     await client.query(`
@@ -59,21 +75,23 @@ const initDbProd = async () => {
         clientid VARCHAR(255) REFERENCES clients(id) ON DELETE CASCADE,
         type VARCHAR(50),
         company VARCHAR(100),
-        documentnumber VARCHAR(100),
+        documentnumber VARCHAR(30),
         startdate DATE,
         enddate DATE,
         status VARCHAR(50),
         attachmentname VARCHAR(255),
-        notes TEXT,
+        notes VARCHAR(1000),
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    console.log("Database initialization complete.");
+    console.log("✅ Tables created successfully.");
+    console.log("✅ Unique constraints on CPF/CNPJ added.");
+    console.log("\n🎉 Database initialization complete.");
 
     client.release();
   } catch (err) {
-    console.error("Error initializing database:", err);
+    console.error("❌ Error initializing database:", err);
     process.exit(1);
   } finally {
     await pool.end();

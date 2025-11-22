@@ -178,7 +178,6 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                 </>
             )}
 
-            {/* Dropdown with results */}
             {isOpen && filteredClients.length > 0 && (
                 <div className="absolute z-50 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg max-h-60 overflow-auto">
                     {filteredClients.map(client => (
@@ -202,14 +201,12 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                 </div>
             )}
 
-            {/* No results message */}
             {isOpen && searchTerm.length >= 3 && filteredClients.length === 0 && (
                 <div className="absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg p-4 text-center text-slate-500">
                     Nenhum cliente encontrado
                 </div>
             )}
 
-            {/* Hidden input for form validation */}
             <input
                 type="hidden"
                 name="clientId"

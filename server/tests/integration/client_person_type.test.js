@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../../index.js';
 import pool from '../../src/infrastructure/database/pool.js';
@@ -13,17 +13,15 @@ describe('Client Person Type Integration Tests', () => {
     };
 
     beforeAll(async () => {
-        // Create a test user to get a token
-        const hashedPass = '$2a$10$X.Y.Z.hashedpassword'; // Mock hash not needed if we mock auth or insert directly
-        // Actually, let's just generate a valid token without inserting if auth middleware checks DB, 
-        // but usually it just verifies signature. 
-        // If authMiddleware checks DB, we need to insert. Let's check authMiddleware.
-        // Looking at previous file views, authMiddleware verifies token.
-
         token = jwt.sign({ id: 'test-user-id', email: testUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    });    // Clean up test clients before each test to avoid uniqueness conflicts
+    beforeEach(async () => {
+        await pool.query(`DELETE FROM clients WHERE id LIKE 'test-%'`);
     });
 
     afterAll(async () => {
+        // Clean up test clients
+        await pool.query(`DELETE FROM clients WHERE id LIKE 'test-%'`);
         await pool.end();
     });
 
@@ -32,7 +30,7 @@ describe('Client Person Type Integration Tests', () => {
             id: 'test-pf-' + Date.now(),
             name: 'João Física',
             personType: 'Física',
-            cpf: '123.456.789-00',
+            cpf: '529.982.247-25', // Valid CPF for testing
             email: 'joao@example.com',
             phone: '11999999999',
             birthDate: '1990-01-01',
@@ -75,7 +73,7 @@ describe('Client Person Type Integration Tests', () => {
             id: 'test-pj-' + Date.now(),
             name: 'Empresa Legal Ltda',
             personType: 'Jurídica',
-            cnpj: '12.345.678/0001-90',
+            cnpj: '11.222.333/0001-81', // Valid CNPJ for testing
             email: 'contato@empresa.com',
             phone: '1133334444'
         };
@@ -112,7 +110,7 @@ describe('Client Person Type Integration Tests', () => {
             id: 'test-pj-min-' + Date.now(),
             name: 'Empresa Minimalista',
             personType: 'Jurídica',
-            cnpj: '99.999.999/0001-99',
+            cnpj: '06.990.590/0001-23', // Valid CNPJ for testing
             email: 'min@empresa.com'
         };
 

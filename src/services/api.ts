@@ -53,6 +53,12 @@ export const api = {
 
         if (!response.ok) {
             const error = await response.json();
+
+            if (Array.isArray(error.error)) {
+                const messages = error.error.map((e: any) => e.message).join(', ');
+                throw new Error(messages);
+            }
+
             const errorMessage = typeof error.error === 'string'
                 ? error.error
                 : JSON.stringify(error.error);
@@ -75,6 +81,12 @@ export const api = {
 
         if (!response.ok) {
             const error = await response.json();
+
+            if (Array.isArray(error.error)) {
+                const messages = error.error.map((e: any) => e.message).join(', ');
+                throw new Error(messages);
+            }
+
             const errorMessage = typeof error.error === 'string'
                 ? error.error
                 : JSON.stringify(error.error);

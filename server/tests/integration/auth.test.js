@@ -12,7 +12,6 @@ describe('Auth Integration Tests', () => {
     const testPassword = 'TestPassword123!';
 
     afterAll(async () => {
-        // Cleanup: delete test user
         await pool.query('DELETE FROM users WHERE email = $1', [testEmail]);
         await pool.end();
     });

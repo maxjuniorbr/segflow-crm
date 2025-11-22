@@ -6,11 +6,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from the .env file in the server directory
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-// Explicitly set environment variables to ensure they're available
-// This must happen before any test files are imported
 if (!process.env.JWT_SECRET || !process.env.DATABASE_URL) {
     console.error('❌ FATAL: Environment variables not loaded in vitest.config.js');
     console.error('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');

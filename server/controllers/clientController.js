@@ -63,6 +63,32 @@ export const createClient = async (req, res) => {
     const addressJson = address ? JSON.stringify(address) : null;
 
     try {
+        // Check for duplicate CPF
+        if (cpf && cpf.trim() !== '') {
+            const cpfCheck = await pool.query(
+                'SELECT id FROM clients WHERE cpf = $1',
+                [cpf]
+            );
+            if (cpfCheck.rows.length > 0) {
+                return res.status(400).json({
+                    error: [{ path: ['cpf'], message: 'CPF já cadastrado' }]
+                });
+            }
+        }
+
+        // Check for duplicate CNPJ
+        if (cnpj && cnpj.trim() !== '') {
+            const cnpjCheck = await pool.query(
+                'SELECT id FROM clients WHERE cnpj = $1',
+                [cnpj]
+            );
+            if (cnpjCheck.rows.length > 0) {
+                return res.status(400).json({
+                    error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }]
+                });
+            }
+        }
+
         await pool.query(
             `INSERT INTO clients (id, name, persontype, cpf, cnpj, rg, rgdispatchdate, rgissuer, birthdate, maritalstatus, email, phone, address, notes) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
@@ -96,6 +122,32 @@ export const updateClient = async (req, res) => {
     const addressJson = address ? JSON.stringify(address) : null;
 
     try {
+        // Check for duplicate CPF (excluding current client)
+        if (cpf && cpf.trim() !== '') {
+            const cpfCheck = await pool.query(
+                'SELECT id FROM clients WHERE cpf = $1 AND id != $2',
+                [cpf, req.params.id]
+            );
+            if (cpfCheck.rows.length > 0) {
+                return res.status(400).json({
+                    error: [{ path: ['cpf'], message: 'CPF já cadastrado' }]
+                });
+            }
+        }
+
+        // Check for duplicate CNPJ (excluding current client)
+        if (cnpj && cnpj.trim() !== '') {
+            const cnpjCheck = await pool.query(
+                'SELECT id FROM clients WHERE cnpj = $1 AND id != $2',
+                [cnpj, req.params.id]
+            );
+            if (cnpjCheck.rows.length > 0) {
+                return res.status(400).json({
+                    error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }]
+                });
+            }
+        }
+
         await pool.query(
             `UPDATE clients SET name=$1, persontype=$2, cpf=$3, cnpj=$4, rg=$5, rgdispatchdate=$6, rgissuer=$7, birthdate=$8, maritalstatus=$9, email=$10, phone=$11, address=$12, notes=$13 WHERE id=$14`,
             [name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes, req.params.id]

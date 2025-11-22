@@ -6,6 +6,7 @@ import { Client } from '../types';
 import { Card, Input, Button, Select, Alert, DateInput } from '../components/UIComponents';
 import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
 import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../utils/formatters';
+import { isValidCPF, isValidCNPJ } from '../utils/validators';
 import { useToast } from '../contexts/ToastContext';
 
 export const ClientForm: React.FC = () => {
@@ -119,6 +120,28 @@ export const ClientForm: React.FC = () => {
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleCpfBlur = () => {
+    if (formData.cpf && formData.cpf.trim() !== '') {
+      if (!isValidCPF(formData.cpf)) {
+        setError('CPF inválido. Verifique os números digitados.');
+        showToast('CPF inválido', 'error');
+      } else {
+        setError('');
+      }
+    }
+  };
+
+  const handleCnpjBlur = () => {
+    if (formData.cnpj && formData.cnpj.trim() !== '') {
+      if (!isValidCNPJ(formData.cnpj)) {
+        setError('CNPJ inválido. Verifique os números digitados.');
+        showToast('CNPJ inválido', 'error');
+      } else {
+        setError('');
+      }
     }
   };
 
@@ -281,13 +304,13 @@ export const ClientForm: React.FC = () => {
         <Card title="Documentação e Identificação">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
-              <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required />
+              <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required maxLength={255} />
             </div>
 
             {formData.personType === 'Física' ? (
               <>
                 <div className="sm:col-span-3">
-                  <Input label="CPF *" name="cpf" value={formData.cpf || ''} onChange={handleChange} required maxLength={14} />
+                  <Input label="CPF *" name="cpf" value={formData.cpf || ''} onChange={handleChange} onBlur={handleCpfBlur} required maxLength={14} />
                 </div>
                 <div className="sm:col-span-3">
                   <Select
@@ -301,10 +324,10 @@ export const ClientForm: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} />
+                  <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} maxLength={12} />
                 </div>
                 <div className="sm:col-span-3">
-                  <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" />
+                  <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" maxLength={20} />
                 </div>
                 <div className="sm:col-span-3">
                   <DateInput label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate || ''} onChange={handleChange as any} />
@@ -320,7 +343,7 @@ export const ClientForm: React.FC = () => {
               </>
             ) : (
               <div className="sm:col-span-6">
-                <Input label="CNPJ *" name="cnpj" value={formData.cnpj || ''} onChange={handleChange} required maxLength={18} />
+                <Input label="CNPJ *" name="cnpj" value={formData.cnpj || ''} onChange={handleChange} onBlur={handleCnpjBlur} required maxLength={18} />
               </div>
             )}
           </div>
@@ -329,7 +352,7 @@ export const ClientForm: React.FC = () => {
         <Card title="Contatos">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
-              <Input type="email" label="Email *" name="email" value={formData.email} onChange={handleChange} required />
+              <Input type="email" label="Email *" name="email" value={formData.email} onChange={handleChange} required maxLength={254} />
             </div>
             <div className="sm:col-span-6">
               <Input type="tel" label="Telefone/Celular *" name="phone" value={formData.phone} onChange={handleChange} required maxLength={15} />
@@ -433,6 +456,7 @@ export const ClientForm: React.FC = () => {
             className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
             value={formData.notes}
             onChange={handleChange}
+            maxLength={1000}
           />
         </div>
 

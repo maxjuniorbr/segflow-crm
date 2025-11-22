@@ -211,7 +211,6 @@ export const DocumentForm: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Card>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {/* Client Selection */}
             <div className="sm:col-span-2">
               <ClientAutocomplete
                 clients={clients}
@@ -221,7 +220,6 @@ export const DocumentForm: React.FC = () => {
               />
             </div>
 
-            {/* Basic Info */}
             <div>
               <Select
                 label="Tipo de Seguro *"
@@ -252,10 +250,10 @@ export const DocumentForm: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Opcional"
                 autoComplete="off"
+                maxLength={30}
               />
             </div>
 
-            {/* Vigência */}
             <div>
               <DateInput
                 label="Início de Vigência *"
@@ -289,7 +287,6 @@ export const DocumentForm: React.FC = () => {
               />
             </div>
 
-            {/* Anexo */}
             <div className="sm:col-span-2">
               <label htmlFor="file-upload" className="block text-sm font-medium text-slate-700 mb-1.5">Anexo (PDF/Imagem)</label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-slate-50 hover:bg-blue-50">
@@ -324,6 +321,7 @@ export const DocumentForm: React.FC = () => {
                 value={formData.notes || ''}
                 onChange={handleChange}
                 autoComplete="off"
+                maxLength={1000}
               />
             </div>
           </div>
