@@ -15,7 +15,6 @@ export function isValidCPF(cpf) {
 
     if (cpf.length !== 11) return false;
 
-    // Check for known invalid patterns (all same digits)
     const invalidPatterns = [
         '00000000000', '11111111111', '22222222222',
         '33333333333', '44444444444', '55555555555',
@@ -24,7 +23,6 @@ export function isValidCPF(cpf) {
     ];
     if (invalidPatterns.includes(cpf)) return false;
 
-    // Validate first check digit
     let sum = 0;
     for (let i = 0; i < 9; i++) {
         sum += parseInt(cpf.charAt(i)) * (10 - i);
@@ -33,7 +31,6 @@ export function isValidCPF(cpf) {
     if (checkDigit1 >= 10) checkDigit1 = 0;
     if (checkDigit1 !== parseInt(cpf.charAt(9))) return false;
 
-    // Validate second check digit
     sum = 0;
     for (let i = 0; i < 10; i++) {
         sum += parseInt(cpf.charAt(i)) * (11 - i);
@@ -57,7 +54,6 @@ export function isValidCNPJ(cnpj) {
 
     if (cnpj.length !== 14) return false;
 
-    // Check for known invalid patterns (all same digits)
     const invalidPatterns = [
         '00000000000000', '11111111111111', '22222222222222',
         '33333333333333', '44444444444444', '55555555555555',
@@ -66,7 +62,6 @@ export function isValidCNPJ(cnpj) {
     ];
     if (invalidPatterns.includes(cnpj)) return false;
 
-    // Validate first check digit
     let sum = 0;
     let weight = 2;
     for (let i = 11; i >= 0; i--) {
@@ -76,7 +71,6 @@ export function isValidCNPJ(cnpj) {
     let checkDigit1 = sum % 11 < 2 ? 0 : 11 - (sum % 11);
     if (checkDigit1 !== parseInt(cnpj.charAt(12))) return false;
 
-    // Validate second check digit
     sum = 0;
     weight = 2;
     for (let i = 12; i >= 0; i--) {

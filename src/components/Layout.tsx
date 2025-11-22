@@ -32,7 +32,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      {/* Mobile Header */}
       <div className="md:hidden bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-20 border-b border-slate-200">
         <div className="flex items-center space-x-2 font-bold text-slate-800 text-xl">
           <ShieldCheck className="w-8 h-8 text-blue-600" />
@@ -43,7 +42,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </button>
       </div>
 
-      {/* Sidebar Navigation */}
       <aside className={`
         fixed inset-y-0 left-0 z-10 w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out
         md:translate-x-0 md:static md:min-h-screen
@@ -95,7 +93,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-slate-900 bg-opacity-75 z-0 md:hidden"
@@ -103,7 +100,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         ></div>
       )}
 
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           {children}

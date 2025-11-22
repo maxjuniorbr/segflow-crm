@@ -44,7 +44,6 @@ export const getClientById = async (req, res) => {
 export const createClient = async (req, res) => {
     let { id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, address, notes } = req.body;
 
-    // Set defaults
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
 

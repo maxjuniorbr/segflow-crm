@@ -22,7 +22,6 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1 && !origin.includes('onrender.com')) {
             // In production, we might want to be stricter, but for now allowing render domains
@@ -34,7 +33,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Development request logging
 if (process.env.NODE_ENV !== 'production') {
     app.use('/api', (req, res, next) => {
         console.log(`📨 ${req.method} ${req.path}`);
@@ -42,7 +40,6 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// API Routes
 app.use('/api', routes);
 
 // Start server only if not in test environment
