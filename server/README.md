@@ -1,262 +1,244 @@
-# SegFlow CRM - Server
+# SegFlow CRM - Backend
 
-Backend API for SegFlow CRM built with Node.js, Express, and PostgreSQL.
+API REST para gerenciamento de clientes e propostas/apólices de seguros.
 
-## Architecture
+---
 
-This server follows **Clean Architecture** principles with clear separation of concerns:
+## 🛠️ Tecnologias
+
+- **Node.js** + Express
+- **PostgreSQL** 16
+- **JWT** (jsonwebtoken) para autenticação
+- **Zod** para validação de schemas
+- **bcryptjs** para hash de senhas
+- **CORS** habilitado
+
+---
+
+## 📁 Estrutura
 
 ```
 server/
-├── src/
-│   ├── domain/              # Business entities and core logic
-│   │   └── entities/        # Domain models (User, Client, Document)
-│   ├── infrastructure/      # External dependencies
-│   │   ├── database/        # Database connection
-│   │   └── repositories/    # Data access layer
-│   ├── application/         # Use cases / business logic
-│   │   └── use-cases/       # Specific business operations
-│   └── presentation/        # HTTP layer
-│       ├── controllers/     # Request handlers
-│       ├── middleware/      # Auth, validation
-│       └── routes/          # Route definitions
-├── controllers/             # Current controllers (to be migrated)
-├── middleware/              # Current middleware
-├── routes/                  # Current routes
-├── schemas/                 # Validation schemas (Zod)
-├── scripts/                 # Database initialization
-└── tests/                   # Test suites
-    ├── unit/                # Unit tests
-    └── integration/         # Integration tests
+├── config/
+│   └── db.js              # Pool de conexão PostgreSQL
+├── controllers/
+│   ├── authController.js  # Login, registro, validação
+│   ├── clientController.js
+│   └── documentController.js
+├── middleware/
+│   └── index.js           # authMiddleware + validate (Zod)
+├── routes/
+│   └── index.js           # Definição de todas as rotas
+├── schemas/
+│   └── index.js           # Schemas Zod (validação)
+└── scripts/
+    ├── dropDbLocal.js     # Limpar banco (apenas local)
+    ├── initDbLocal.js     # Criar tabelas (apenas local)
+    ├── initDbProd.js      # Criar tabelas (produção)
+    └── seedDbLocal.js     # Dados de teste (git ignored)
 ```
 
-## Setup
+---
 
-### Prerequisites
+## 🔧 Variáveis de Ambiente
 
-- Node.js 18+ and npm
-- PostgreSQL 12+
-
-### Installation
-
-```bash
-cd server
-npm install
-```
-
-### Environment Variables
-
-Create a `.env` file in the server directory:
+Criar arquivo `.env` na raiz de `server/`:
 
 ```env
 PORT=3001
-DATABASE_URL=postgres://username:password@localhost:5432/segflow_crm
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/segflow_crm
+JWT_SECRET=sua_chave_secreta_super_segura
 NODE_ENV=development
 ```
 
-> **Security Note**: Always use a strong, randomly generated JWT_SECRET in production. You can generate one using:
-> ```bash
-> node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-> ```
+### Descrição
 
-### Database Initialization
+- `PORT` - Porta do servidor (padrão: 3001)
+- `DATABASE_URL` - String de conexão PostgreSQL
+- `JWT_SECRET` - **OBRIGATÓRIO** - Chave para assinar tokens JWT
+- `NODE_ENV` - Ambiente (`development` ou `production`)
 
-Run the database initialization script to create the schema:
+---
 
+## 📦 Scripts
+
+### Desenvolvimento
 ```bash
-node scripts/initDb.js
+npm run dev        # Inicia servidor com nodemon
 ```
 
-This will:
-1. Create the `segflow_crm` database if it doesn't exist
-2. Create the required tables (users, clients, documents)
-3. **No default users are created** - you must register via the API
-
-## Running the Server
-
-### Development Mode
-
+### Banco de Dados (Local)
 ```bash
-npm  run dev
+# 1. Limpar banco (CUIDADO: deleta tudo)
+node scripts/dropDbLocal.js
+
+# 2. Criar tabelas
+node scripts/initDbLocal.js
+
+# 3. Popular com dados de teste (opcional)
+node scripts/seedDbLocal.js
 ```
 
-Server runs on `http://localhost:3001` with hot reload via nodemon.
+> **Nota**: Scripts com sufixo `Local` **não rodam em produção** (verificam `NODE_ENV`).
 
-### Production Mode
-
+### Banco de Dados (Produção)
 ```bash
-npm start
+# Criar tabelas em produção
+node scripts/initDbProd.js
 ```
 
-## API Documentation
+Executado automaticamente no primeiro deploy via `render.yaml`.
 
-### Authentication
+---
 
-#### Register User
+## 🗄️ Schema do Banco
+
+### Tabela: `users`
+- `id` (SERIAL PRIMARY KEY)
+- `email` (VARCHAR UNIQUE)
+- `password` (VARCHAR) - hash bcrypt
+- `username` (VARCHAR)
+- `createdat` (TIMESTAMP)
+
+### Tabela: `clients`
+- `id` (VARCHAR PRIMARY KEY)
+- `name`, `persontype`, `cpf`, `cnpj`, `rg`, `rgissuer`, `rgdispatchdate`
+- `birthdate`, `maritalstatus`, `email`, `phone`
+- `address` (JSONB) - {street, number, complement, neighborhood, city, state, zipCode}
+- `notes` (TEXT)
+- `createdat` (TIMESTAMP)
+
+### Tabela: `documents`
+- `id` (VARCHAR PRIMARY KEY)
+- `clientid` (FK → clients.id CASCADE)
+- `type`, `company`, `documentnumber`
+- `startdate`, `enddate`, `status`
+- `notes`, `attachmentname`
+- `createdat` (TIMESTAMP)
+
+---
+
+## 🔗 Endpoints da API
+
+### Autenticação
+```
+POST   /api/register       - Criar novo usuário
+POST   /api/login         - Login (retorna token JWT)
+GET    /api/auth/validate - Validar token
+```
+
+### Clientes (requer autenticação)
+```
+GET    /api/clients           - Listar todos
+GET    /api/clients/:id       - Buscar por ID
+POST   /api/clients           - Criar novo
+PUT    /api/clients/:id       - Atualizar
+DELETE /api/clients/:id       - Deletar
+```
+
+### Documentos (requer autenticação)
+```
+GET    /api/documents         - Listar todos
+POST   /api/documents         - Criar novo
+PUT    /api/documents/:id     - Atualizar
+DELETE /api/documents/:id     - Deletar
+```
+
+---
+
+## 🔐 Autenticação
+
+Todas as rotas exceto `/register` e `/login` exigem header:
+
+```
+Authorization: Bearer <token_jwt>
+```
+
+**Middleware**: `authMiddleware` verifica token e injeta `req.user`.
+
+---
+
+## ✅ Validação de Dados
+
+Schemas Zod aplicados via middleware `validate`:
+
+- `registerSchema` - Email, password, username
+- `loginSchema` - Email, password
+- `clientSchema` - Todos os campos de cliente (PF/PJ)
+- `documentSchema` - Campos de proposta/apólice
+
+Erros retornam status `400` com array de erros Zod.
+
+---
+
+## 🚨 Tratamento de Erros
+
+- **401** - Token não fornecido
+- **400** - Token inválido ou validação Zod falhou
+- **500** - Erro interno (stack trace oculto em produção)
+
+Logs de erro aparecem no console do servidor com `console.error`.
+
+---
+
+## 🧪 Como Testar
+
+### 1. Com Thunder Client / Postman
+
+**Registrar**:
 ```http
-POST /api/register
+POST http://localhost:3001/api/register
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "securePassword123"
+  "email": "teste@email.com",
+  "password": "senha123",
+  "username": "Teste"
 }
 ```
 
-#### Login
+**Login**:
 ```http
-POST /api/login
+POST http://localhost:3001/api/login
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "securePassword123"
-}
-
-Response:
-{
-  "token": "jwt-token-here",
-  "user": {
-    "email": "user@example.com",
-    "username": "user",
-    "isAuthenticated": true
-  }
+  "email": "teste@email.com",
+  "password": "senha123"
 }
 ```
 
-### Protected Routes
+Retorna: `{ token: "...", user: {...} }`
 
-All routes below require authentication. Include the JWT token in the Authorization header:
-
+**Listar Clientes** (com token):
 ```http
-Authorization: Bearer <your-jwt-token>
+GET http://localhost:3001/api/clients
+Authorization: Bearer SEU_TOKEN_AQUI
 ```
 
-#### Clients
+### 2. Via Interface Frontend
 
-- `GET /api/clients` - List all clients
-- `GET /api/clients/:id` - Get client by ID
-- `POST /api/clients` - Create new client
-- `PUT /api/clients/:id` - Update client
-- `DELETE /api/clients/:id` - Delete client
+Execute o frontend (porta 5173) e teste pelo navegador.
 
-#### Documents
+---
 
-- `GET /api/documents` - List all documents
-- `POST /api/documents` - Create new document
-- `PUT /api/documents/:id` - Update document
-- `DELETE /api/documents/:id` - Delete document
+## 📝 Observações Importantes
 
-## Testing
+1. **JWT_SECRET** deve ser definido OBRIGATORIAMENTE (servidor não inicia sem)
+2. **SSL do PostgreSQL** é habilitado apenas em `NODE_ENV=production`
+3. Scripts `*Local.js` têm proteção e **não rodam em produção**
+4. Validação Zod está aplicada em **POST e PUT** em todos os endpoints
+5. Tratamento de erros oculta stack trace em produção
 
-### Run All Tests
+---
 
-```bash
-npm test
-```
+## 🌐 Deploy (Render)
 
-### Run Tests in Watch Mode
+O servidor é deployado automaticamente via `render.yaml`:
 
-```bash
-npm run test:watch
-```
+- Build: `npm install && npm run init-db-prod`
+- Start: `node index.js`
+- Variáveis obrigatórias: `JWT_SECRET`
+- `DATABASE_URL` é auto-configurado pelo Render
 
-### Run Tests with UI
-
-```bash
-npm run test:ui
-```
-
-### Test Coverage
-
-Coverage reports are generated in the `coverage/` directory after running tests.
-
-### Test Structure
-
-- **Unit Tests** (`tests/unit/`): Test individual entities and business logic
-- **Integration Tests** (`tests/integration/`): Test API endpoints and database interactions
-
-## Code Quality
-
-### Linting
-
-```bash
-npx eslint .
-```
-
-### Formatting
-
-Check formatting:
-```bash
-npx prettier --check .
-```
-
-Auto-fix formatting:
-```bash
-npx prettier --write .
-```
-
-## Security Features
-
-✅ **Password Hashing**: All passwords are hashed using bcryptjs (cost factor: 10)
-✅ **JWT Authentication**: Secure token-based authentication with 1-hour expiration
-✅ **Input Validation**: Request validation using Zod schemas
-✅ **CORS Protection**: Configured allowed origins
-✅ **SQL Injection Protection**: Parameterized queries via pg library
-✅ **Environment Variables**: Sensitive data in `.env` (gitignored)
-
-## Project Structure Highlights
-
-### Domain Entities
-
-Entities represent core business objects with no dependencies on external frameworks:
-
-- `User`: Application users with authentication
-- `Client`: Customer records with personal information
-- `Document`: Insurance documents linked to clients
-
-Each entity includes:
-- Constructor for creating instances
-- `fromDatabase()` static method for database → entity transformation
-- `toJSON()` / `toPublicJSON()` for entity → API response transformation
-
-### Current Migration Status
-
-The codebase is in a transition state:
-- ✅ Domain entities created in `src/domain/entities/`
-- ✅ Infrastructure layer started in `src/infrastructure/`
-- 🔄 Controllers still in root `controllers/` (to be migrated to `src/presentation/controllers/`)
-- 🔄 Direct database calls in controllers (to be moved to repositories and use cases)
-
-This architecture provides a foundation for:
-- Easy testing (entities are framework-independent)
-- Clear separation of concerns
-- Flexibility to change infrastructure without affecting business logic
-
-## Troubleshooting
-
-### Database Connection Issues
-
-1. Ensure PostgreSQL is running
-2. Verify DATABASE_URL in `.env` is correct  
-3. Check that the `segflow_crm` database exists
-
-### Authentication Failures
-
-1. Ensure JWT_SECRET is set in `.env`
-2. Check token hasn't expired (1-hour limit)
-3. Verify token format: `Bearer <token>`
-
-## Contributing
-
-When adding new features:
-
-1. **Create entities first** in `src/domain/entities/`
-2. **Add repositories** in `src/infrastructure/repositories/`
-3. **Implement use cases** in `src/application/use-cases/`
-4. **Add controllers** in `src/presentation/controllers/`
-5. **Write tests** in `tests/unit/` and `tests/integration/`
-6. **Update schemas** in `schemas/` for validation
-
-Follow existing patterns for consistency.
+Consulte `/README.md` (raiz) para mais detalhes de deploy.
