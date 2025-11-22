@@ -20,7 +20,7 @@ describe('Client Person Type Integration Tests', () => {
         // If authMiddleware checks DB, we need to insert. Let's check authMiddleware.
         // Looking at previous file views, authMiddleware verifies token.
 
-        token = jwt.sign({ id: 'test-user-id', email: testUser.email }, process.env.JWT_SECRET || 'segredo_super_secreto', { expiresIn: '1h' });
+        token = jwt.sign({ id: 'test-user-id', email: testUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     });
 
     afterAll(async () => {

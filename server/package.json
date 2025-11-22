@@ -9,7 +9,7 @@
     "dev": "nodemon index.js",
     "init-db-prod": "node scripts/initDbProd.js",
     "seed:prod": "node scripts/seedDbProd.js",
-    "test": "vitest run --coverage",
+    "test": "NODE_ENV=test node --require dotenv/config node_modules/.bin/vitest run --coverage",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
   },

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../../index.js';
-import pool from '../../config/db.js';
+import pool from '../../src/infrastructure/database/pool.js';
 
 /**
  * Integration tests for authentication endpoints
