@@ -17,7 +17,7 @@ export class User {
         return new User(row.id, row.name, row.cpf, row.email, row.username, row.password, row.created_at);
     }
 
-    toPublicJSON() {
+    toJSON() {
         return {
             id: this.id,
             name: this.name,

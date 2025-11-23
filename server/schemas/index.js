@@ -102,7 +102,6 @@ export const clientSchema = z.object({
         }
     }
 
-    // Check if CNPJ is required and valid
     if (data.personType === 'Jurídica') {
         if (!data.cnpj || data.cnpj.trim() === '') {
             ctx.addIssue({

@@ -47,7 +47,6 @@ export const createClient = async (req, res) => {
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
 
-    // Convert empty strings to null for optional fields
     if (rgDispatchDate === '') rgDispatchDate = null;
     if (birthDate === '') birthDate = null;
     if (!cpf || cpf === '') cpf = null;
@@ -58,11 +57,9 @@ export const createClient = async (req, res) => {
     if (!phone || phone === '') phone = null;
     if (!notes || notes === '') notes = null;
 
-    // Convert address object to JSON string for PostgreSQL
     const addressJson = address ? JSON.stringify(address) : null;
 
     try {
-        // Check for duplicate CPF
         if (cpf && cpf.trim() !== '') {
             const cpfCheck = await pool.query(
                 'SELECT id FROM clients WHERE cpf = $1',
@@ -75,7 +72,6 @@ export const createClient = async (req, res) => {
             }
         }
 
-        // Check for duplicate CNPJ
         if (cnpj && cnpj.trim() !== '') {
             const cnpjCheck = await pool.query(
                 'SELECT id FROM clients WHERE cnpj = $1',
@@ -102,11 +98,9 @@ export const createClient = async (req, res) => {
 export const updateClient = async (req, res) => {
     let { name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, address, notes } = req.body;
 
-    // Set defaults
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
 
-    // Convert empty strings to null for optional fields
     if (rgDispatchDate === '') rgDispatchDate = null;
     if (birthDate === '') birthDate = null;
     if (!cpf || cpf === '') cpf = null;
@@ -117,11 +111,9 @@ export const updateClient = async (req, res) => {
     if (!phone || phone === '') phone = null;
     if (!notes || notes === '') notes = null;
 
-    // Convert address object to JSON string for PostgreSQL
     const addressJson = address ? JSON.stringify(address) : null;
 
     try {
-        // Check for duplicate CPF (excluding current client)
         if (cpf && cpf.trim() !== '') {
             const cpfCheck = await pool.query(
                 'SELECT id FROM clients WHERE cpf = $1 AND id != $2',
@@ -134,7 +126,6 @@ export const updateClient = async (req, res) => {
             }
         }
 
-        // Check for duplicate CNPJ (excluding current client)
         if (cnpj && cnpj.trim() !== '') {
             const cnpjCheck = await pool.query(
                 'SELECT id FROM clients WHERE cnpj = $1 AND id != $2',
@@ -159,7 +150,6 @@ export const updateClient = async (req, res) => {
 
 export const deleteClient = async (req, res) => {
     try {
-        // Check for active proposals
         const proposalsCheck = await pool.query(
             "SELECT count(*) as count FROM documents WHERE clientid = $1 AND status != 'Cancelado'",
             [req.params.id]

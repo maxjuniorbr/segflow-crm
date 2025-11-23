@@ -33,13 +33,13 @@ describe('User Entity', () => {
     });
 
     it('should convert to public JSON without password', () => {
-        const user = new User(1, 'Test User', '12345678900', 'test@example.com', 'testuser', 'hashedpassword');
-        const publicJSON = user.toPublicJSON();
+        const user = new User(1, 'Test User', '97456321558', 'test@example.com', 'testuser', 'hashedpassword');
+        const publicJSON = user.toJSON();
 
         expect(publicJSON).toEqual({
             id: 1,
             name: 'Test User',
-            cpf: '12345678900',
+            cpf: '97456321558',
             email: 'test@example.com',
             username: 'testuser',
         });

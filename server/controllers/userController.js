@@ -17,7 +17,7 @@ export const getUsers = async (req, res) => {
         `);
 
         const users = result.rows.map(row => User.fromDatabase(row));
-        const publicUsers = users.map(user => user.toPublicJSON());
+        const publicUsers = users.map(user => user.toJSON());
 
         res.json(publicUsers);
     } catch (err) {
@@ -37,7 +37,7 @@ export const getUserById = async (req, res) => {
 
         const user = User.fromDatabase(result.rows[0]);
 
-        res.json(user.toPublicJSON());
+        res.json(user.toJSON());
     } catch (err) {
         handleError(res, err, 'getUserById');
     }

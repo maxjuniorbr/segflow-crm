@@ -17,14 +17,13 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'http://localhost:3001',
-    process.env.RENDER_EXTERNAL_URL // Render sets this automatically
+    process.env.RENDER_EXTERNAL_URL
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1 && !origin.includes('onrender.com')) {
-            // In production, we might want to be stricter, but for now allowing render domains
             return callback(null, true);
         }
         return callback(null, true);
@@ -42,7 +41,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use('/api', routes);
 
-// Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
     if (!process.env.JWT_SECRET) {
         console.error('FATAL ERROR: JWT_SECRET is not defined.');

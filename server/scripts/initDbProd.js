@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'development' && !process.env.DATABASE_URL_PROD) {
   process.exit(1);
 }
 
-const RESET_DB = false; // Set to true to drop and recreate all tables
+const RESET_DB = false;
 
 const run = async () => {
   const pool = new pg.Pool({
