@@ -8,7 +8,9 @@
     "server": "cd server && npm run dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest run -c vitest.config.js",
+    "test:watch": "vitest watch -c vitest.config.js",
+    "test:ui": "vitest --ui -c vitest.config.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -24,6 +26,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/ui": "^1.6.1",
     "autoprefixer": "^10.4.22",
     "concurrently": "^9.2.1",
     "jsdom": "^24.1.3",

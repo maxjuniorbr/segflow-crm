@@ -9,9 +9,9 @@
     "dev": "nodemon index.js",
     "init-db-prod": "node scripts/initDbProd.js",
     "seed:prod": "node scripts/seedDbProd.js",
-    "test": "NODE_ENV=test node --require dotenv/config node_modules/.bin/vitest run --coverage",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test": "vitest run -c ../vitest.config.js",
+    "test:watch": "vitest watch -c ../vitest.config.js",
+    "test:ui": "vitest --ui -c ../vitest.config.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
