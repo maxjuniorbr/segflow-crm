@@ -1,0 +1,19 @@
+import { defineConfig } from 'vitest/config';
+import path from 'path';
+import dotenv from 'dotenv';
+
+// Load .env file
+dotenv.config({ path: path.resolve(__dirname, 'server/.env') });
+
+export default defineConfig({
+    test: {
+        globals: true,
+        environment: 'node',
+        setupFiles: ['./server/tests/setup.js'],
+        exclude: ['src/**', '**/node_modules/**', '**/dist/**'],
+        env: {
+            JWT_SECRET: process.env.JWT_SECRET || 'test_secret',
+            DATABASE_URL: process.env.DATABASE_URL,
+        }
+    },
+});

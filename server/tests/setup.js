@@ -1,19 +1,13 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load environment variables from server/.env
+// Load .env from server directory
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// Verify critical environment variables are loaded
-if (!process.env.JWT_SECRET) {
-    console.error('FATAL: JWT_SECRET not loaded in test environment');
-    console.error('process.env.JWT_SECRET:', process.env.JWT_SECRET);
-}
-
+console.log('✅ Test Setup: Loaded env vars');
 if (!process.env.DATABASE_URL) {
-    console.error('FATAL: DATABASE_URL not loaded in test environment');
+    console.error('❌ Test Setup: DATABASE_URL is missing!');
+}
+if (!process.env.JWT_SECRET) {
+    console.error('❌ Test Setup: JWT_SECRET is missing!');
 }

@@ -35,6 +35,8 @@ describe('Auth Controller', () => {
         const res = await request(app)
             .post('/register')
             .send({
+                name: 'Test User',
+                cpf: '97456321558',
                 email: 'test@example.com',
                 password: 'password123'
             });

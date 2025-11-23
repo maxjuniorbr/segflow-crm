@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import app from '../../index.js';
-import pool from '../../src/infrastructure/database/pool.js';
+import pool from '../../config/db.js';
 
 /**
  * Integration tests for authentication endpoints
@@ -21,6 +21,8 @@ describe('Auth Integration Tests', () => {
             const response = await request(app)
                 .post('/api/register')
                 .send({
+                    name: 'Test User',
+                    cpf: '97456321558',
                     email: testEmail,
                     password: testPassword,
                 })
