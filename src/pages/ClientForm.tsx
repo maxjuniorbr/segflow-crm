@@ -262,12 +262,12 @@ export const ClientForm: React.FC = () => {
     <div className="space-y-6 max-w-4xl mx-auto pb-24 sm:pb-0">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors">
+          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Cliente' : 'Cadastrar Cliente'}</h1>
-            <p className="text-sm text-slate-500 mt-1">Preencha as informações abaixo para registrar um novo segurado.</p>
+            <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Cliente' : 'Cadastrar Cliente'}</h1>
+            <p className="text-sm text-gray-500 mt-1">Preencha as informações abaixo para registrar um novo segurado.</p>
           </div>
         </div>
       </div>
@@ -304,7 +304,7 @@ export const ClientForm: React.FC = () => {
         <Card title="Documentação e Identificação">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
-              <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required maxLength={255} />
+              <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required maxLength={200} />
             </div>
 
             {formData.personType === 'Física' ? (
@@ -324,7 +324,7 @@ export const ClientForm: React.FC = () => {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} maxLength={12} />
+                  <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} maxLength={20} />
                 </div>
                 <div className="sm:col-span-3">
                   <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" maxLength={20} />
@@ -338,7 +338,7 @@ export const ClientForm: React.FC = () => {
                   <DateInput label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange as any} required />
                 </div>
                 <div className="sm:col-span-2">
-                  <Input label="Idade" name="age" id="age" value={calculatedAge} readOnly className="bg-slate-50" />
+                  <Input label="Idade" name="age" id="age" value={calculatedAge} readOnly className="bg-gray-50" />
                 </div>
               </>
             ) : (
@@ -363,7 +363,7 @@ export const ClientForm: React.FC = () => {
         <Card title="Endereço">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-3">
-              <label htmlFor="zipCode" className="block text-sm font-medium text-slate-700 mb-1.5">CEP *</label>
+              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-1.5">CEP *</label>
               <div className="flex rounded-md shadow-sm">
                 <input
                   id="zipCode"
@@ -373,12 +373,12 @@ export const ClientForm: React.FC = () => {
                   onBlur={handleCepBlur}
                   required
                   maxLength={9}
-                  className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-slate-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white text-slate-900"
+                  className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white text-gray-900"
                 />
                 <button
                   type="button"
                   onClick={fetchAddress}
-                  className="-ml-px inline-flex items-center space-x-2 px-3 py-2 border border-l-0 border-slate-300 text-sm font-medium rounded-r-md text-slate-700 bg-slate-50 hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="-ml-px inline-flex items-center space-x-2 px-3 py-2 border border-l-0 border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 >
                   {cepLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 </button>
@@ -395,6 +395,7 @@ export const ClientForm: React.FC = () => {
                 required
                 readOnly={lockedFields.street}
                 ref={streetInputRef}
+                maxLength={200}
               />
             </div>
 
@@ -406,11 +407,12 @@ export const ClientForm: React.FC = () => {
                 onChange={handleChange}
                 required
                 ref={numberInputRef}
+                maxLength={20}
               />
             </div>
 
             <div className="sm:col-span-4">
-              <Input label="Complemento" name="addr.complement" value={formData.address.complement || ''} onChange={handleChange} />
+              <Input label="Complemento" name="addr.complement" value={formData.address.complement || ''} onChange={handleChange} maxLength={100} />
             </div>
 
             <div className="sm:col-span-4">
@@ -421,6 +423,7 @@ export const ClientForm: React.FC = () => {
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.neighborhood}
+                maxLength={100}
               />
             </div>
 
@@ -432,6 +435,7 @@ export const ClientForm: React.FC = () => {
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.city}
+                maxLength={100}
               />
             </div>
             <div className="sm:col-span-1">
@@ -442,25 +446,26 @@ export const ClientForm: React.FC = () => {
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.state}
+                maxLength={2}
               />
             </div>
           </div>
         </Card>
 
-        <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
-          <label htmlFor="notes" className="block text-sm font-medium text-slate-700 mb-1.5">Observações Adicionais</label>
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações Adicionais</label>
           <textarea
             id="notes"
             rows={3}
             name="notes"
-            className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-gray-900"
             value={formData.notes}
             onChange={handleChange}
             maxLength={1000}
           />
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
           <Button type="submit" isLoading={saving}>
             <Save className="w-4 h-4 mr-2" />

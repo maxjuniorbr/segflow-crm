@@ -55,8 +55,10 @@ export interface Document {
 }
 
 export interface User {
+  id?: number;
+  name: string;
+  cpf: string;
   email: string;
-  password?: string;
   username: string;
   isAuthenticated: boolean;
   token?: string;

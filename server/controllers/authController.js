@@ -11,11 +11,17 @@ const handleError = (res, err, context) => {
 };
 
 export const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { name, cpf, email, password } = req.body;
     try {
-        const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (userCheck.rows.length > 0) {
+        const emailCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (emailCheck.rows.length > 0) {
             return res.status(400).json({ error: 'Email já cadastrado' });
+        }
+
+        const cpfClean = cpf.replace(/[^\d]/g, '');
+        const cpfCheck = await pool.query('SELECT * FROM users WHERE cpf = $1', [cpfClean]);
+        if (cpfCheck.rows.length > 0) {
+            return res.status(400).json({ error: 'CPF já cadastrado' });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -23,8 +29,8 @@ export const register = async (req, res) => {
         const username = email.split('@')[0];
 
         await pool.query(
-            'INSERT INTO users (email, password, username) VALUES ($1, $2, $3)',
-            [email, hashedPassword, username]
+            'INSERT INTO users (name, cpf, email, password, username) VALUES ($1, $2, $3, $4, $5)',
+            [name, cpfClean, email, hashedPassword, username]
         );
 
         res.status(201).json({ message: 'Usuário criado com sucesso' });
@@ -55,6 +61,8 @@ export const login = async (req, res) => {
         res.json({
             token,
             user: {
+                name: user.name,
+                cpf: user.cpf,
                 email: user.email,
                 username: user.username,
                 isAuthenticated: true

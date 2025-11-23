@@ -2,11 +2,25 @@ import { z } from 'zod';
 import { isValidCPF, isValidCNPJ } from '../utils/validators.js';
 
 export const registerSchema = z.object({
+    name: z.string()
+        .min(1, 'Nome é obrigatório')
+        .max(200, 'Nome deve ter no máximo 200 caracteres'),
+    cpf: z.string()
+        .min(1, 'CPF é obrigatório')
+        .max(14, 'CPF deve ter no máximo 14 caracteres'),
     email: z.string()
         .email('Email inválido')
         .max(254, 'Email deve ter no máximo 254 caracteres'),
     password: z.string()
         .min(6, 'Senha deve ter no mínimo 6 caracteres'),
+}).superRefine((data, ctx) => {
+    if (!isValidCPF(data.cpf)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['cpf'],
+            message: 'CPF inválido',
+        });
+    }
 });
 
 export const loginSchema = z.object({
@@ -21,12 +35,12 @@ export const clientSchema = z.object({
     id: z.string().optional(),
     name: z.string()
         .min(1, 'Nome é obrigatório')
-        .max(255, 'Nome deve ter no máximo 255 caracteres'),
+        .max(200, 'Nome deve ter no máximo 200 caracteres'),
     personType: z.enum(['Física', 'Jurídica']).default('Física'),
-    cpf: z.string().nullable().optional(),
-    cnpj: z.string().nullable().optional(),
+    cpf: z.string().max(14).nullable().optional(),
+    cnpj: z.string().max(18).nullable().optional(),
     rg: z.string()
-        .max(12, 'RG deve ter no máximo 12 caracteres')
+        .max(20, 'RG deve ter no máximo 20 caracteres')
         .nullable()
         .optional(),
     rgDispatchDate: z.string().nullable().optional(),
@@ -41,15 +55,30 @@ export const clientSchema = z.object({
         .max(254, 'Email deve ter no máximo 254 caracteres')
         .min(1, 'Email é obrigatório'),
     phone: z.string()
-        .min(1, 'Telefone é obrigatório'),
+        .min(1, 'Telefone é obrigatório')
+        .max(15, 'Telefone deve ter no máximo 15 caracteres'),
     address: z.object({
-        street: z.string().min(1, 'Rua é obrigatória'),
-        number: z.string().min(1, 'Número é obrigatório'),
-        complement: z.string().optional(),
-        neighborhood: z.string().min(1, 'Bairro é obrigatório'),
-        city: z.string().min(1, 'Cidade é obrigatória'),
-        state: z.string().min(1, 'Estado é obrigatório'),
-        zipCode: z.string().min(1, 'CEP é obrigatório'),
+        street: z.string()
+            .min(1, 'Rua é obrigatória')
+            .max(200, 'Logradouro deve ter no máximo 200 caracteres'),
+        number: z.string()
+            .min(1, 'Número é obrigatório')
+            .max(20, 'Número deve ter no máximo 20 caracteres'),
+        complement: z.string()
+            .max(100, 'Complemento deve ter no máximo 100 caracteres')
+            .optional(),
+        neighborhood: z.string()
+            .min(1, 'Bairro é obrigatório')
+            .max(100, 'Bairro deve ter no máximo 100 caracteres'),
+        city: z.string()
+            .min(1, 'Cidade é obrigatória')
+            .max(100, 'Cidade deve ter no máximo 100 caracteres'),
+        state: z.string()
+            .min(1, 'Estado é obrigatório')
+            .max(2, 'Estado deve ter 2 caracteres'),
+        zipCode: z.string()
+            .min(1, 'CEP é obrigatório')
+            .max(9, 'CEP deve ter no máximo 9 caracteres'),
     }).nullable().optional(),
     createdAt: z.string().optional(),
     notes: z.string()
@@ -100,7 +129,7 @@ export const documentSchema = z.object({
     company: z.string()
         .min(1, 'Seguradora é obrigatória'),
     documentNumber: z.string()
-        .max(30, 'Número deve ter no máximo 30 caracteres')
+        .max(50, 'Número deve ter no máximo 50 caracteres')
         .nullable()
         .optional(),
     startDate: z.string()
@@ -115,3 +144,28 @@ export const documentSchema = z.object({
         .nullable()
         .optional(),
 });
+
+export const userSchema = z.object({
+    name: z.string()
+        .min(1, 'Nome é obrigatório')
+        .max(200, 'Nome deve ter no máximo 200 caracteres'),
+    cpf: z.string()
+        .min(1, 'CPF é obrigatório')
+        .max(14, 'CPF deve ter no máximo 14 caracteres'),
+    email: z.string()
+        .email('Email inválido')
+        .max(254, 'Email deve ter no máximo 254 caracteres'),
+    password: z.string()
+        .min(6, 'Senha deve ter no mínimo 6 caracteres')
+        .optional()
+        .nullable(),
+}).superRefine((data, ctx) => {
+    if (!isValidCPF(data.cpf)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['cpf'],
+            message: 'CPF inválido',
+        });
+    }
+});
+

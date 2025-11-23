@@ -11,6 +11,8 @@ import { ClientForm } from './pages/ClientForm';
 import { ClientDetail } from './pages/ClientDetail';
 import { DocumentList } from './pages/DocumentList';
 import { DocumentForm } from './pages/DocumentForm';
+import { UserList } from './pages/UserList';
+import { UserForm } from './pages/UserForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -38,6 +40,10 @@ function App() {
               <Route path="documents" element={<DocumentList />} />
               <Route path="documents/new" element={<DocumentForm />} />
               <Route path="documents/edit/:id" element={<DocumentForm />} />
+
+              <Route path="settings/users" element={<UserList />} />
+              <Route path="settings/users/new" element={<UserForm />} />
+              <Route path="settings/users/:id" element={<UserForm />} />
             </Route>
           </Routes>
         </Router>

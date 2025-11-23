@@ -6,7 +6,7 @@ export const storageService = {
     return;
   },
 
-  async register(user: { email: string; password: string; username?: string }) {
+  async register(user: { name: string; cpf: string; email: string; password: string; username?: string }) {
     try {
       await api.post('/api/register', user);
     } catch (error) {

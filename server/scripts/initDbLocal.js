@@ -13,9 +13,14 @@ if (process.env.NODE_ENV === 'production') {
   process.exit(1);
 }
 
+if (!process.env.DATABASE_URL) {
+  console.error("❌ DATABASE_URL is missing in .env!");
+  process.exit(1);
+}
+
 const RESET_DB = false; // Set to true to drop and recreate all tables
 
-const createTables = async () => {
+const run = async () => {
   const defaultPool = new pg.Pool({
     connectionString: process.env.DATABASE_URL.replace('/segflow_crm', '/postgres'),
   });
@@ -44,7 +49,7 @@ const createTables = async () => {
 
   try {
     const client = await pool.connect();
-    console.log("Connected to 'segflow_crm'.");
+    console.log("Connected to database.");
 
     if (RESET_DB) {
       console.log("🔄 RESET_DB is true. Dropping all tables...");
@@ -59,6 +64,8 @@ const createTables = async () => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
+        name VARCHAR(200) NOT NULL,
+        cpf VARCHAR(14) NOT NULL UNIQUE,
         email VARCHAR(254) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         username VARCHAR(255) NOT NULL,
@@ -69,24 +76,24 @@ const createTables = async () => {
     await client.query(`
       CREATE TABLE IF NOT EXISTS clients (
         id VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        name VARCHAR(200) NOT NULL,
         persontype VARCHAR(20) DEFAULT 'Física',
         cpf VARCHAR(14),
         cnpj VARCHAR(18),
-        rg VARCHAR(12),
+        rg VARCHAR(20),
         rgdispatchdate DATE,
-        rgissuer VARCHAR(50),
+        rgissuer VARCHAR(20),
         birthdate DATE,
         maritalstatus VARCHAR(50),
         email VARCHAR(254),
-        phone VARCHAR(50),
+        phone VARCHAR(15),
         address JSONB,
         notes VARCHAR(1000),
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    // Create unique indexes for CPF and CNPJ (allowing NULL)
+    console.log("Creating unique constraints...");
     await client.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS unique_cpf 
       ON clients (cpf) 
@@ -105,7 +112,7 @@ const createTables = async () => {
         clientid VARCHAR(255) REFERENCES clients(id) ON DELETE CASCADE,
         type VARCHAR(50),
         company VARCHAR(100),
-        documentnumber VARCHAR(30),
+        documentnumber VARCHAR(50),
         startdate DATE,
         enddate DATE,
         status VARCHAR(50),
@@ -115,19 +122,17 @@ const createTables = async () => {
       );
     `);
 
-    console.log("✅ Tables created/verified successfully.");
+    console.log("✅ Tables created successfully.");
     console.log("✅ Unique constraints on CPF/CNPJ added.");
     console.log("\n🎉 Database initialization complete.");
-    console.log("You can now register your first user via the /api/register endpoint.");
-    console.log("Or run 'node scripts/seedDbLocal.js' to add sample data.");
 
     client.release();
   } catch (err) {
-    console.error("❌ Error initializing tables:", err);
+    console.error("❌ Error initializing database:", err);
     process.exit(1);
   } finally {
     await pool.end();
   }
 };
 
-createTables();
+run();

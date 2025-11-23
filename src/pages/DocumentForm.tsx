@@ -192,12 +192,12 @@ export const DocumentForm: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
+          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
-            <p className="text-sm text-slate-500 mt-1">{id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}</p>
+            <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
+            <p className="text-sm text-gray-500 mt-1">{id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}</p>
           </div>
         </div>
         {id && (
@@ -253,7 +253,7 @@ export const DocumentForm: React.FC = () => {
                 onChange={handleChange}
                 placeholder="Opcional"
                 autoComplete="off"
-                maxLength={30}
+                maxLength={50}
               />
             </div>
 
@@ -291,18 +291,18 @@ export const DocumentForm: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="file-upload" className="block text-sm font-medium text-slate-700 mb-1.5">Anexo (PDF/Imagem)</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-slate-50 hover:bg-blue-50">
+              <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1.5">Anexo (PDF/Imagem)</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
                 <div className="space-y-1 text-center">
-                  <Paperclip className="mx-auto h-12 w-12 text-slate-400" />
-                  <div className="flex text-sm text-slate-600">
+                  <Paperclip className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600">
                     <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                       <span>Upload de arquivo</span>
                       <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} autoComplete="off" />
                     </label>
                     <p className="pl-1">ou arraste e solte</p>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-gray-500">
                     PNG, JPG, PDF até 10MB
                   </p>
                   {formData.attachmentName && (
@@ -315,12 +315,12 @@ export const DocumentForm: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="notes" className="block text-sm font-medium text-slate-700 mb-1.5">Observações</label>
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações</label>
               <textarea
                 id="notes"
                 rows={3}
                 name="notes"
-                className="block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-slate-900"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-gray-900"
                 value={formData.notes || ''}
                 onChange={handleChange}
                 autoComplete="off"
@@ -330,7 +330,7 @@ export const DocumentForm: React.FC = () => {
           </div>
         </Card>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
           <Button type="submit" isLoading={saving}>
             <Save className="w-4 h-4 mr-2" />

@@ -8,7 +8,9 @@ import {
   LogOut,
   Menu,
   X,
-  ShieldCheck
+  ShieldCheck,
+  Settings,
+  ChevronDown
 } from 'lucide-react';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -16,6 +18,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -70,6 +73,42 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 {item.label}
               </Link>
             ))}
+
+            <div>
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className={`
+                  w-full group flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md transition-colors
+                  ${isActive('/settings')
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'}
+                `}
+              >
+                <div className="flex items-center">
+                  <Settings className={`mr-3 flex-shrink-0 h-5 w-5 ${isActive('/settings') ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                  Configurações
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isSettingsOpen && (
+                <div className="ml-6 mt-1 space-y-1">
+                  <Link
+                    to="/settings/users"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
+                      group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                      ${isActive('/settings/users')
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'}
+                    `}
+                  >
+                    <Users className={`mr-3 flex-shrink-0 h-4 w-4 ${isActive('/settings/users') ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                    Usuários
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="p-4 border-t border-slate-800 bg-slate-900">

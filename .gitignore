@@ -24,4 +24,5 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 server/scripts/seedDbLocal.js
+server/scripts/seedDbProd.js
 .agent/rules

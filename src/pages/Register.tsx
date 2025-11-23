@@ -3,8 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, AlertCircle } from 'lucide-react';
 import { Button, Input } from '../components/UIComponents';
 import { storageService } from '../services/storage';
+import { maskCPF } from '../utils/formatters';
+import { isValidCPF } from '../utils/validators';
 
 export const Register: React.FC = () => {
+  const [name, setName] = useState('');
+  const [cpf, setCpf] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,9 +17,29 @@ export const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = maskCPF(e.target.value);
+    setCpf(masked);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!name.trim()) {
+      setError('Nome é obrigatório.');
+      return;
+    }
+
+    if (!cpf.trim()) {
+      setError('CPF é obrigatório.');
+      return;
+    }
+
+    if (!isValidCPF(cpf)) {
+      setError('CPF inválido.');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não conferem.');
@@ -30,7 +54,7 @@ export const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      await storageService.register({ email, password });
+      await storageService.register({ name, cpf, email, password });
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
@@ -76,6 +100,28 @@ export const Register: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              id="name"
+              name="name"
+              label="Nome Completo"
+              type="text"
+              placeholder="Seu nome completo"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              maxLength={200}
+            />
+            <Input
+              id="cpf"
+              name="cpf"
+              label="CPF"
+              type="text"
+              placeholder="000.000.000-00"
+              value={cpf}
+              onChange={handleCpfChange}
+              required
+              maxLength={14}
+            />
             <Input
               id="email"
               name="email"
