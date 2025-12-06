@@ -2,7 +2,7 @@
 
 Sistema de gerenciamento de clientes e propostas/apólices de seguros.
 
-## 🚀 Tecnologias
+## Tecnologias
 
 ### Frontend
 - **React** + TypeScript + Vite
@@ -19,7 +19,7 @@ Sistema de gerenciamento de clientes e propostas/apólices de seguros.
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 segflow-crm/
@@ -44,7 +44,7 @@ segflow-crm/
 
 ---
 
-## 🏃 Como Rodar Localmente
+## Como Rodar Localmente
 
 ### Pré-requisitos
 - Node.js 18+
@@ -99,7 +99,7 @@ Acessar: `http://localhost:5173`
 
 ---
 
-## 📦 Scripts Disponíveis
+## Scripts Disponíveis
 
 ### Frontend (raiz)
 - `npm run dev` - Servidor de desenvolvimento
@@ -112,9 +112,17 @@ Acessar: `http://localhost:5173`
 - `node scripts/initDbLocal.js` - Criar tabelas
 - `node scripts/seedDbLocal.js` - Popular com dados de teste
 
+### Testes
+
+#### Backend
+- `cd server && npm run test` - executa Vitest usando banco em memória (mock)
+
+#### Frontend
+- `npm run test` - executa Vitest + Testing Library para fluxos do React
+
 ---
 
-## 🌐 Deploy no Render
+## Deploy no Render
 
 O projeto está configurado para deploy automático no Render usando o arquivo `render.yaml`.
 
@@ -140,19 +148,19 @@ O projeto está configurado para deploy automático no Render usando o arquivo `
 
 ---
 
-## 🔐 Funcionalidades
+## Funcionalidades
 
-- ✅ Autenticação com JWT
-- ✅ Cadastro de clientes (PF/PJ)
-- ✅ Gerenciamento de propostas/apólices
-- ✅ Busca e filtros
-- ✅ Consulta de CEP (BrasilAPI)
-- ✅ Validação de dados com Zod
-- ✅ Interface responsiva
+- Autenticação com JWT via cookies HTTP-only
+- Cadastro de clientes (PF/PJ)
+- Gerenciamento de propostas/apólices
+- Busca e filtros
+- Consulta de CEP (BrasilAPI)
+- Validação de dados com Zod
+- Interface responsiva
 
 ---
 
-## 📝 Observações
+## Observações
 
 - Scripts de banco com prefixo `Local` **não rodam em produção** (têm verificação de `NODE_ENV`)
 - O arquivo `seedDbLocal.js` está no `.gitignore` e contém dados de teste locais

@@ -1,7 +1,30 @@
 import jwt from 'jsonwebtoken';
 
+const parseCookies = (cookieHeader = '') => {
+    return cookieHeader.split(';').reduce((acc, cookie) => {
+        const [rawName, ...rawValue] = cookie.trim().split('=');
+        if (!rawName) {
+            return acc;
+        }
+        acc[rawName] = rawValue.join('=');
+        return acc;
+    }, {});
+};
+
+const extractToken = (req) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return authHeader.substring(7);
+    }
+    if (req.headers.cookie) {
+        const cookies = parseCookies(req.headers.cookie);
+        return cookies.segflow_token;
+    }
+    return null;
+};
+
 export const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = extractToken(req);
     if (!token) {
         return res.status(401).json({ error: 'Token não fornecido.' });
     }

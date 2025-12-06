@@ -1,4 +1,6 @@
 import pool from '../config/db.js';
+import { randomUUID } from 'crypto';
+import { Client } from '../src/domain/entities/Client.js';
 
 const handleError = (res, err, context) => {
     console.error(`Error in ${context}:`, err);
@@ -7,7 +9,6 @@ const handleError = (res, err, context) => {
         : err.message;
     res.status(500).json({ error: message });
 };
-import { Client } from '../src/domain/entities/Client.js';
 
 export const getClients = async (req, res) => {
     try {
@@ -43,6 +44,7 @@ export const getClientById = async (req, res) => {
 
 export const createClient = async (req, res) => {
     let { id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, address, notes } = req.body;
+    const clientId = id || randomUUID();
 
     if (!personType) personType = 'Física';
     if (!maritalStatus) maritalStatus = 'Solteiro(a)';
@@ -87,9 +89,9 @@ export const createClient = async (req, res) => {
         await pool.query(
             `INSERT INTO clients (id, name, persontype, cpf, cnpj, rg, rgdispatchdate, rgissuer, birthdate, maritalstatus, email, phone, address, notes) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-            [id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes]
+            [clientId, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes]
         );
-        res.status(201).json({ message: 'Cliente criado' });
+        res.status(201).json({ message: 'Cliente criado', id: clientId });
     } catch (err) {
         handleError(res, err, 'createClient');
     }

@@ -2,6 +2,18 @@ import pool from '../config/db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+const buildCookieBaseOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/'
+});
+
+const authCookieOptions = () => ({
+    ...buildCookieBaseOptions(),
+    maxAge: 60 * 60 * 1000 // 1 hour
+});
+
 const handleError = (res, err, context) => {
     console.error(`Error in ${context}:`, err);
     const message = process.env.NODE_ENV === 'production'
@@ -58,9 +70,11 @@ export const login = async (req, res) => {
             expiresIn: '1h',
         });
 
+        res.cookie('segflow_token', token, authCookieOptions());
+
         res.json({
-            token,
             user: {
+                id: user.id,
                 name: user.name,
                 cpf: user.cpf,
                 email: user.email,
@@ -74,23 +88,35 @@ export const login = async (req, res) => {
 };
 
 export const validate = async (req, res) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-        return res.status(401).json({ valid: false, error: 'Token não fornecido' });
-    }
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const result = await pool.query(
+            'SELECT id, name, cpf, email, username FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ valid: false, error: 'Usuário não encontrado' });
+        }
+
+        const user = result.rows[0];
 
         res.json({
             valid: true,
             user: {
-                id: decoded.id,
-                email: decoded.email
+                id: user.id,
+                name: user.name,
+                cpf: user.cpf,
+                email: user.email,
+                username: user.username,
+                isAuthenticated: true
             }
         });
     } catch (err) {
-        res.status(401).json({ valid: false, error: 'Token inválido ou expirado' });
+        handleError(res, err, 'validate');
     }
+};
+
+export const logout = (req, res) => {
+    res.clearCookie('segflow_token', buildCookieBaseOptions());
+    res.json({ message: 'Sessão encerrada' });
 };

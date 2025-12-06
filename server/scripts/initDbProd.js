@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '../.env') });
 
 if (process.env.NODE_ENV === 'development' && !process.env.DATABASE_URL_PROD) {
-  console.error("❌ This script should NOT be run in development without DATABASE_URL_PROD!");
+  console.error("This script should NOT be run in development without DATABASE_URL_PROD!");
   process.exit(1);
 }
 
@@ -28,11 +28,11 @@ const run = async () => {
     console.log("Connected to database.");
 
     if (RESET_DB) {
-      console.log("🔄 RESET_DB is true. Dropping all tables...");
+      console.log("RESET_DB is true. Dropping all tables...");
       await client.query('DROP TABLE IF EXISTS documents CASCADE');
       await client.query('DROP TABLE IF EXISTS clients CASCADE');
       await client.query('DROP TABLE IF EXISTS users CASCADE');
-      console.log("✅ Tables dropped successfully.");
+      console.log("Tables dropped successfully.");
     }
 
     console.log("Creating tables...");
@@ -98,13 +98,13 @@ const run = async () => {
       );
     `);
 
-    console.log("✅ Tables created successfully.");
-    console.log("✅ Unique constraints on CPF/CNPJ added.");
-    console.log("\n🎉 Database initialization complete.");
+    console.log("Tables created successfully.");
+    console.log("Unique constraints on CPF/CNPJ added.");
+    console.log("\nDatabase initialization complete.");
 
     client.release();
   } catch (err) {
-    console.error("❌ Error initializing database:", err);
+    console.error("Error initializing database:", err);
     process.exit(1);
   } finally {
     await pool.end();

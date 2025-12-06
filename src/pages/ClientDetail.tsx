@@ -218,7 +218,11 @@ export const ClientDetail: React.FC = () => {
                       </p>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <Link to={`/documents/edit/${doc.id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      <Link
+                        to={`/documents/edit/${doc.id}`}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        state={{ from: `/clients/${client.id}` }}
+                      >
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button

@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
+import { api } from '../services/api';
+import { storageService } from '../services/storage';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (user: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,53 +16,55 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const clearSession = () => {
+    setUser(null);
+    localStorage.removeItem('segflow_active_session');
+  };
+
   useEffect(() => {
     const validateSession = async () => {
-      const storedUser = localStorage.getItem('segflow_active_session');
-      const token = localStorage.getItem('token');
-
-      if (!storedUser || !token) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const API_URL = import.meta.env.VITE_API_URL || '';
-        const response = await fetch(`${API_URL}/api/auth/validate`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          setUser(JSON.parse(storedUser));
+        const response = await api.get('/api/auth/validate');
+        if (response && response.user) {
+          const sessionUser = { ...response.user, isAuthenticated: true };
+          setUser(sessionUser);
+          localStorage.setItem('segflow_active_session', JSON.stringify(sessionUser));
         } else {
-          localStorage.removeItem('segflow_active_session');
-          localStorage.removeItem('token');
+          clearSession();
         }
       } catch (error) {
-        localStorage.removeItem('segflow_active_session');
-        localStorage.removeItem('token');
+        clearSession();
       } finally {
         setLoading(false);
       }
     };
 
+    const storedUser = localStorage.getItem('segflow_active_session');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem('segflow_active_session');
+      }
+    }
+
     validateSession();
   }, []);
 
   const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('segflow_active_session', JSON.stringify(userData));
-    if (userData.token) {
-      localStorage.setItem('token', userData.token);
-    }
+    const sessionUser = { ...userData, isAuthenticated: true };
+    setUser(sessionUser);
+    localStorage.setItem('segflow_active_session', JSON.stringify(sessionUser));
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('segflow_active_session');
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await storageService.logout();
+    } catch (error) {
+      console.error('Erro ao encerrar sessão', error);
+    } finally {
+      clearSession();
+    }
   };
 
   return (

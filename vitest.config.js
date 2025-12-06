@@ -14,6 +14,12 @@ export default defineConfig({
         env: {
             JWT_SECRET: process.env.JWT_SECRET || 'test_secret',
             DATABASE_URL: process.env.DATABASE_URL,
+        },
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html'],
+            include: ['server/**/*.js'],
+            exclude: ['server/tests/**', 'server/scripts/**', 'server/config/**', '**/node_modules/**']
         }
     },
 });

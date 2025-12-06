@@ -124,7 +124,11 @@ export const Dashboard: React.FC = () => {
                       Vence em: {doc.endDate ? new Date(doc.endDate).toLocaleDateString('pt-BR') : '-'}
                     </p>
                   </div>
-                  <Link to={`/documents/edit/${doc.id}`} className="text-sm text-blue-600 hover:underline">
+                  <Link
+                    to={`/documents/edit/${doc.id}`}
+                    className="text-sm text-blue-600 hover:underline"
+                    state={{ from: '/documents' }}
+                  >
                     Ver
                   </Link>
                 </div>

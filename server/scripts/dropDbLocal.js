@@ -9,12 +9,12 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '../.env') });
 
 if (process.env.NODE_ENV === 'production') {
-    console.error("❌ This script should NOT be run in production!");
+    console.error("This script should NOT be run in production!");
     process.exit(1);
 }
 
 if (!process.env.DATABASE_URL) {
-    console.error("❌ DATABASE_URL is missing in .env!");
+    console.error("DATABASE_URL is missing in .env!");
     process.exit(1);
 }
 
@@ -33,16 +33,16 @@ const run = async () => {
             AND pid <> pg_backend_pid()
         `);
 
-        console.log("🔄 Dropping database 'segflow_crm'...");
+        console.log("Dropping database 'segflow_crm'...");
         await client.query('DROP DATABASE IF EXISTS segflow_crm');
-        console.log("✨ Creating database 'segflow_crm'...");
+        console.log("Creating database 'segflow_crm'...");
         await client.query('CREATE DATABASE segflow_crm');
 
-        console.log("✅ Database dropped and recreated successfully.");
+        console.log("Database dropped and recreated successfully.");
 
         client.release();
     } catch (err) {
-        console.error("❌ Error resetting database:", err);
+        console.error("Error resetting database:", err);
         process.exit(1);
     } finally {
         await pool.end();

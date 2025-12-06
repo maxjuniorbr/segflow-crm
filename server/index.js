@@ -18,23 +18,30 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:3001',
     process.env.RENDER_EXTERNAL_URL
-];
+].filter(Boolean);
+
+const isAllowedOrigin = (origin = '') => {
+    if (!origin) return true;
+    if (allowedOrigins.includes(origin)) return true;
+    if (origin.endsWith('.onrender.com')) return true;
+    return false;
+};
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1 && !origin.includes('onrender.com')) {
+        if (isAllowedOrigin(origin)) {
             return callback(null, true);
         }
-        return callback(null, true);
-    }
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
 }));
 
 app.use(express.json());
 
 if (process.env.NODE_ENV !== 'production') {
     app.use('/api', (req, res, next) => {
-        console.log(`📨 ${req.method} ${req.path}`);
+        console.log(`Request ${req.method} ${req.path}`);
         next();
     });
 }

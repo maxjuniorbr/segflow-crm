@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { storageService } from '../services/storage';
 import { Document, Client } from '../types';
-import { Card, Input, Button } from '../components/UIComponents';
-import { Plus, Search, FileText } from 'lucide-react';
+import { Card, Button } from '../components/UIComponents';
+import { Plus, Search, FileText, Loader2 } from 'lucide-react';
 
 const getDocumentTypeLabel = (type: string) => {
   const typeMap: { [key: string]: string } = {
@@ -21,48 +21,72 @@ export const DocumentList: React.FC = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [clientsLoading, setClientsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'Proposta' | 'Apólice' | 'Cancelado'>('all');
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchClients = async () => {
       try {
-        const [docsData, clientsData] = await Promise.all([
-          storageService.getDocuments(),
-          storageService.getClients()
-        ]);
-        setDocuments(docsData);
+        const clientsData = await storageService.getClients();
         setClients(clientsData);
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error("Error loading clients:", error);
       } finally {
-        setLoading(false);
+        setClientsLoading(false);
       }
     };
-    fetchData();
+    fetchClients();
   }, []);
 
-  const getFilteredDocuments = () => {
-    let result = documents;
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(d => {
-        const client = clients.find(c => c.id === d.clientId);
-        const clientName = client ? client.name.toLowerCase() : '';
-        return (
-          d.documentNumber.toLowerCase().includes(lower) ||
-          d.company.toLowerCase().includes(lower) ||
-          clientName.includes(lower)
-        );
-      });
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      if (!initialLoadRef.current) {
+        setRefreshing(true);
+      }
+      try {
+        const filters: { search?: string; status?: string; limit?: number } = {
+          limit: 200
+        };
+        if (debouncedSearch) filters.search = debouncedSearch;
+        if (statusFilter !== 'all') filters.status = statusFilter;
+        const docsData = await storageService.getDocuments(filters);
+        setDocuments(docsData);
+      } catch (error) {
+        console.error("Error loading documents:", error);
+      } finally {
+        setDocumentsLoading(false);
+        setRefreshing(false);
+        initialLoadRef.current = false;
+      }
+    };
+    fetchDocuments();
+  }, [debouncedSearch, statusFilter]);
+
+  const initialLoading = (documentsLoading && initialLoadRef.current) || clientsLoading;
+
+  const getStatusBadgeClasses = (status: string) => {
+    const base = 'px-3 py-1 inline-flex text-xs font-semibold rounded-full border';
+    switch (status) {
+      case 'Apólice':
+        return `${base} bg-green-50 text-green-700 border-green-200`;
+      case 'Cancelado':
+        return `${base} bg-red-50 text-red-700 border-red-200`;
+      default:
+        return `${base} bg-yellow-50 text-yellow-700 border-yellow-200`;
     }
-    return result;
   };
-
-  const filteredDocuments = getFilteredDocuments();
-
-  if (loading) return <div className="p-8 text-center">Carregando...</div>;
 
   return (
     <div className="space-y-6">
@@ -80,21 +104,47 @@ export const DocumentList: React.FC = () => {
       </div>
 
       <Card>
-        <div className="mb-6 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              id="search-documents"
+              name="search-documents"
+              className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+              placeholder="Buscar por cliente, número ou seguradora..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <Input
-            id="search-documents"
-            name="search-documents"
-            placeholder="Buscar por cliente, número ou seguradora..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <select
+            id="status-filter"
+            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
+          >
+            <option value="all">Todos</option>
+            <option value="Proposta">Proposta</option>
+            <option value="Apólice">Apólice</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
         </div>
 
-        {filteredDocuments.length === 0 ? (
+        {refreshing && !initialLoading && (
+          <div className="flex items-center justify-end text-sm text-gray-500 mb-3">
+            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            Atualizando resultados...
+          </div>
+        )}
+
+        {initialLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-500">Carregando propostas e apólices...</p>
+          </div>
+        ) : documents.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
             <FileText className="mx-auto h-12 w-12 text-gray-300 mb-3" />
             <h3 className="text-sm font-medium text-gray-900">Nenhuma proposta encontrada</h3>
@@ -114,19 +164,16 @@ export const DocumentList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredDocuments.map((d) => {
+                {documents.map((d) => {
                   const client = clients.find(c => c.id === d.clientId);
                   return (
                     <tr
                       key={d.id}
                       className="hover:bg-gray-50 cursor-pointer"
-                      onClick={() => navigate(`/documents/edit/${d.id}`)}
+                      onClick={() => navigate(`/documents/edit/${d.id}`, { state: { from: '/documents' } })}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${d.status === 'Apólice' ? 'bg-green-100 text-green-800' :
-                            d.status === 'Cancelado' ? 'bg-red-100 text-red-800' :
-                              'bg-yellow-100 text-yellow-800'}`}>
+                        <span className={getStatusBadgeClasses(d.status)}>
                           {d.status}
                         </span>
                       </td>
@@ -140,7 +187,7 @@ export const DocumentList: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{getDocumentTypeLabel(d.type)} - {d.company}</div>
-                        <div className="text-sm text-gray-500">{d.documentNumber}</div>
+                        <div className="text-sm text-gray-500">{d.documentNumber || '-'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                         {d.startDate ? d.startDate.split('T')[0].split('-').reverse().join('/') : '-'} <br />até {d.endDate ? d.endDate.split('T')[0].split('-').reverse().join('/') : '-'}

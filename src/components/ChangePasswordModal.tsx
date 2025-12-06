@@ -33,8 +33,8 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
 
         if (!newPassword) {
             newErrors.newPassword = 'Nova senha é obrigatória';
-        } else if (newPassword.length < 6) {
-            newErrors.newPassword = 'Nova senha deve ter no mínimo 6 caracteres';
+        } else if (newPassword.length < 8 || !/(?=.*[A-Za-z])(?=.*\d)/.test(newPassword)) {
+            newErrors.newPassword = 'Senha deve ter ao menos 8 caracteres, com letras e números';
         }
 
         if (!confirmPassword) {
@@ -123,7 +123,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
                     />
 
                     <p className="text-sm text-gray-500">
-                        A senha deve ter no mínimo 6 caracteres.
+                        A nova senha deve ter no mínimo 8 caracteres, combinando letras e números.
                     </p>
 
                     <div className="flex gap-3 pt-4">

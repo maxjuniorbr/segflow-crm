@@ -106,7 +106,7 @@ export const DocumentForm: React.FC = () => {
     setSaving(true);
     try {
       const document: Document = {
-        id: id || Math.random().toString(36).substr(2, 9),
+        id: id || '',
         ...formData
       };
       await storageService.saveDocument(document, !id);

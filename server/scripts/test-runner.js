@@ -17,16 +17,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Verify critical variables are set
 if (!process.env.JWT_SECRET) {
-    console.error('❌ FATAL: JWT_SECRET not found in .env');
+    console.error('FATAL: JWT_SECRET not found in .env');
     process.exit(1);
 }
 
 if (!process.env.DATABASE_URL) {
-    console.error('❌ FATAL: DATABASE_URL not found in .env');
+    console.error('FATAL: DATABASE_URL not found in .env');
     process.exit(1);
 }
 
-console.log('✅ Environment variables loaded for tests');
+console.log('Environment variables loaded for tests');
 
 // Run vitest with all env vars passed through
 const vitest = spawn('vitest', process.argv.slice(2), {

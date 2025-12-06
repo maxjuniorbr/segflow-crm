@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, validate as validateToken } from '../controllers/authController.js';
+import { register, login, validate as validateToken, logout } from '../controllers/authController.js';
 import { getClients, getClientById, createClient, updateClient, deleteClient } from '../controllers/clientController.js';
 import { getDocuments, getDocumentById, createDocument, updateDocument, deleteDocument } from '../controllers/documentController.js';
 import { getUsers, getUserById, updateUser, deleteUser } from '../controllers/userController.js';
@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
-router.get('/auth/validate', validateToken);
+router.get('/auth/validate', authMiddleware, validateToken);
+router.post('/logout', logout);
 
 router.get('/clients', authMiddleware, getClients);
 router.get('/clients/:id', authMiddleware, getClientById);

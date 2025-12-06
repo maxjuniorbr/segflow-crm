@@ -4,7 +4,7 @@ API REST para gerenciamento de clientes e propostas/apólices de seguros.
 
 ---
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 - **Node.js** + Express
 - **PostgreSQL** 16
@@ -15,7 +15,7 @@ API REST para gerenciamento de clientes e propostas/apólices de seguros.
 
 ---
 
-## 📁 Estrutura
+## Estrutura
 
 ```
 server/
@@ -40,7 +40,7 @@ server/
 
 ---
 
-## 🔧 Variáveis de Ambiente
+## Variáveis de Ambiente
 
 Criar arquivo `.env` na raiz de `server/`:
 
@@ -60,7 +60,7 @@ NODE_ENV=development
 
 ---
 
-## 📦 Scripts
+## Scripts
 
 ### Desenvolvimento
 ```bash
@@ -91,7 +91,7 @@ Executado automaticamente no primeiro deploy via `render.yaml`.
 
 ---
 
-## 🗄️ Schema do Banco
+## Schema do Banco
 
 ### Tabela: `users`
 - `id` (SERIAL PRIMARY KEY)
@@ -118,7 +118,7 @@ Executado automaticamente no primeiro deploy via `render.yaml`.
 
 ---
 
-## 🔗 Endpoints da API
+## Endpoints da API
 
 ### Autenticação
 ```
@@ -146,7 +146,7 @@ DELETE /api/documents/:id     - Deletar
 
 ---
 
-## 🔐 Autenticação
+## Autenticação
 
 Todas as rotas exceto `/register` e `/login` exigem header:
 
@@ -158,7 +158,7 @@ Authorization: Bearer <token_jwt>
 
 ---
 
-## ✅ Validação de Dados
+## Validação de Dados
 
 Schemas Zod aplicados via middleware `validate`:
 
@@ -171,7 +171,7 @@ Erros retornam status `400` com array de erros Zod.
 
 ---
 
-## 🚨 Tratamento de Erros
+## Tratamento de Erros
 
 - **401** - Token não fornecido
 - **400** - Token inválido ou validação Zod falhou
@@ -181,7 +181,7 @@ Logs de erro aparecem no console do servidor com `console.error`.
 
 ---
 
-## 🧪 Como Testar
+## Como Testar
 
 ### 1. Com Thunder Client / Postman
 
@@ -222,7 +222,7 @@ Execute o frontend (porta 5173) e teste pelo navegador.
 
 ---
 
-## 📝 Observações Importantes
+## Observações Importantes
 
 1. **JWT_SECRET** deve ser definido OBRIGATORIAMENTE (servidor não inicia sem)
 2. **SSL do PostgreSQL** é habilitado apenas em `NODE_ENV=production`
@@ -232,7 +232,7 @@ Execute o frontend (porta 5173) e teste pelo navegador.
 
 ---
 
-## 🌐 Deploy (Render)
+## Deploy (Render)
 
 O servidor é deployado automaticamente via `render.yaml`:
 

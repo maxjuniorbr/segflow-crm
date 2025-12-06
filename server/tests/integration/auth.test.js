@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import app from '../../index.js';
-import pool from '../../config/db.js';
+import { resetTestDb } from '../utils/testDbMock.js';
 
 /**
  * Integration tests for authentication endpoints
@@ -11,9 +11,8 @@ describe('Auth Integration Tests', () => {
     const testEmail = `test-${Date.now()}@example.com`;
     const testPassword = 'TestPassword123!';
 
-    afterAll(async () => {
-        await pool.query('DELETE FROM users WHERE email = $1', [testEmail]);
-        await pool.end();
+    beforeEach(() => {
+        resetTestDb();
     });
 
     describe('POST /api/register', () => {
@@ -35,6 +34,18 @@ describe('Auth Integration Tests', () => {
             await request(app)
                 .post('/api/register')
                 .send({
+                    name: 'Test User',
+                    cpf: '97456321558',
+                    email: testEmail,
+                    password: testPassword,
+                })
+                .expect(201);
+
+            await request(app)
+                .post('/api/register')
+                .send({
+                    name: 'Test User',
+                    cpf: '97456321558',
                     email: testEmail,
                     password: testPassword,
                 })
@@ -43,6 +54,17 @@ describe('Auth Integration Tests', () => {
     });
 
     describe('POST /api/login', () => {
+        beforeEach(async () => {
+            await request(app)
+                .post('/api/register')
+                .send({
+                    name: 'Test User',
+                    cpf: '97456321558',
+                    email: testEmail,
+                    password: testPassword,
+                });
+        });
+
         it('should login with valid credentials', async () => {
             const response = await request(app)
                 .post('/api/login')
@@ -52,10 +74,10 @@ describe('Auth Integration Tests', () => {
                 })
                 .expect(200);
 
-            expect(response.body.token).toBeDefined();
             expect(response.body.user).toBeDefined();
             expect(response.body.user.email).toBe(testEmail);
             expect(response.body.user.isAuthenticated).toBe(true);
+            expect(response.headers['set-cookie']).toBeDefined();
         });
 
         it('should reject invalid credentials', async () => {

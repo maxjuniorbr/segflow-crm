@@ -17,7 +17,7 @@ projects:
               - key: "DATABASE_URL"
                 sync: false
             region: "oregon"
-            buildCommand: "npm install && npm run init-db-prod"
+            buildCommand: "npm install"
             startCommand: "npm start"
             autoDeployTrigger: "commit"
             rootDir: "server"

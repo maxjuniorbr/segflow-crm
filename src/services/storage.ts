@@ -18,10 +18,9 @@ export const storageService = {
   validateUser: async (email: string, password: string): Promise<User | null> => {
     try {
       const data = await api.post('/api/login', { email, password });
-      if (data && data.token && data.user) {
+      if (data && data.user) {
         return {
           ...data.user,
-          token: data.token,
           isAuthenticated: true
         };
       }
@@ -29,6 +28,14 @@ export const storageService = {
     } catch (error) {
       console.error("Login failed", error);
       return null;
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await api.post('/api/logout');
+    } catch (error) {
+      console.error('Logout failed', error);
     }
   },
 
@@ -46,12 +53,18 @@ export const storageService = {
 
   async saveClient(client: Client, isNew: boolean = false): Promise<Client> {
     try {
+      const payload: any = { ...client };
+      if (isNew) {
+        delete payload.id;
+        delete payload.createdAt;
+      }
+
       if (!isNew && client.id) {
-        const response = await api.put(`/api/clients/${client.id}`, client);
-        return response;  // ← Removido .data
+        const response = await api.put(`/api/clients/${client.id}`, payload);
+        return response;
       } else {
-        const response = await api.post('/api/clients', client);
-        return response;  // ← Removido .data
+        const response = await api.post('/api/clients', payload);
+        return response;
       }
     } catch (error) {
       console.error('Error saving client:', error);
@@ -72,9 +85,17 @@ export const storageService = {
 
 
 
-  async getDocuments(): Promise<Document[]> {
+  async getDocuments(filters?: { clientId?: string; status?: string; search?: string; limit?: number; offset?: number }): Promise<Document[]> {
     try {
-      return await api.get('/api/documents');
+      const params = new URLSearchParams();
+      if (filters?.clientId) params.append('clientId', filters.clientId);
+      if (filters?.status) params.append('status', filters.status);
+      if (filters?.search) params.append('search', filters.search);
+      if (filters?.limit) params.append('limit', String(filters.limit));
+      if (filters?.offset) params.append('offset', String(filters.offset));
+
+      const query = params.toString();
+      return await api.get(`/api/documents${query ? `?${query}` : ''}`);
     } catch (error) {
       console.error('Error fetching documents:', error);
       return [];
@@ -93,12 +114,18 @@ export const storageService = {
 
   async saveDocument(doc: Document, isNew: boolean = false): Promise<Document> {
     try {
+      const payload: any = { ...doc };
+      if (isNew) {
+        delete payload.id;
+        delete payload.createdAt;
+      }
+
       if (!isNew && doc.id) {
-        const response = await api.put(`/api/documents/${doc.id}`, doc);
-        return response;  // ← Removido .data
+        const response = await api.put(`/api/documents/${doc.id}`, payload);
+        return response;
       } else {
-        const response = await api.post('/api/documents', doc);
-        return response;  // ← Removido .data
+        const response = await api.post('/api/documents', payload);
+        return response;
       }
     } catch (error) {
       console.error('Error saving document:', error);
@@ -117,8 +144,8 @@ export const storageService = {
 
   getDocumentsByClientId: async (clientId: string): Promise<Document[]> => {
     try {
-      const all = await api.get('/api/documents');
-      return all.filter((d: Document) => d.clientId === clientId);
+      const params = new URLSearchParams({ clientId, limit: '200' });
+      return await api.get(`/api/documents?${params.toString()}`);
     } catch (error) {
       console.error('Error fetching client documents:', error);
       return [];

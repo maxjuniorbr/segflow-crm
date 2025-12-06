@@ -47,6 +47,7 @@ export const ClientForm: React.FC = () => {
   };
 
   const [formData, setFormData] = useState(emptyClient);
+  const [clientMeta, setClientMeta] = useState<{ createdAt?: string }>({});
 
   const [lockedFields, setLockedFields] = useState({
     street: true,
@@ -89,6 +90,7 @@ export const ClientForm: React.FC = () => {
           rest.rgDispatchDate = rest.rgDispatchDate ? rest.rgDispatchDate.substring(0, 10) : '';
 
           setFormData(rest);
+          setClientMeta({ createdAt: createdAt || new Date().toISOString() });
           setCalculatedAge(calculateAge(rest.birthDate || ''));
         }
         setLoading(false);
@@ -225,8 +227,8 @@ export const ClientForm: React.FC = () => {
     setError('');
     try {
       const clientToSave: Client = {
-        id: id || Math.random().toString(36).substr(2, 9),
-        createdAt: id ? (await storageService.getClientById(id))?.createdAt || new Date().toISOString() : new Date().toISOString(),
+        id: id || '',
+        createdAt: id ? clientMeta.createdAt || new Date().toISOString() : new Date().toISOString(),
         ...formData
       };
       await storageService.saveClient(clientToSave, !id);

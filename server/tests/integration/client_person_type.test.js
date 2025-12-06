@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../../index.js';
-import pool from '../../src/infrastructure/database/pool.js';
 import jwt from 'jsonwebtoken';
+import { resetTestDb } from '../utils/testDbMock.js';
 
 describe('Client Person Type Integration Tests', () => {
     let token;
@@ -15,14 +15,8 @@ describe('Client Person Type Integration Tests', () => {
     beforeAll(async () => {
         token = jwt.sign({ id: 'test-user-id', email: testUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
     });    // Clean up test clients before each test to avoid uniqueness conflicts
-    beforeEach(async () => {
-        await pool.query(`DELETE FROM clients WHERE id LIKE 'test-%'`);
-    });
-
-    afterAll(async () => {
-        // Clean up test clients
-        await pool.query(`DELETE FROM clients WHERE id LIKE 'test-%'`);
-        await pool.end();
+    beforeEach(() => {
+        resetTestDb();
     });
 
     it('should create a Pessoa Física client successfully', async () => {

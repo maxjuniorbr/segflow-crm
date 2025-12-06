@@ -8,16 +8,13 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-if (!process.env.JWT_SECRET || !process.env.DATABASE_URL) {
-    console.error('❌ FATAL: Environment variables not loaded in vitest.config.js');
-    console.error('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
-    console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
-    process.exit(1);
+if (!process.env.JWT_SECRET) {
+    process.env.JWT_SECRET = 'test_secret_key';
 }
 
-console.log('✅ Environment variables loaded successfully in vitest');
-console.log('JWT_SECRET:', process.env.JWT_SECRET.substring(0, 10) + '...');
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = 'postgresql://test-db-url';
+}
 
 export default defineConfig({
     test: {

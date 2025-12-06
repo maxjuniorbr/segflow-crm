@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Key } from 'lucide-react';
-import { Button, Input, Card } from '../components/UIComponents';
+import { ChevronLeft, Key, Loader2 } from 'lucide-react';
+import { Button, Input, Card, Alert } from '../components/UIComponents';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { userService } from '../services/userService';
 import { User } from '../types';
 import { maskCPF } from '../utils/formatters';
 import { isValidCPF } from '../utils/validators';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export const UserForm: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { user: currentUser } = useAuth();
+    const parsedId = id ? Number(id) : null;
+    const isSelf = parsedId !== null && currentUser?.id === parsedId;
 
     const [formData, setFormData] = useState({
         name: '',
@@ -23,17 +27,18 @@ export const UserForm: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [formError, setFormError] = useState('');
     const [showPasswordModal, setShowPasswordModal] = useState(false);
 
     useEffect(() => {
         const loadUser = async () => {
-            if (!id) {
+            if (!parsedId) {
                 setLoadingData(false);
                 return;
             }
 
             try {
-                const user = await userService.getUserById(Number(id));
+                const user = await userService.getUserById(parsedId);
                 if (user) {
                     setFormData({
                         name: user.name,
@@ -42,7 +47,9 @@ export const UserForm: React.FC = () => {
                     });
                 }
             } catch (error: any) {
-                showToast(error.message || 'Erro ao carregar usuário', 'error');
+                const message = error.message || 'Erro ao carregar usuário';
+                showToast(message, 'error');
+                setFormError(message);
                 navigate('/settings/users');
             } finally {
                 setLoadingData(false);
@@ -50,7 +57,7 @@ export const UserForm: React.FC = () => {
         };
 
         loadUser();
-    }, [id]);
+    }, [parsedId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -102,6 +109,7 @@ export const UserForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setFormError('');
         if (!validate()) {
             return;
         }
@@ -109,8 +117,8 @@ export const UserForm: React.FC = () => {
         setLoading(true);
 
         try {
-            if (id) {
-                await userService.updateUser(Number(id), formData);
+            if (parsedId) {
+                await userService.updateUser(parsedId, formData);
                 showToast('Usuário atualizado com sucesso', 'success');
             } else {
                 await userService.createUser(formData);
@@ -118,15 +126,21 @@ export const UserForm: React.FC = () => {
             }
             navigate('/settings/users');
         } catch (error: any) {
-            showToast(error.message || 'Erro ao salvar usuário', 'error');
+            const message = error.message || 'Erro ao salvar usuário';
+            setFormError(message);
+            showToast(message, 'error');
         } finally {
             setLoading(false);
         }
     };
 
     const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
+        if (!parsedId || !isSelf) {
+            showToast('Você só pode alterar sua própria senha', 'error');
+            return;
+        }
         try {
-            await userService.changePassword(Number(id), currentPassword, newPassword);
+            await userService.changePassword(parsedId, currentPassword, newPassword);
             showToast('Senha alterada com sucesso', 'success');
         } catch (error: any) {
             const errorMessage = error.message || 'Erro ao alterar senha';
@@ -137,24 +151,18 @@ export const UserForm: React.FC = () => {
 
     if (loadingData) {
         return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Usuário' : 'Novo Usuário'}</h1>
-                    <p className="mt-1 text-sm text-gray-500">{id ? 'Atualize os dados do usuário' : 'Cadastre um novo usuário'}</p>
-                </div>
-                <div className="flex justify-center items-center h-64">
-                    <div className="text-slate-500">Carregando...</div>
-                </div>
+            <div className="flex justify-center items-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-3xl mx-auto space-y-6 pb-24 sm:pb-0">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center">
-                    <button onClick={() => navigate('/settings/users')} className="mr-4 p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
-                        <ArrowLeft className="w-6 h-6" />
+                    <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+                        <ChevronLeft className="w-6 h-6" />
                     </button>
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Usuário' : 'Novo Usuário'}</h1>
@@ -163,83 +171,85 @@ export const UserForm: React.FC = () => {
                 </div>
             </div>
 
-            <Card>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Input
-                            id="name"
-                            name="name"
-                            label="Nome Completo *"
-                            type="text"
-                            value={formData.name}
-                            onChange={handleChange}
-                            error={errors.name}
-                            required
-                            maxLength={200}
-                        />
+            {formError && (
+                <Alert variant="error">{formError}</Alert>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <Card>
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Input
+                                id="name"
+                                name="name"
+                                label="Nome Completo *"
+                                type="text"
+                                value={formData.name}
+                                onChange={handleChange}
+                                error={errors.name}
+                                required
+                                maxLength={200}
+                            />
+
+                            <Input
+                                id="cpf"
+                                name="cpf"
+                                label="CPF *"
+                                type="text"
+                                value={formData.cpf}
+                                onChange={handleChange}
+                                onBlur={handleCpfBlur}
+                                error={errors.cpf}
+                                required
+                                maxLength={14}
+                            />
+                        </div>
 
                         <Input
-                            id="cpf"
-                            name="cpf"
-                            label="CPF *"
-                            type="text"
-                            value={formData.cpf}
+                            id="email"
+                            name="email"
+                            label="Email *"
+                            type="email"
+                            value={formData.email}
                             onChange={handleChange}
-                            onBlur={handleCpfBlur}
-                            error={errors.cpf}
+                            error={errors.email}
                             required
-                            maxLength={14}
+                            maxLength={254}
                         />
+
+                        {!parsedId && (
+                            <Input
+                                id="password"
+                                name="password"
+                                label="Senha Inicial *"
+                                type="password"
+                                value={formData.password || ''}
+                                onChange={handleChange}
+                                error={errors.password}
+                                required
+                            />
+                        )}
                     </div>
+                </Card>
 
-                    <Input
-                        id="email"
-                        name="email"
-                        label="Email *"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={errors.email}
-                        required
-                        maxLength={254}
-                    />
+                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
+                    <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+                        Cancelar
+                    </Button>
+                    <Button type="submit" isLoading={loading}>
+                        Salvar Alterações
+                    </Button>
+                </div>
+            </form>
 
-                    {!id && (
-                        <Input
-                            id="password"
-                            name="password"
-                            label="Senha Inicial *"
-                            type="password"
-                            value={formData.password || ''}
-                            onChange={handleChange}
-                            error={errors.password}
-                            required
-                        />
-                    )}
-
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
-                        <Button type="submit" isLoading={loading}>
-                            Salvar Alterações
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => navigate('/settings/users')}
-                        >
-                            Cancelar
-                        </Button>
-                    </div>
-                </form>
-            </Card>
-
-            {id && (
+            {isSelf && (
                 <Card>
                     <div className="space-y-4">
                         <div>
                             <h3 className="text-sm font-medium text-gray-900">Segurança</h3>
                             <p className="mt-1 text-sm text-gray-500">Gerencie a senha de acesso</p>
                         </div>
-                        <div>
+                        <div className="flex justify-between items-center">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -253,11 +263,13 @@ export const UserForm: React.FC = () => {
                 </Card>
             )}
 
-            <ChangePasswordModal
-                isOpen={showPasswordModal}
-                onClose={() => setShowPasswordModal(false)}
-                onConfirm={handlePasswordChange}
-            />
+            {isSelf && (
+                <ChangePasswordModal
+                    isOpen={showPasswordModal}
+                    onClose={() => setShowPasswordModal(false)}
+                    onConfirm={handlePasswordChange}
+                />
+            )}
         </div>
     );
 };
