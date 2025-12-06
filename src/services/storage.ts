@@ -1,4 +1,4 @@
-import { Client, Document, User } from '../types';
+import { Client, Document, User, Broker } from '../types';
 import { api } from './api';
 
 export const storageService = {
@@ -149,6 +149,51 @@ export const storageService = {
     } catch (error) {
       console.error('Error fetching client documents:', error);
       return [];
+    }
+  },
+
+  async getBrokers(): Promise<Broker[]> {
+    try {
+      return await api.get('/api/brokers');
+    } catch (error) {
+      console.error('Error fetching brokers:', error);
+      return [];
+    }
+  },
+
+  async getBrokerById(id: string): Promise<Broker | undefined> {
+    try {
+      return await api.get(`/api/brokers/${id}`);
+    } catch (error) {
+      console.error('Error fetching broker:', error);
+      return undefined;
+    }
+  },
+
+  async saveBroker(broker: Broker, isNew: boolean): Promise<Broker> {
+    try {
+      const payload: any = { ...broker };
+      if (isNew) {
+        delete payload.id;
+        delete payload.createdAt;
+      }
+
+      if (!isNew && broker.id) {
+        return await api.put(`/api/brokers/${broker.id}`, payload);
+      }
+      return await api.post('/api/brokers', payload);
+    } catch (error) {
+      console.error('Error saving broker:', error);
+      throw error;
+    }
+  },
+
+  async deleteBroker(id: string): Promise<void> {
+    try {
+      await api.delete(`/api/brokers/${id}`);
+    } catch (error) {
+      console.error('Error deleting broker:', error);
+      throw error;
     }
   }
 };

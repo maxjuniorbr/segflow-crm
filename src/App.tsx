@@ -13,6 +13,8 @@ import { DocumentList } from './pages/DocumentList';
 import { DocumentForm } from './pages/DocumentForm';
 import { UserList } from './pages/UserList';
 import { UserForm } from './pages/UserForm';
+import { BrokerList } from './pages/BrokerList';
+import { BrokerForm } from './pages/BrokerForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -44,6 +46,9 @@ function App() {
               <Route path="settings/users" element={<UserList />} />
               <Route path="settings/users/new" element={<UserForm />} />
               <Route path="settings/users/:id" element={<UserForm />} />
+              <Route path="settings/brokers" element={<BrokerList />} />
+              <Route path="settings/brokers/new" element={<BrokerForm />} />
+              <Route path="settings/brokers/:id" element={<BrokerForm />} />
             </Route>
           </Routes>
         </Router>

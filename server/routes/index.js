@@ -4,8 +4,9 @@ import { getClients, getClientById, createClient, updateClient, deleteClient } f
 import { getDocuments, getDocumentById, createDocument, updateDocument, deleteDocument } from '../controllers/documentController.js';
 import { getUsers, getUserById, updateUser, deleteUser } from '../controllers/userController.js';
 import { changePassword } from '../controllers/passwordController.js';
+import { getBrokers, getBrokerById, createBroker, updateBroker, deleteBroker } from '../controllers/brokerController.js';
 import { authMiddleware, validate } from '../middleware/index.js';
-import { registerSchema, loginSchema, clientSchema, documentSchema, userSchema } from '../schemas/index.js';
+import { registerSchema, loginSchema, clientSchema, documentSchema, userSchema, brokerSchema } from '../schemas/index.js';
 
 const router = express.Router();
 
@@ -25,6 +26,12 @@ router.get('/documents/:id', authMiddleware, getDocumentById);
 router.post('/documents', authMiddleware, validate(documentSchema), createDocument);
 router.put('/documents/:id', authMiddleware, validate(documentSchema), updateDocument);
 router.delete('/documents/:id', authMiddleware, deleteDocument);
+
+router.get('/brokers', authMiddleware, getBrokers);
+router.get('/brokers/:id', authMiddleware, getBrokerById);
+router.post('/brokers', authMiddleware, validate(brokerSchema), createBroker);
+router.put('/brokers/:id', authMiddleware, validate(brokerSchema), updateBroker);
+router.delete('/brokers/:id', authMiddleware, deleteBroker);
 
 router.get('/users', authMiddleware, getUsers);
 router.get('/users/:id', authMiddleware, getUserById);

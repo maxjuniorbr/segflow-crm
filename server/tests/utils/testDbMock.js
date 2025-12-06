@@ -4,6 +4,7 @@ const state = {
     users: [],
     clients: [],
     documents: [],
+    brokers: [],
 };
 
 let userIdSeq = 1;
@@ -15,6 +16,7 @@ export const resetTestDb = () => {
     state.users = [];
     state.clients = [];
     state.documents = [];
+    state.brokers = [];
     userIdSeq = 1;
 };
 
@@ -22,6 +24,7 @@ const findUserByEmail = (email) => state.users.filter(user => user.email === ema
 const findUserByCpf = (cpf) => state.users.filter(user => user.cpf === cpf);
 
 const selectClientByField = (field, value) => state.clients.filter(client => client[field] === value);
+const selectBrokerByField = (field, value, excludeId) => state.brokers.filter(broker => broker[field] === value && (!excludeId || broker.id !== excludeId));
 
 const insertClient = (params) => {
     const [id, name, personType, cpf, cnpj, rg, rgDispatchDate, rgIssuer, birthDate, maritalStatus, email, phone, addressJson, notes] = params;
@@ -92,6 +95,50 @@ const selectClientById = (id) => {
 
 const buildRows = (rows) => ({ rows: rows.map(clone), rowCount: rows.length });
 
+const insertBroker = (params) => {
+    const [id, corporateName, tradeName, cnpj, susepCode, contactName, email, phone, mobile] = params;
+    const newBroker = {
+        id,
+        corporatename: corporateName,
+        tradename: tradeName,
+        cnpj,
+        susepcode: susepCode,
+        contactname: contactName,
+        email,
+        phone,
+        mobile,
+        createdat: new Date().toISOString()
+    };
+    state.brokers.push(newBroker);
+    return { rows: [], rowCount: 1 };
+};
+
+const updateBroker = (params) => {
+    const [corporateName, tradeName, cnpj, susepCode, contactName, email, phone, mobile, id] = params;
+    const broker = state.brokers.find(b => b.id === id);
+    if (broker) {
+        broker.corporatename = corporateName;
+        broker.tradename = tradeName;
+        broker.cnpj = cnpj;
+        broker.susepcode = susepCode;
+        broker.contactname = contactName;
+        broker.email = email;
+        broker.phone = phone;
+        broker.mobile = mobile;
+    }
+    return { rows: [], rowCount: broker ? 1 : 0 };
+};
+
+const selectBrokerById = (id) => {
+    const rows = state.brokers.filter(broker => broker.id === id);
+    return { rows: rows.map(clone), rowCount: rows.length };
+};
+
+const selectBrokersOrdered = () => {
+    const rows = [...state.brokers].sort((a, b) => new Date(b.createdat).getTime() - new Date(a.createdat).getTime());
+    return { rows: rows.map(clone), rowCount: rows.length };
+};
+
 const handleQuery = (sql, params) => {
     if (sql.startsWith('SELECT * FROM USERS WHERE EMAIL = $1')) {
         return buildRows(findUserByEmail(params[0]));
@@ -142,6 +189,48 @@ const handleQuery = (sql, params) => {
 
     if (sql.startsWith('DELETE FROM CLIENTS WHERE ID = $1')) {
         return deleteClientById(params[0]);
+    }
+
+    if (sql.startsWith('SELECT * FROM BROKERS ORDER BY CREATEDAT DESC')) {
+        return selectBrokersOrdered();
+    }
+
+    if (sql.startsWith('SELECT * FROM BROKERS WHERE ID = $1')) {
+        return selectBrokerById(params[0]);
+    }
+
+    if (sql.startsWith('SELECT ID FROM BROKERS WHERE CNPJ = $1 AND ID != $2')) {
+        const rows = selectBrokerByField('cnpj', params[0], params[1]).map(broker => ({ id: broker.id }));
+        return buildRows(rows);
+    }
+
+    if (sql.startsWith('SELECT ID FROM BROKERS WHERE CNPJ = $1')) {
+        const rows = selectBrokerByField('cnpj', params[0]).map(broker => ({ id: broker.id }));
+        return buildRows(rows);
+    }
+
+    if (sql.startsWith('SELECT ID FROM BROKERS WHERE SUSEPCODE = $1 AND ID != $2')) {
+        const rows = selectBrokerByField('susepcode', params[0], params[1]).map(broker => ({ id: broker.id }));
+        return buildRows(rows);
+    }
+
+    if (sql.startsWith('SELECT ID FROM BROKERS WHERE SUSEPCODE = $1')) {
+        const rows = selectBrokerByField('susepcode', params[0]).map(broker => ({ id: broker.id }));
+        return buildRows(rows);
+    }
+
+    if (sql.startsWith('INSERT INTO BROKERS')) {
+        return insertBroker(params);
+    }
+
+    if (sql.startsWith('UPDATE BROKERS SET')) {
+        return updateBroker(params);
+    }
+
+    if (sql.startsWith('DELETE FROM BROKERS WHERE ID = $1')) {
+        const before = state.brokers.length;
+        state.brokers = state.brokers.filter(broker => broker.id !== params[0]);
+        return { rows: [], rowCount: before - state.brokers.length };
     }
 
     throw new Error(`Test DB mock does not support query: ${sql}`);

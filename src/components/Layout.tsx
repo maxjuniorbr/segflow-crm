@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -10,7 +10,8 @@ import {
   X,
   ShieldCheck,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Building2
 } from 'lucide-react';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -20,6 +21,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  useEffect(() => {
+    if (location.pathname.startsWith('/settings')) {
+      setIsSettingsOpen(true);
+    }
+  }, [location.pathname]);
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
@@ -28,7 +35,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'Clientes', path: '/clients', icon: Users },
-    { label: 'Propostas/Apólices', path: '/documents', icon: FileText },
+    { label: 'Propostas/Apólices', path: '/documents', icon: FileText }
   ];
 
   const isActive = (path: string) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
@@ -105,6 +112,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   >
                     <Users className={`mr-3 flex-shrink-0 h-4 w-4 ${isActive('/settings/users') ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`} />
                     Usuários
+                  </Link>
+                  <Link
+                    to="/settings/brokers"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
+                      group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                      ${isActive('/settings/brokers')
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800'}
+                    `}
+                  >
+                    <Building2 className={`mr-3 flex-shrink-0 h-4 w-4 ${isActive('/settings/brokers') ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                    Corretoras
                   </Link>
                 </div>
               )}

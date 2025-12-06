@@ -62,3 +62,16 @@ export interface User {
   username: string;
   isAuthenticated: boolean;
 }
+
+export interface Broker {
+  id: string;
+  corporateName: string;
+  tradeName: string;
+  cnpj: string;
+  susepCode?: string | null;
+  contactName: string;
+  email: string;
+  phone: string;
+  mobile: string;
+  createdAt?: string;
+}

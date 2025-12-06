@@ -168,3 +168,41 @@ export const userSchema = z.object({
     }
 });
 
+export const brokerSchema = z.object({
+    id: z.string().optional(),
+    corporateName: z.string()
+        .min(1, 'Razão social é obrigatória')
+        .max(200, 'Razão social deve ter no máximo 200 caracteres'),
+    tradeName: z.string()
+        .min(1, 'Nome fantasia é obrigatório')
+        .max(200, 'Nome fantasia deve ter no máximo 200 caracteres'),
+    cnpj: z.string()
+        .min(1, 'CNPJ é obrigatório')
+        .max(18, 'CNPJ deve ter no máximo 18 caracteres'),
+    susepCode: z.string()
+        .max(20, 'Código SUSEP deve ter no máximo 20 caracteres')
+        .nullable()
+        .optional(),
+    contactName: z.string()
+        .min(1, 'Contato é obrigatório')
+        .max(200, 'Contato deve ter no máximo 200 caracteres'),
+    email: z.string()
+        .email('Email inválido')
+        .max(254, 'Email deve ter no máximo 254 caracteres')
+        .min(1, 'Email é obrigatório'),
+    phone: z.string()
+        .min(1, 'Telefone é obrigatório')
+        .max(20, 'Telefone deve ter no máximo 20 caracteres'),
+    mobile: z.string()
+        .min(1, 'Celular é obrigatório')
+        .max(20, 'Celular deve ter no máximo 20 caracteres'),
+}).superRefine((data, ctx) => {
+    if (!isValidCNPJ(data.cnpj)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['cnpj'],
+            message: 'CNPJ inválido',
+        });
+    }
+});
+

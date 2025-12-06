@@ -39,6 +39,13 @@ import {
 } from '../../controllers/userController.js';
 import { changePassword } from '../../controllers/passwordController.js';
 import { register, login, validate, logout } from '../../controllers/authController.js';
+import {
+    getBrokers,
+    getBrokerById,
+    createBroker,
+    updateBroker,
+    deleteBroker
+} from '../../controllers/brokerController.js';
 
 const createRes = () => ({
     statusCode: 200,
@@ -91,6 +98,19 @@ const sampleUserRow = {
     created_at: '2024-01-01'
 };
 
+const sampleBrokerRow = {
+    id: 'bro-1',
+    corporatename: 'Razão Social',
+    tradename: 'Nome Fantasia',
+    cnpj: '12345678000190',
+    susepcode: '12345',
+    contactname: 'Contato',
+    email: 'corretora@example.com',
+    phone: '1130002000',
+    mobile: '11999999999',
+    createdat: '2024-01-02'
+};
+
 const mockQuery = () => pool.query;
 
 beforeEach(() => {
@@ -127,6 +147,14 @@ describe('Client Controller', () => {
         expect(querySpy).toHaveBeenCalled();
     });
 
+    it('handles errors when fetching single client', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('boom'));
+        const res = createRes();
+        await getClientById({ params: { id: 'cli-1' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('boom');
+    });
+
     it('creates client with unique identifiers', async () => {
         const querySpy = mockQuery()
             .mockResolvedValueOnce({ rows: [] })
@@ -148,6 +176,16 @@ describe('Client Controller', () => {
         expect(querySpy).toHaveBeenCalled();
     });
 
+    it('returns 500 when create client fails', async () => {
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockRejectedValueOnce(new Error('insert fail'));
+        const res = createRes();
+        await createClient({ body: { name: 'Novo', cpf: '123', personType: 'Física' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('insert fail');
+    });
+
     it('updates client and validates duplicates', async () => {
         const querySpy = mockQuery()
             .mockResolvedValueOnce({ rows: [] })
@@ -158,6 +196,16 @@ describe('Client Controller', () => {
         await updateClient({ params: { id: 'cli-1' }, body: { name: 'Atualizado', cpf: '123' } }, res);
         expect(res.statusCode).toBe(200);
         expect(res.payload.message).toContain('atualizado');
+    });
+
+    it('returns 500 when update client fails', async () => {
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockRejectedValueOnce(new Error('update fail'));
+        const res = createRes();
+        await updateClient({ params: { id: 'cli-1' }, body: { name: 'Atualizado', cpf: '123' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('update fail');
     });
 
     it('prevents client deletion with active proposals', async () => {
@@ -175,6 +223,14 @@ describe('Client Controller', () => {
         await deleteClient({ params: { id: 'cli-1' } }, res);
         expect(res.statusCode).toBe(200);
         expect(res.payload.message).toBe('Cliente excluído');
+    });
+
+    it('returns 500 when delete client fails', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('delete fail'));
+        const res = createRes();
+        await deleteClient({ params: { id: 'cli-1' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('delete fail');
     });
 });
 
@@ -225,6 +281,142 @@ describe('Document Controller', () => {
         await deleteDocument({ params: { id: 'doc-1' } }, resDelete);
         expect(resDelete.payload.message).toBe('Documento excluído');
     });
+
+    it('handles errors on document queries', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('doc fail'));
+        const resById = createRes();
+        await getDocumentById({ params: { id: 'doc-err' } }, resById);
+        expect(resById.statusCode).toBe(500);
+
+        mockQuery().mockRejectedValueOnce(new Error('create fail'));
+        const resCreate = createRes();
+        await createDocument({ body: { clientId: 'cli-1', type: 'Auto', company: 'XYZ', documentNumber: '123', startDate: '2025-01-01', endDate: '2025-12-31', status: 'Apólice' } }, resCreate);
+        expect(resCreate.statusCode).toBe(500);
+
+        mockQuery().mockRejectedValueOnce(new Error('update fail'));
+        const resUpdate = createRes();
+        await updateDocument({ params: { id: 'doc-1' }, body: { clientId: 'cli-1', type: 'Auto', company: 'ABC', documentNumber: '123', startDate: '2025-01-01', endDate: '2025-12-31', status: 'Apólice' } }, resUpdate);
+        expect(resUpdate.statusCode).toBe(500);
+
+        mockQuery().mockRejectedValueOnce(new Error('delete fail'));
+        const resDelete = createRes();
+        await deleteDocument({ params: { id: 'doc-1' } }, resDelete);
+        expect(resDelete.statusCode).toBe(500);
+    });
+});
+
+describe('Broker Controller', () => {
+    it('lists brokers ordered', async () => {
+        const querySpy = mockQuery().mockResolvedValueOnce({ rows: [sampleBrokerRow] });
+        const res = createRes();
+        await getBrokers({}, res);
+        expect(res.payload[0].tradeName).toBe(sampleBrokerRow.tradename);
+        expect(querySpy).toHaveBeenCalled();
+    });
+
+    it('handles list error', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('fail'));
+        const res = createRes();
+        await getBrokers({}, res);
+        expect(res.statusCode).toBe(500);
+    });
+
+    it('gets broker by id', async () => {
+        mockQuery().mockResolvedValueOnce({ rows: [] });
+        const resMissing = createRes();
+        await getBrokerById({ params: { id: 'missing' } }, resMissing);
+        expect(resMissing.statusCode).toBe(404);
+
+        mockQuery().mockResolvedValueOnce({ rows: [sampleBrokerRow] });
+        const res = createRes();
+        await getBrokerById({ params: { id: 'bro-1' } }, res);
+        expect(res.payload.id).toBe('bro-1');
+    });
+
+    it('creates broker enforcing unique fields', async () => {
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] });
+        const res = createRes();
+        await createBroker({ body: { corporateName: 'Razão', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '123', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, res);
+        expect(res.statusCode).toBe(201);
+
+        mockQuery().mockResolvedValueOnce({ rows: [{ id: 'ex' }] });
+        const dupRes = createRes();
+        await createBroker({ body: { corporateName: 'Razão', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, dupRes);
+        expect(dupRes.statusCode).toBe(400);
+
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [{ id: 'ex' }] });
+        const dupSusepRes = createRes();
+        await createBroker({ body: { corporateName: 'Razão', tradeName: 'Fantasia', cnpj: '98.765.432/0001-10', susepCode: '123', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, dupSusepRes);
+        expect(dupSusepRes.statusCode).toBe(400);
+    });
+
+    it('updates broker with unique validation', async () => {
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] });
+        const res = createRes();
+        await updateBroker({ params: { id: 'bro-1' }, body: { corporateName: 'Nova', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, res);
+        expect(res.statusCode).toBe(200);
+
+        pool.query.mockReset();
+
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [{ id: 'other' }] });
+        const dupRes = createRes();
+        await updateBroker({ params: { id: 'bro-1' }, body: { corporateName: 'Nova', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, dupRes);
+        expect(dupRes.statusCode).toBe(400);
+    });
+
+    it('rejects broker update when susep already exists', async () => {
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [{ id: 'other' }] });
+        const res = createRes();
+        await updateBroker({ params: { id: 'bro-1' }, body: { corporateName: 'Nova', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '123', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, res);
+        expect(res.statusCode).toBe(400);
+        expect(res.payload.error[0].path).toContain('susepCode');
+    });
+
+    it('deletes broker', async () => {
+        mockQuery().mockResolvedValueOnce({ rows: [] });
+        const res = createRes();
+        await deleteBroker({ params: { id: 'bro-1' } }, res);
+        expect(res.payload.message).toBe('Corretora excluída');
+
+        mockQuery().mockRejectedValueOnce(new Error('fail'));
+        const resFail = createRes();
+        await deleteBroker({ params: { id: 'bro-1' } }, resFail);
+        expect(resFail.statusCode).toBe(500);
+    });
+
+    it('handles broker controller errors', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('get fail'));
+        const resGet = createRes();
+        await getBrokerById({ params: { id: 'bro-1' } }, resGet);
+        expect(resGet.statusCode).toBe(500);
+
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockRejectedValueOnce(new Error('create fail'));
+        const resCreate = createRes();
+        await createBroker({ body: { corporateName: 'Nova', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '123', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, resCreate);
+        expect(resCreate.statusCode).toBe(500);
+
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockRejectedValueOnce(new Error('update fail'));
+        const resUpdate = createRes();
+        await updateBroker({ params: { id: 'bro-1' }, body: { corporateName: 'Nova', tradeName: 'Fantasia', cnpj: '12.345.678/0001-90', susepCode: '123', contactName: 'Contato', email: 'email@example.com', phone: '11', mobile: '11' } }, resUpdate);
+        expect(resUpdate.statusCode).toBe(500);
+    });
 });
 
 describe('User Controller', () => {
@@ -254,6 +446,14 @@ describe('User Controller', () => {
         await getUserById({ params: { id: 1 } }, res);
         expect(res.statusCode).toBe(404);
         querySpy.mockRestore();
+    });
+
+    it('handles errors when fetching user by id', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('user fail'));
+        const res = createRes();
+        await getUserById({ params: { id: 1 } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('user fail');
     });
 
     it('getUserById returns data when found', async () => {
@@ -290,6 +490,18 @@ describe('User Controller', () => {
         const res = createRes();
         await updateUser({ params: { id: 1 }, body: { name: 'Novo', cpf: '111.222.333-44', email: 'novo@example.com' } }, res);
         expect(res.statusCode).toBe(400);
+    });
+
+    it('returns 500 when update user fails', async () => {
+        mockBcrypt();
+        mockQuery()
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [] })
+            .mockRejectedValueOnce(new Error('update fail'));
+        const res = createRes();
+        await updateUser({ params: { id: 1 }, body: { name: 'Novo', cpf: '111.222.333-44', email: 'novo@example.com', password: 'Senha123' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('update fail');
     });
 
     it('deletes user', async () => {
@@ -401,6 +613,14 @@ describe('Auth Controller', () => {
         await register({ body: { name: 'Dup', cpf: '123.456.789-00', email: 'dup@example.com', password: 'Senha1234' } }, res);
         expect(res.statusCode).toBe(400);
         expect(res.payload.error).toContain('CPF já cadastrado');
+    });
+
+    it('handles errors on register', async () => {
+        mockQuery().mockRejectedValueOnce(new Error('db fail'));
+        const res = createRes();
+        await register({ body: { name: 'Err', cpf: '123.456.789-00', email: 'err@example.com', password: 'Senha1234' } }, res);
+        expect(res.statusCode).toBe(500);
+        expect(res.payload.error).toContain('db fail');
     });
 
     it('logs user in and sets cookie', async () => {

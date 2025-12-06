@@ -42,6 +42,18 @@ segflow-crm/
 └── render.yaml           # Configuração de deploy no Render
 ```
 
+### Arquitetura (visão geral)
+
+```mermaid
+graph LR
+    A[Usuário / Operador] -->|HTTP/HTTPS| B[Frontend React + Vite]
+    B -->|REST / JSON| C[Backend Express + Node.js]
+    C -->|Consultas / Persistência| D[(PostgreSQL)]
+    C -->|JWT| E[Serviço de Autenticação]
+    B -->|Context / Fetch API| F[Serviços de Dados]
+    C -->|Validação| G[Zod]
+```
+
 ---
 
 ## Como Rodar Localmente
@@ -73,13 +85,14 @@ NODE_ENV=development
 
 **Inicializar banco de dados**:
 ```bash
-# Criar database e tabelas
-node scripts/dropDbLocal.js  # Opcional: limpar banco
-node scripts/initDbLocal.js
+# Fluxo recomendado sempre que houver mudanças de schema
+node scripts/dropDbLocal.js   # Limpa tudo (recomendado sempre antes)
+node scripts/initDbLocal.js   # Cria bancos, tabelas e índices
 
 # Popular com dados de teste (opcional)
 node scripts/seedDbLocal.js
 ```
+> Em produção utilizamos o mesmo script de schema (`node scripts/initDbProd.js`), garantindo que toda nova tabela/índice seja criada automaticamente no deploy.
 
 **Rodar servidor**:
 ```bash
@@ -115,7 +128,7 @@ Acessar: `http://localhost:5173`
 ### Testes
 
 #### Backend
-- `cd server && npm run test` - executa Vitest usando banco em memória (mock)
+- `cd server && npm run test` - executa Vitest usando banco em memória (mock) cobrindo controllers (clientes, documentos, usuários e corretoras) e entidades
 
 #### Frontend
 - `npm run test` - executa Vitest + Testing Library para fluxos do React
@@ -153,6 +166,7 @@ O projeto está configurado para deploy automático no Render usando o arquivo `
 - Autenticação com JWT via cookies HTTP-only
 - Cadastro de clientes (PF/PJ)
 - Gerenciamento de propostas/apólices
+- Cadastro e manutenção de corretoras (Configurações)
 - Busca e filtros
 - Consulta de CEP (BrasilAPI)
 - Validação de dados com Zod
