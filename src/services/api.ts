@@ -89,6 +89,7 @@ const handleResponse = async (response: Response, options?: ApiRequestOptions) =
 
 type ApiRequestOptions = {
     redirectOnAuthError?: boolean;
+    suppressToast?: boolean;
 };
 
 const request = async (endpoint: string, init: RequestInit, options?: ApiRequestOptions) => {
@@ -97,9 +98,18 @@ const request = async (endpoint: string, init: RequestInit, options?: ApiRequest
         return handleResponse(response, options);
     } catch (error) {
         if (error instanceof ApiError) {
+            if (!options?.suppressToast) {
+                const { toastBus } = await import('./toastBus');
+                toastBus.notify({ message: error.message, type: 'error' });
+            }
             throw error;
         }
-        throw new ApiError(networkErrorMessage);
+        const apiError = new ApiError(networkErrorMessage);
+        if (!options?.suppressToast) {
+            const { toastBus } = await import('./toastBus');
+            toastBus.notify({ message: apiError.message, type: 'error' });
+        }
+        throw apiError;
     }
 };
 

@@ -84,27 +84,31 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <div>
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                aria-expanded={isSettingsOpen}
+                aria-controls="settings-submenu"
                 className={`
                   w-full group flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md transition-colors
                   ${isActive('/settings')
                     ? 'bg-blue-600 text-white'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'}
+                    : isSettingsOpen
+                      ? 'bg-slate-800 text-white'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800'}
                 `}
               >
                 <div className="flex items-center">
                   <Settings className={`mr-3 flex-shrink-0 h-5 w-5 ${isActive('/settings') ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`} />
                   Configurações
                 </div>
-                <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 transition-transform ${isSettingsOpen ? 'rotate-180 text-slate-200' : 'text-slate-400'}`} />
               </button>
 
               {isSettingsOpen && (
-                <div className="ml-6 mt-1 space-y-1">
+                <div id="settings-submenu" className="ml-3 mt-2 space-y-1 border-l border-slate-700/70 pl-3">
                   <Link
                     to="/settings/users"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`
-                      group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                      group flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors
                       ${isActive('/settings/users')
                         ? 'bg-blue-600 text-white'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800'}
@@ -117,7 +121,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     to="/settings/brokers"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`
-                      group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                      group flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors
                       ${isActive('/settings/brokers')
                         ? 'bg-blue-600 text-white'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800'}

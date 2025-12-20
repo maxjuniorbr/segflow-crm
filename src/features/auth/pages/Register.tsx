@@ -99,7 +99,7 @@ export const Register: React.FC = () => {
               <ShieldCheck className="w-10 h-10 text-blue-600" />
             </div>
           </div>
-          <h2 className="text-center text-2xl font-bold text-slate-900 mb-2">Criar Conta</h2>
+          <h2 className="text-center text-xl sm:text-2xl font-bold text-slate-900 mb-2">Criar Conta</h2>
           <p className="text-center text-slate-600 mb-8">Cadastre-se no SegFlow</p>
 
           {error && (
@@ -109,7 +109,7 @@ export const Register: React.FC = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <Input
               id="name"
               name="name"

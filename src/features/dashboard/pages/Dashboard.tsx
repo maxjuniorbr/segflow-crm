@@ -89,8 +89,8 @@ export const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((stat, index) => (
@@ -114,19 +114,22 @@ export const Dashboard: React.FC = () => {
           {recentDocuments.length === 0 ? (
             <p className="text-slate-500">Nenhuma apólice a vencer em breve.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentDocuments.map(doc => (
-                <div key={doc.id} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
-                  <div>
-                    <p className="font-medium text-slate-900">{doc.clientName}</p>
-                    <p className="text-sm text-slate-600">{doc.type} - {doc.company}</p>
-                    <p className="text-sm text-slate-500">
+                <div
+                  key={doc.id}
+                  className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">{doc.clientName}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 truncate">{doc.type} - {doc.company}</p>
+                    <p className="mt-2 text-xs text-slate-500">
                       Vence em: {doc.endDate ? new Date(doc.endDate).toLocaleDateString('pt-BR') : '-'}
                     </p>
                   </div>
                   <Link
                     to={`/documents/edit/${doc.id}`}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap"
                     state={{ from: '/documents' }}
                   >
                     Ver

@@ -27,6 +27,8 @@ export const ClientDetail: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeleteDocumentDialog, setShowDeleteDocumentDialog] = useState(false);
+  const [documentToDeleteId, setDocumentToDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -55,15 +57,17 @@ export const ClientDetail: React.FC = () => {
     }
   };
 
-  const handleDeleteDocument = async (docId: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta proposta/apólice?')) {
-      try {
-        await storageService.deleteDocument(docId);
-        setDocuments(documents.filter(d => d.id !== docId));
-        showToast("Documento excluído com sucesso!", "success");
-      } catch (error) {
-        showToast("Erro ao excluir documento.", "error");
-      }
+  const handleDeleteDocument = async () => {
+    if (!documentToDeleteId) return;
+    try {
+      await storageService.deleteDocument(documentToDeleteId);
+      setDocuments(documents.filter(d => d.id !== documentToDeleteId));
+      showToast("Documento excluído com sucesso!", "success");
+    } catch (error) {
+      showToast("Erro ao excluir documento.", "error");
+    } finally {
+      setShowDeleteDocumentDialog(false);
+      setDocumentToDeleteId(null);
     }
   };
 
@@ -71,7 +75,7 @@ export const ClientDetail: React.FC = () => {
   if (!client) return <div className="p-8 text-center">Cliente não encontrado</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <ConfirmDialog
         isOpen={showDeleteDialog}
         onConfirm={handleDelete}
@@ -82,13 +86,26 @@ export const ClientDetail: React.FC = () => {
         cancelText="Cancelar"
         variant="danger"
       />
+      <ConfirmDialog
+        isOpen={showDeleteDocumentDialog}
+        onConfirm={handleDeleteDocument}
+        onCancel={() => {
+          setShowDeleteDocumentDialog(false);
+          setDocumentToDeleteId(null);
+        }}
+        title="Excluir Proposta/Apólice"
+        message="Tem certeza que deseja excluir esta proposta/apólice? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate('/clients')} className="mr-4 p-2 hover:bg-slate-100 rounded-full text-slate-500">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-2xl font-bold text-slate-900">{client.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{client.name}</h1>
           <span className={`ml-3 px-3 py-1 text-xs font-semibold rounded-full ${client.personType === 'Física'
             ? 'bg-blue-100 text-blue-800'
             : 'bg-purple-100 text-purple-800'
@@ -96,7 +113,7 @@ export const ClientDetail: React.FC = () => {
             {client.personType === 'Física' ? 'Pessoa Física' : 'Pessoa Jurídica'}
           </span>
         </div>
-        <div className="flex space-x-3 w-full sm:w-auto">
+        <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <Link to={`/clients/edit/${client.id}`} className="flex-1 sm:flex-none">
             <Button variant="outline" className="w-full sm:w-auto">
               <Edit className="w-4 h-4 mr-2" /> Editar
@@ -109,7 +126,7 @@ export const ClientDetail: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <Card>
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Informações Pessoais</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -226,7 +243,10 @@ export const ClientDetail: React.FC = () => {
                         <Edit className="w-4 h-4" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteDocument(doc.id)}
+                        onClick={() => {
+                          setDocumentToDeleteId(doc.id);
+                          setShowDeleteDocumentDialog(true);
+                        }}
                         className="text-red-500 hover:text-red-700 text-sm font-medium"
                         title="Excluir documento"
                       >
@@ -240,7 +260,7 @@ export const ClientDetail: React.FC = () => {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card>
             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">Observações</h3>
             <p className="text-sm text-slate-600 whitespace-pre-wrap">

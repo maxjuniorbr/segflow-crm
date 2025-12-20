@@ -158,15 +158,15 @@ export const UserForm: React.FC = () => {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6 pb-24 sm:pb-0">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                 <div className="flex items-center">
                     <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
                         <ChevronLeft className="w-6 h-6" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Usuário' : 'Novo Usuário'}</h1>
-                        <p className="mt-1 text-sm text-gray-500">{id ? 'Atualize os dados do usuário' : 'Cadastre um novo usuário'}</p>
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{id ? 'Editar Usuário' : 'Novo Usuário'}</h1>
+                        <p className="mt-1 text-xs sm:text-sm text-gray-500">{id ? 'Atualize os dados do usuário' : 'Cadastre um novo usuário'}</p>
                     </div>
                 </div>
             </div>
@@ -175,9 +175,9 @@ export const UserForm: React.FC = () => {
                 <Alert variant="error">{formError}</Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <Card>
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Input
                                 id="name"

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { toastBus } from '../services/toastBus';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -18,7 +19,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
-    const showToast = (message: string, type: ToastType = 'info') => {
+    const showToast = useCallback((message: string, type: ToastType = 'info') => {
         const id = Math.random().toString(36).substring(7);
         const newToast = { id, message, type };
 
@@ -27,7 +28,14 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setTimeout(() => {
             setToasts(prev => prev.filter(toast => toast.id !== id));
         }, 5000);
-    };
+    }, []);
+
+    useEffect(() => {
+        const unsubscribe = toastBus.subscribe(({ message, type }) => {
+            showToast(message, type);
+        });
+        return unsubscribe;
+    }, [showToast]);
 
     const removeToast = (id: string) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));

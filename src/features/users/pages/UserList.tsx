@@ -68,14 +68,14 @@ export const UserList: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Usuários</h1>
-                    <p className="mt-1 text-sm text-gray-500">Gerencie os usuários do sistema</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Usuários</h1>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie os usuários do sistema</p>
                 </div>
                 <Link to="/settings/users/new">
-                    <Button className="w-full sm:w-auto">
+                    <Button className="w-full sm:w-auto whitespace-nowrap">
                         <Plus className="w-4 h-4 mr-2" />
                         Novo Usuário
                     </Button>
@@ -83,7 +83,7 @@ export const UserList: React.FC = () => {
             </div>
 
             <Card>
-                <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1 relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <Search className="h-5 w-5 text-gray-400" />
@@ -109,12 +109,57 @@ export const UserList: React.FC = () => {
                     <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                         <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
                         <h3 className="text-sm font-medium text-gray-900">Nenhum usuário encontrado</h3>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-xs sm:text-sm text-gray-500">
                             {searchTerm ? 'Ajuste sua busca para encontrar usuários.' : 'Aguarde cadastros de novos usuários.'}
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <>
+                        <div className="space-y-3 sm:hidden">
+                            {filteredUsers.map((user) => (
+                                <button
+                                    key={user.id}
+                                    type="button"
+                                    className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+                                    onClick={() => navigate(`/settings/users/${user.id}`)}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <span className="text-blue-700 font-semibold text-sm">{user.name?.charAt(0) || '?'}</span>
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                                                <span className="text-xs text-slate-500">{maskCPF(user.cpf)}</span>
+                                            </div>
+                                            <p className="mt-2 text-sm text-gray-700 truncate">{user.email}</p>
+                                            <p className="mt-1 text-xs text-slate-500">{user.username}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex justify-end">
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (user.id === currentUser?.id) {
+                                                    showToast('Você não pode excluir sua própria conta', 'error');
+                                                } else {
+                                                    setDeleteUserId(user.id!);
+                                                }
+                                            }}
+                                            className="text-red-600 hover:bg-red-50 hover:border-red-300"
+                                            disabled={user.id === currentUser?.id}
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-1" />
+                                            Excluir
+                                        </Button>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="hidden sm:block overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -178,7 +223,8 @@ export const UserList: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                        </div>
+                    </>
                 )}
             </Card>
 

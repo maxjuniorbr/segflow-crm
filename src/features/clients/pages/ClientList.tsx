@@ -49,14 +49,14 @@ export const ClientList: React.FC = () => {
   }, [searchTerm, personTypeFilter, clients]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-          <p className="mt-1 text-sm text-gray-500">Gerencie sua base de clientes.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Clientes</h1>
+          <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie sua base de clientes.</p>
         </div>
         <Link to="/clients/new">
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto whitespace-nowrap">
             <Plus className="w-4 h-4 mr-2" />
             Novo Cliente
           </Button>
@@ -64,7 +64,7 @@ export const ClientList: React.FC = () => {
       </div>
 
       <Card>
-        <div className="mb-6 flex gap-4">
+        <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row">
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -101,12 +101,44 @@ export const ClientList: React.FC = () => {
           <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
             <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
             <h3 className="text-sm font-medium text-gray-900">Nenhum cliente encontrado</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-xs sm:text-sm text-gray-500">
               {searchTerm ? 'Ajuste sua busca para encontrar clientes.' : 'Comece adicionando um novo cliente.'}
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="space-y-3 sm:hidden">
+              {filteredClients.map(client => (
+                <button
+                  key={client.id}
+                  type="button"
+                  className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+                  onClick={() => navigate(`/clients/${client.id}`)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-700 font-semibold text-sm">{client.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{client.name}</p>
+                        <span className="text-xs text-slate-500">{client.personType}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-slate-600">
+                        {client.personType === 'Jurídica' ? client.cnpj : client.cpf}
+                      </p>
+                      <p className="mt-2 text-sm text-gray-700 truncate">{client.email}</p>
+                      <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
+                        <span>{client.phone}</span>
+                        <span>{client.address?.city}, {client.address?.state}</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -149,6 +181,7 @@ export const ClientList: React.FC = () => {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </Card>
     </div>

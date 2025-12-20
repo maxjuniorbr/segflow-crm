@@ -51,14 +51,14 @@ export const BrokerList: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Corretoras</h1>
-          <p className="mt-1 text-sm text-gray-500">Gerencie as corretoras parceiras do SegFlow.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Corretoras</h1>
+          <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie as corretoras parceiras do SegFlow.</p>
         </div>
         <Link to="/settings/brokers/new">
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto whitespace-nowrap">
             <Building2 className="w-4 h-4 mr-2" />
             Nova Corretora
           </Button>
@@ -66,7 +66,7 @@ export const BrokerList: React.FC = () => {
       </div>
 
       <Card>
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -87,12 +87,39 @@ export const BrokerList: React.FC = () => {
           <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
             <Building2 className="mx-auto h-12 w-12 text-gray-300 mb-3" />
             <h3 className="text-sm font-medium text-gray-900">Nenhuma corretora encontrada</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-xs sm:text-sm text-gray-500">
               {searchTerm ? 'Ajuste sua busca para encontrar corretoras.' : 'Cadastre uma nova corretora para começar.'}
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="space-y-3 sm:hidden">
+              {filtered.map((broker) => (
+                <button
+                  key={broker.id}
+                  type="button"
+                  className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+                  onClick={() => navigate(`/settings/brokers/${broker.id}`)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{broker.tradeName}</p>
+                      <p className="mt-1 text-xs text-slate-500 truncate">{broker.corporateName}</p>
+                    </div>
+                    <div className="text-xs text-slate-500 text-right">
+                      <p>{broker.cnpj || '-'}</p>
+                      <p>SUSEP: {broker.susepCode || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 text-sm text-gray-700 truncate">
+                    {broker.contactName || 'Contato não informado'}
+                  </div>
+                  <div className="mt-1 text-xs text-slate-500 truncate">{broker.email || '-'}</div>
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -126,6 +153,7 @@ export const BrokerList: React.FC = () => {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </Card>
     </div>

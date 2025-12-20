@@ -186,12 +186,12 @@ export const Card: React.FC<{ children: React.ReactNode; className?: string; tit
   return (
     <div className={`bg-white overflow-hidden shadow-sm border border-slate-200 rounded-lg ${className}`}>
       {(title || action) && (
-        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           {title && <h3 className="text-base font-semibold text-slate-900">{title}</h3>}
           {action && <div>{action}</div>}
         </div>
       )}
-      <div className="px-6 py-6">
+      <div className="px-4 py-4 sm:px-6 sm:py-6">
         {children}
       </div>
     </div>

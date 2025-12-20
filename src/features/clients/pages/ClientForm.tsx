@@ -261,15 +261,15 @@ export const ClientForm: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-24 sm:pb-0">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+    <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-24 sm:pb-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Cliente' : 'Cadastrar Cliente'}</h1>
-            <p className="text-sm text-gray-500 mt-1">Preencha as informações abaixo para registrar um novo segurado.</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{id ? 'Editar Cliente' : 'Cadastrar Cliente'}</h1>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Preencha as informações abaixo para registrar um novo segurado.</p>
           </div>
         </div>
       </div>
@@ -283,7 +283,7 @@ export const ClientForm: React.FC = () => {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
 
         <Card title="Tipo de Pessoa">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">

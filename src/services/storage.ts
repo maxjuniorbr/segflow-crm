@@ -7,12 +7,12 @@ export const storageService = {
   },
 
   async register(user: { name: string; cpf: string; email: string; password: string; username?: string }) {
-    await api.post('/api/register', user);
+    await api.post('/api/register', user, { suppressToast: true });
   },
 
   validateUser: async (email: string, password: string): Promise<User | null> => {
     try {
-      const data = await api.post('/api/login', { email, password }, { redirectOnAuthError: false });
+      const data = await api.post('/api/login', { email, password }, { redirectOnAuthError: false, suppressToast: true });
       if (data && data.user) {
         return {
           ...data.user,
@@ -52,17 +52,17 @@ export const storageService = {
     }
 
     if (!isNew && client.id) {
-      const response = await api.put(`/api/clients/${client.id}`, payload);
+      const response = await api.put(`/api/clients/${client.id}`, payload, { suppressToast: true });
       return response;
     } else {
-      const response = await api.post('/api/clients', payload);
+      const response = await api.post('/api/clients', payload, { suppressToast: true });
       return response;
     }
   },
 
   deleteClient: async (id: string): Promise<boolean> => {
     try {
-      await api.delete(`/api/clients/${id}`);
+      await api.delete(`/api/clients/${id}`, { suppressToast: true });
       return true;
     } catch (error) {
       throw error; // Propagate error (e.g. "active proposals")
@@ -97,17 +97,17 @@ export const storageService = {
     }
 
     if (!isNew && doc.id) {
-      const response = await api.put(`/api/documents/${doc.id}`, payload);
+      const response = await api.put(`/api/documents/${doc.id}`, payload, { suppressToast: true });
       return response;
     } else {
-      const response = await api.post('/api/documents', payload);
+      const response = await api.post('/api/documents', payload, { suppressToast: true });
       return response;
     }
   },
 
   deleteDocument: async (id: string): Promise<void> => {
     try {
-      await api.delete(`/api/documents/${id}`);
+      await api.delete(`/api/documents/${id}`, { suppressToast: true });
     } catch (error) {
       console.error('Erro ao excluir documento', error);
       throw error;
@@ -135,14 +135,14 @@ export const storageService = {
     }
 
     if (!isNew && broker.id) {
-      return api.put(`/api/brokers/${broker.id}`, payload);
+      return api.put(`/api/brokers/${broker.id}`, payload, { suppressToast: true });
     }
-    return api.post('/api/brokers', payload);
+    return api.post('/api/brokers', payload, { suppressToast: true });
   },
 
   async deleteBroker(id: string): Promise<void> {
     try {
-      await api.delete(`/api/brokers/${id}`);
+      await api.delete(`/api/brokers/${id}`, { suppressToast: true });
     } catch (error) {
       console.error('Erro ao excluir corretora', error);
       throw error;

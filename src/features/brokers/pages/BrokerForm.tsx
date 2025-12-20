@@ -108,7 +108,7 @@ export const BrokerForm: React.FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-24 sm:pb-0">
+    <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-0">
       <ConfirmDialog
         isOpen={showDeleteDialog}
         onConfirm={handleDelete}
@@ -120,14 +120,14 @@ export const BrokerForm: React.FC = () => {
         variant="danger"
       />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{isNew ? 'Nova Corretora' : 'Editar Corretora'}</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{isNew ? 'Nova Corretora' : 'Editar Corretora'}</h1>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
               {isNew ? 'Preencha os campos para cadastrar uma nova corretora.' : 'Atualize as informações da corretora.'}
             </p>
           </div>
@@ -141,7 +141,7 @@ export const BrokerForm: React.FC = () => {
 
       {error && <Alert variant="error">{error}</Alert>}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <Card title="Informações da Corretora">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <Input
