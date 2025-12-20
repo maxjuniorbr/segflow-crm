@@ -1,0 +1,343 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { storageService } from '../../../services/storage';
+import { Client, Document, DocumentFormData } from '../../../types';
+import { Card, Input, Button, Select, Alert, DateInput } from '../../../shared/components/UIComponents';
+import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
+import { ClientAutocomplete } from '../../clients/components/ClientAutocomplete';
+import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
+import { useToast } from '../../../contexts/ToastContext';
+
+export const DocumentForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const preselectedClientId = searchParams.get('clientId');
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [error, setError] = useState('');
+
+  // ... (rest of state)
+
+  const emptyDocument: DocumentFormData = {
+    clientId: preselectedClientId || '',
+    type: 'Auto',
+    company: 'Porto Seguro',
+    documentNumber: '',
+    startDate: '',
+    endDate: '',
+    status: 'Proposta',
+    notes: '',
+    attachmentName: ''
+  };
+
+  const [formData, setFormData] = useState(emptyDocument);
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      try {
+        const clientsData = await storageService.getClients();
+        setClients(clientsData);
+
+        if (id) {
+          const d = await storageService.getDocumentById(id);
+          if (d) {
+            const { id: pid, ...rest } = d;
+            setFormData({
+              ...emptyDocument,
+              ...rest,
+              startDate: rest.startDate ? rest.startDate.split('T')[0] : '',
+              endDate: rest.endDate ? rest.endDate.split('T')[0] : ''
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Erro ao carregar dados.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+  }, [id]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    let { name, value } = e.target;
+
+    // Automação de vigência: se mudou a data de início, calcular fim automaticamente (+1 ano)
+    if (name === 'startDate' && value) {
+      const startDate = new Date(value);
+      const endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        endDate: endDate.toISOString().split('T')[0]
+      }));
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({ ...prev, attachmentName: e.target.files![0].name }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (new Date(formData.startDate) > new Date(formData.endDate)) {
+      setError("A data de início não pode ser posterior à data de fim.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const document: Document = {
+        id: id || '',
+        ...formData
+      };
+      await storageService.saveDocument(document, !id);
+
+      // Feedback via Toast
+      showToast(id ? 'Documento atualizado com sucesso!' : 'Documento criado com sucesso!', 'success');
+
+      // Redirecionamento inteligente baseado na origem
+      const originPath = location.state?.from ||
+        (formData.clientId ? `/clients/${formData.clientId}` : '/documents');
+
+      navigate(originPath);
+    } catch (e: any) {
+      console.error(e);
+      setError(e.message || "Erro ao salvar documento");
+      showToast("Erro ao salvar documento.", "error");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    try {
+      await storageService.deleteDocument(id);
+      showToast("Documento excluído com sucesso!", "success");
+      navigate('/documents');
+    } catch (error) {
+      showToast("Erro ao excluir documento.", "error");
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
+
+  // ... (options arrays)
+
+  const typeOptions = [
+    { value: 'Auto', label: 'Automóvel' },
+    { value: 'Life', label: 'Vida' },
+    { value: 'Residential', label: 'Residencial' },
+    { value: 'Corporate', label: 'Empresarial' },
+    { value: 'Health', label: 'Saúde' },
+    { value: 'Travel', label: 'Viagem' },
+  ];
+
+  const statusOptions = [
+    { value: 'Proposta', label: 'Proposta' },
+    { value: 'Apólice', label: 'Apólice' },
+    { value: 'Cancelado', label: 'Cancelado' },
+  ];
+
+  const companyOptions = [
+    { value: 'Porto Seguro', label: 'Porto Seguro' },
+    { value: 'Azul Seguros', label: 'Azul Seguros' },
+    { value: 'Itaú Seguros', label: 'Itaú Seguros' },
+    { value: 'Allianz', label: 'Allianz' },
+    { value: 'Tokio Marine', label: 'Tokio Marine' },
+    { value: 'HDI Seguros', label: 'HDI Seguros' },
+    { value: 'Mapfre', label: 'Mapfre' },
+    { value: 'Bradesco Seguros', label: 'Bradesco Seguros' },
+    { value: 'Mitsui Sumitomo', label: 'Mitsui Sumitomo' },
+  ];
+
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[400px]">
+      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+    </div>
+  );
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6 pb-24 sm:pb-0">
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+        title="Excluir Documento"
+        message="Tem certeza que deseja excluir este documento permanentemente? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center">
+          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500">
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
+            <p className="text-sm text-gray-500 mt-1">{id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}</p>
+          </div>
+        </div>
+        {id && (
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
+            <Trash2 className="w-4 h-4 mr-2" /> Excluir
+          </Button>
+        )}
+      </div>
+
+      {error && (
+        <Alert variant="error">{error}</Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <Card>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <ClientAutocomplete
+                clients={clients}
+                value={formData.clientId}
+                onChange={(clientId) => setFormData(prev => ({ ...prev, clientId }))}
+                required
+              />
+            </div>
+
+            <div>
+              <Select
+                label="Tipo de Seguro *"
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                options={typeOptions}
+                required
+              />
+            </div>
+            <div>
+              <Select
+                label="Seguradora *"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                options={companyOptions}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Input
+                label="Número da Proposta/Apólice"
+                name="documentNumber"
+                value={formData.documentNumber || ''}
+                onChange={handleChange}
+                placeholder="Opcional"
+                autoComplete="off"
+                maxLength={50}
+              />
+            </div>
+
+            <div>
+              <DateInput
+                label="Início de Vigência *"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <DateInput
+                label="Fim de Vigência *"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <Select
+                label="Status *"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                options={statusOptions}
+                required
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1.5">Anexo (PDF/Imagem)</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                <div className="space-y-1 text-center">
+                  <Paperclip className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600">
+                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span>Upload de arquivo</span>
+                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} autoComplete="off" />
+                    </label>
+                    <p className="pl-1">ou arraste e solte</p>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, PDF até 10MB
+                  </p>
+                  {formData.attachmentName && (
+                    <p className="text-sm text-green-600 font-medium mt-2">
+                      Selecionado: {formData.attachmentName}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações</label>
+              <textarea
+                id="notes"
+                rows={3}
+                name="notes"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-gray-900"
+                value={formData.notes || ''}
+                onChange={handleChange}
+                autoComplete="off"
+                maxLength={1000}
+              />
+            </div>
+          </div>
+        </Card>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
+          <Button type="submit" isLoading={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            Salvar Documento
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};

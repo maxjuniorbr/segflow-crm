@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { describe, it, expect, beforeEach } from 'vitest';
-import app from '../../index.js';
+import app from '../../src/app.js';
 import { resetTestDb } from '../utils/testDbMock.js';
 
 /**

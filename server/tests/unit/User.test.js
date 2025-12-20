@@ -3,7 +3,14 @@ import { User } from '../../src/domain/entities/User.js';
 
 describe('User Entity', () => {
     it('should create a user instance', () => {
-        const user = new User(1, 'Test User', '12345678900', 'test@example.com', 'testuser', 'hashedpassword');
+        const user = new User({
+            id: 1,
+            name: 'Test User',
+            cpf: '12345678900',
+            email: 'test@example.com',
+            username: 'testuser',
+            password: 'hashedpassword'
+        });
 
         expect(user.id).toBe(1);
         expect(user.name).toBe('Test User');
@@ -33,7 +40,14 @@ describe('User Entity', () => {
     });
 
     it('should convert to public JSON without password', () => {
-        const user = new User(1, 'Test User', '97456321558', 'test@example.com', 'testuser', 'hashedpassword');
+        const user = new User({
+            id: 1,
+            name: 'Test User',
+            cpf: '97456321558',
+            email: 'test@example.com',
+            username: 'testuser',
+            password: 'hashedpassword'
+        });
         const publicJSON = user.toJSON();
 
         expect(publicJSON).toEqual({
@@ -42,7 +56,23 @@ describe('User Entity', () => {
             cpf: '97456321558',
             email: 'test@example.com',
             username: 'testuser',
+            createdAt: user.createdAt
         });
         expect(publicJSON.password).toBeUndefined();
+    });
+
+    it('should map createdAt from database', () => {
+        const createdAt = new Date('2024-02-02');
+        const user = User.fromDatabase({
+            id: 2,
+            name: 'Another User',
+            cpf: '22233344455',
+            email: 'another@example.com',
+            username: 'another',
+            password: 'hashedpassword',
+            created_at: createdAt
+        });
+
+        expect(user.createdAt).toBe(createdAt);
     });
 });

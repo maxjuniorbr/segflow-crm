@@ -9,8 +9,8 @@ const __dirname = dirname(__filename);
 
 dotenv.config({ path: join(__dirname, '../.env') });
 
-if (process.env.NODE_ENV === 'production') {
-  console.error("This script should NOT be run in production!");
+if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+  console.error('This script should only run in development.');
   process.exit(1);
 }
 

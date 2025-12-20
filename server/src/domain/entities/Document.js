@@ -1,3 +1,5 @@
+import { getRowValue } from './entityMapper.js';
+
 /**
  * Document Entity
  * Represents an insurance document linked to a client
@@ -34,17 +36,17 @@ export class Document {
      */
     static fromDatabase(row) {
         return new Document({
-            id: row.id,
-            clientId: row.clientid || row.clientId,
-            type: row.type,
-            company: row.company,
-            documentNumber: row.documentnumber || row.documentNumber,
-            startDate: row.startdate || row.startDate,
-            endDate: row.enddate || row.endDate,
-            status: row.status,
-            attachmentName: row.attachmentname || row.attachmentName,
-            notes: row.notes,
-            createdAt: row.created_at || row.createdAt,
+            id: getRowValue(row, ['id']),
+            clientId: getRowValue(row, ['clientId', 'clientid', 'client_id']),
+            type: getRowValue(row, ['type']),
+            company: getRowValue(row, ['company']),
+            documentNumber: getRowValue(row, ['documentNumber', 'documentnumber', 'document_number']),
+            startDate: getRowValue(row, ['startDate', 'startdate', 'start_date']),
+            endDate: getRowValue(row, ['endDate', 'enddate', 'end_date']),
+            status: getRowValue(row, ['status']),
+            attachmentName: getRowValue(row, ['attachmentName', 'attachmentname', 'attachment_name']),
+            notes: getRowValue(row, ['notes']),
+            createdAt: getRowValue(row, ['createdAt', 'createdat', 'created_at']),
         });
     }
 

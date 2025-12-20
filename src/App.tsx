@@ -2,20 +2,20 @@ import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
-import { Layout } from './components/Layout';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { Dashboard } from './pages/Dashboard';
-import { ClientList } from './pages/ClientList';
-import { ClientForm } from './pages/ClientForm';
-import { ClientDetail } from './pages/ClientDetail';
-import { DocumentList } from './pages/DocumentList';
-import { DocumentForm } from './pages/DocumentForm';
-import { UserList } from './pages/UserList';
-import { UserForm } from './pages/UserForm';
-import { BrokerList } from './pages/BrokerList';
-import { BrokerForm } from './pages/BrokerForm';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { Layout } from './shared/components/Layout';
+import { Login } from './features/auth/pages/Login';
+import { Register } from './features/auth/pages/Register';
+import { Dashboard } from './features/dashboard/pages/Dashboard';
+import { ClientList } from './features/clients/pages/ClientList';
+import { ClientForm } from './features/clients/pages/ClientForm';
+import { ClientDetail } from './features/clients/pages/ClientDetail';
+import { DocumentList } from './features/documents/pages/DocumentList';
+import { DocumentForm } from './features/documents/pages/DocumentForm';
+import { UserList } from './features/users/pages/UserList';
+import { UserForm } from './features/users/pages/UserForm';
+import { BrokerList } from './features/brokers/pages/BrokerList';
+import { BrokerForm } from './features/brokers/pages/BrokerForm';
+import { ProtectedRoute } from './shared/components/ProtectedRoute';
 
 function App() {
   return (

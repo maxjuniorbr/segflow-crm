@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
-import app from '../../index.js';
+import app from '../../src/app.js';
 import jwt from 'jsonwebtoken';
 import { resetTestDb } from '../utils/testDbMock.js';
 

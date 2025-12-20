@@ -18,7 +18,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearSession = () => {
     setUser(null);
-    localStorage.removeItem('segflow_active_session');
   };
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (response && response.user) {
           const sessionUser = { ...response.user, isAuthenticated: true };
           setUser(sessionUser);
-          localStorage.setItem('segflow_active_session', JSON.stringify(sessionUser));
         } else {
           clearSession();
         }
@@ -39,22 +37,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
 
-    const storedUser = localStorage.getItem('segflow_active_session');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem('segflow_active_session');
-      }
-    }
-
     validateSession();
   }, []);
 
   const login = (userData: User) => {
     const sessionUser = { ...userData, isAuthenticated: true };
     setUser(sessionUser);
-    localStorage.setItem('segflow_active_session', JSON.stringify(sessionUser));
   };
 
   const logout = async () => {

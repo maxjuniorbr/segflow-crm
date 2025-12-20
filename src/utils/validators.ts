@@ -82,3 +82,13 @@ export function isValidCNPJ(cnpj: string): boolean {
 
     return true;
 }
+
+/**
+ * Validates basic email format
+ * @param email - Email address
+ * @returns true if format looks valid, false otherwise
+ */
+export function isValidEmail(email: string): boolean {
+    if (!email) return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}

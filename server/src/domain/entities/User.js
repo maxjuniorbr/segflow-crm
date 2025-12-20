@@ -1,9 +1,19 @@
+import { getRowValue } from './entityMapper.js';
+
 /**
  * User Entity
  * Represents a user in the system with authentication credentials
  */
 export class User {
-    constructor(id, name, cpf, email, username, password, createdAt = new Date()) {
+    constructor({
+        id,
+        name,
+        cpf,
+        email,
+        username,
+        password,
+        createdAt = new Date()
+    }) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
@@ -14,7 +24,15 @@ export class User {
     }
 
     static fromDatabase(row) {
-        return new User(row.id, row.name, row.cpf, row.email, row.username, row.password, row.created_at);
+        return new User({
+            id: getRowValue(row, ['id']),
+            name: getRowValue(row, ['name']),
+            cpf: getRowValue(row, ['cpf']),
+            email: getRowValue(row, ['email']),
+            username: getRowValue(row, ['username']),
+            password: getRowValue(row, ['password']),
+            createdAt: getRowValue(row, ['createdAt', 'createdat', 'created_at'])
+        });
     }
 
     toJSON() {
@@ -24,6 +42,7 @@ export class User {
             cpf: this.cpf,
             email: this.email,
             username: this.username,
+            createdAt: this.createdAt
         };
     }
 }

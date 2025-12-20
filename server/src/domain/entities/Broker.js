@@ -1,3 +1,5 @@
+import { getRowValue } from './entityMapper.js';
+
 /**
  * Broker Entity
  * Represents an insurance broker/corretora
@@ -29,16 +31,16 @@ export class Broker {
 
     static fromDatabase(row) {
         return new Broker({
-            id: row.id,
-            corporateName: row.corporatename || row.corporateName,
-            tradeName: row.tradename || row.tradeName,
-            cnpj: row.cnpj,
-            susepCode: row.susepcode || row.susepCode,
-            contactName: row.contactname || row.contactName,
-            email: row.email,
-            phone: row.phone,
-            mobile: row.mobile,
-            createdAt: row.createdat || row.createdAt
+            id: getRowValue(row, ['id']),
+            corporateName: getRowValue(row, ['corporateName', 'corporatename', 'corporate_name']),
+            tradeName: getRowValue(row, ['tradeName', 'tradename', 'trade_name']),
+            cnpj: getRowValue(row, ['cnpj']),
+            susepCode: getRowValue(row, ['susepCode', 'susepcode', 'susep_code']),
+            contactName: getRowValue(row, ['contactName', 'contactname', 'contact_name']),
+            email: getRowValue(row, ['email']),
+            phone: getRowValue(row, ['phone']),
+            mobile: getRowValue(row, ['mobile']),
+            createdAt: getRowValue(row, ['createdAt', 'createdat', 'created_at'])
         });
     }
 

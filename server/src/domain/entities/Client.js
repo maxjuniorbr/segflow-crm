@@ -1,3 +1,5 @@
+import { getRowValue } from './entityMapper.js';
+
 /**
  * Client Entity
  * Represents a customer/client in the CRM system
@@ -41,22 +43,25 @@ export class Client {
      * Create a Client instance from database row
      */
     static fromDatabase(row) {
+        const rawAddress = getRowValue(row, ['address']);
+        const address = typeof rawAddress === 'string' ? JSON.parse(rawAddress) : rawAddress;
+
         return new Client({
-            id: row.id,
-            name: row.name,
-            personType: row.persontype || row.personType || 'Física',
-            cpf: row.cpf,
-            cnpj: row.cnpj,
-            rg: row.rg,
-            rgDispatchDate: row.rgdispatchdate || row.rgDispatchDate,
-            rgIssuer: row.rgissuer || row.rgIssuer,
-            birthDate: row.birthdate || row.birthDate,
-            maritalStatus: row.maritalstatus || row.maritalStatus,
-            email: row.email,
-            phone: row.phone,
-            address: typeof row.address === 'string' ? JSON.parse(row.address) : row.address,
-            notes: row.notes,
-            createdAt: row.createdat || row.createdAt,
+            id: getRowValue(row, ['id']),
+            name: getRowValue(row, ['name']),
+            personType: getRowValue(row, ['personType', 'persontype', 'person_type']) ?? 'Física',
+            cpf: getRowValue(row, ['cpf']),
+            cnpj: getRowValue(row, ['cnpj']),
+            rg: getRowValue(row, ['rg']),
+            rgDispatchDate: getRowValue(row, ['rgDispatchDate', 'rgdispatchdate', 'rg_dispatch_date']),
+            rgIssuer: getRowValue(row, ['rgIssuer', 'rgissuer', 'rg_issuer']),
+            birthDate: getRowValue(row, ['birthDate', 'birthdate', 'birth_date']),
+            maritalStatus: getRowValue(row, ['maritalStatus', 'maritalstatus', 'marital_status']),
+            email: getRowValue(row, ['email']),
+            phone: getRowValue(row, ['phone']),
+            address,
+            notes: getRowValue(row, ['notes']),
+            createdAt: getRowValue(row, ['createdAt', 'createdat', 'created_at']),
         });
     }
 

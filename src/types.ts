@@ -14,10 +14,15 @@ export enum InsuranceType {
   TRAVEL = 'Travel'
 }
 
+export type DocumentStatusValue = 'Proposta' | 'Apólice' | 'Cancelado';
+export type InsuranceTypeValue = 'Auto' | 'Life' | 'Residential' | 'Corporate' | 'Health' | 'Travel';
+export type PersonType = 'Física' | 'Jurídica';
+export type FormErrors<T> = Partial<Record<keyof T, string>>;
+
 export interface Client {
   id: string;
   name: string;
-  personType: 'Física' | 'Jurídica';
+  personType: PersonType;
   cpf?: string;
   cnpj?: string;
   rg?: string;
@@ -43,12 +48,12 @@ export interface Client {
 export interface Document {
   id: string;
   clientId: string;
-  type: string;
+  type: InsuranceTypeValue;
   company: string;
   documentNumber: string;
   startDate: string;
   endDate: string;
-  status: string;
+  status: DocumentStatusValue;
   attachmentName?: string;
   notes?: string;
   createdAt?: string;
@@ -60,7 +65,7 @@ export interface User {
   cpf: string;
   email: string;
   username: string;
-  isAuthenticated: boolean;
+  isAuthenticated?: boolean;
 }
 
 export interface Broker {
@@ -75,3 +80,27 @@ export interface Broker {
   mobile: string;
   createdAt?: string;
 }
+
+export type LoginFormData = {
+  email: string;
+  password: string;
+};
+
+export type RegisterFormData = {
+  name: string;
+  cpf: string;
+  email: string;
+  password: string;
+  username?: string;
+};
+
+export type UserFormData = {
+  name: string;
+  cpf: string;
+  email: string;
+  password?: string;
+};
+
+export type ClientFormData = Omit<Client, 'id' | 'createdAt'>;
+export type DocumentFormData = Omit<Document, 'id' | 'createdAt'>;
+export type BrokerFormData = Omit<Broker, 'id' | 'createdAt'>;

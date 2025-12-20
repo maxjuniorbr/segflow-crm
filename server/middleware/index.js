@@ -37,10 +37,13 @@ export const authMiddleware = (req, res, next) => {
     }
 };
 
-export const validate = (schema) => {
+export const validate = (schema, { target = 'body' } = {}) => {
     return (req, res, next) => {
         try {
-            schema.parse(req.body);
+            const parsed = schema.parse(req[target]);
+            if (parsed !== undefined) {
+                req[target] = parsed;
+            }
             next();
         } catch (err) {
             return res.status(400).json({ error: err.errors });

@@ -27,7 +27,7 @@ export const externalService = {
       const data = await response.json();
       return data as CepResponse;
     } catch (error) {
-      console.error("Error fetching CEP:", error);
+      console.error("Erro ao buscar CEP:", error);
       return null;
     }
   }

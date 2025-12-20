@@ -7,11 +7,7 @@ export const userService = {
     },
 
     async getUserById(id: number): Promise<User | undefined> {
-        try {
-            return await api.get(`/api/users/${id}`);
-        } catch (e) {
-            return undefined;
-        }
+        return api.get(`/api/users/${id}`);
     },
 
     async createUser(data: { name: string; cpf: string; email: string; password?: string }): Promise<void> {
