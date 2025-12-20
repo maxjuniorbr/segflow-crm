@@ -65,11 +65,11 @@ describe('DocumentForm page', () => {
       expect(getClientsMock).toHaveBeenCalled();
     });
 
-    const clientSearch = screen.getByLabelText(/Cliente/i);
+    const clientSearch = await screen.findByLabelText(/Cliente/i);
     fireEvent.change(clientSearch, { target: { value: 'Joao' } });
 
-    const clientOption = await screen.findByRole('button', { name: /Joao Cliente/i });
-    fireEvent.click(clientOption);
+    const clientOption = await screen.findByText(/Joao Cliente/i);
+    fireEvent.click(clientOption.closest('button')!);
 
     fireEvent.change(screen.getByLabelText(/Início de Vigência/i), { target: { value: '01/01/2025' } });
     fireEvent.change(screen.getByLabelText(/Fim de Vigência/i), { target: { value: '31/12/2025' } });

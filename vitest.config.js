@@ -10,6 +10,7 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         setupFiles: ['./server/tests/setup.js'],
+        include: ['server/**/*.test.js'],
         exclude: ['src/**', '**/node_modules/**', '**/dist/**'],
         env: {
             JWT_SECRET: process.env.JWT_SECRET || 'test_secret',

@@ -8,9 +8,13 @@
     "server": "cd server && npm run dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run -c vitest.config.js",
-    "test:watch": "vitest watch -c vitest.config.js",
-    "test:ui": "vitest --ui -c vitest.config.js"
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "vitest run -c vitest.config.js",
+    "test:frontend": "vitest run -c vitest.config.ts",
+    "test:watch": "vitest watch -c vitest.config.ts",
+    "test:ui": "vitest --ui -c vitest.config.ts",
+    "test:backend:watch": "vitest watch -c vitest.config.js",
+    "test:backend:ui": "vitest --ui -c vitest.config.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

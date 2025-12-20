@@ -219,27 +219,6 @@ Backend JS usa JSDoc + `checkJs` para tipagem estatica.
 
 ---
 
-## Refatoracao - Checklist
-
-1) Diagnostico e alinhamento de arquitetura
-2) Padronizacao de estrutura no backend (Clean Architecture)
-3) DTOs e contratos de entrada/saida no backend
-4) Camada de Use Cases
-5) Camada de Repositorios
-6) Padronizacao de tratamento de erros no backend
-7) Validacoes e schema unicos
-8) Padronizacao de entidades de dominio
-9) Configuracao e bootstrap do servidor
-10) Frontend: estrutura por feature
-11) Frontend: tipagem e validacoes
-12) Frontend: servicos e camada de dados
-13) Testes: backend
-14) Testes: frontend
-15) Banco de dados (dev-only)
-16) Documentacao tecnica
-
----
-
 ## Variaveis de Ambiente (Resumo)
 
 **Backend**:

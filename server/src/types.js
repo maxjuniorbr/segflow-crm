@@ -98,3 +98,5 @@
  * @property {number} status
  * @property {any} payload
  */
+
+export {};

@@ -43,6 +43,7 @@ describe('ClientForm page', () => {
 
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Joao Teste' } });
     fireEvent.change(screen.getByLabelText(/^CPF/i), { target: { value: '390.533.447-05' } });
+    fireEvent.change(screen.getByLabelText(/Data de Nascimento/i), { target: { value: '01/01/1990' } });
     fireEvent.change(screen.getByLabelText(/Email \*/i), { target: { value: 'joao@example.com' } });
     fireEvent.change(screen.getByLabelText(/Telefone\/Celular/i), { target: { value: '(11) 99999-9999' } });
     fireEvent.change(screen.getByLabelText(/CEP/i), { target: { value: '01001-000' } });

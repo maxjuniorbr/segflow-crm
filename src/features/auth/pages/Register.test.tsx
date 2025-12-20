@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Register } from './Register';
 
@@ -23,11 +23,6 @@ vi.mock('react-router-dom', async () => {
 describe('Register page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   it('prevents submit when CPF is invalid', async () => {
@@ -77,10 +72,8 @@ describe('Register page', () => {
 
     expect(await screen.findByText('Conta Criada!')).toBeInTheDocument();
 
-    act(() => {
-      vi.runAllTimers();
-    });
-
-    expect(navigateMock).toHaveBeenCalledWith('/login');
+    await waitFor(() => {
+      expect(navigateMock).toHaveBeenCalledWith('/login');
+    }, { timeout: 2500 });
   });
 });

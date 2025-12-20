@@ -1,15 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
+vi.mock('./services/api', () => ({
+    api: {
+        get: vi.fn().mockResolvedValue(null)
+    }
+}));
+
 describe('App', () => {
-    it('renders without crashing', () => {
+    it('renders without crashing', async () => {
         render(<App />);
-        // Since App redirects to /login if not authenticated, we might see login page or loading
-        // But we need to mock AuthProvider or Router if they are inside App.
-        // App contains AuthProvider and Router.
-        // So it should render.
-        // Let's just check if it renders something.
-        expect(document.body).toBeDefined();
+        expect(await screen.findByText('Acesse sua conta')).toBeInTheDocument();
     });
 });
