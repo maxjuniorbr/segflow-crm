@@ -24,12 +24,12 @@ Sistema de gerenciamento de clientes e propostas/apolices de seguros.
 
 ```mermaid
 flowchart LR
-    UI[UI (React)] --> Services[Services (fetch)]
-    Services --> Routes[Express routes]
-    Routes --> Controllers[Controllers]
-    Controllers --> UseCases[Use cases]
-    UseCases --> Repositories[Repositories]
-    Repositories --> DB[(PostgreSQL)]
+    UI["UI (React)"] --> Services["Services (fetch)"]
+    Services --> Routes["Express routes"]
+    Routes --> Controllers["Controllers"]
+    Controllers --> UseCases["Use cases"]
+    UseCases --> Repositories["Repositories"]
+    Repositories --> DB[("PostgreSQL")]
 ```
 
 ### Camadas
