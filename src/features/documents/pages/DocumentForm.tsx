@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
 import { Client, Document, DocumentFormData } from '../../../types';
-import { Card, Input, Button, Select, Alert, DateInput } from '../../../shared/components/UIComponents';
+import { Card, Input, Button, Select, Alert, DateInput, TextArea, PageHeader, LoadingState, FileDropzone } from '../../../shared/components/UIComponents';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
 import { ClientAutocomplete } from '../../clients/components/ClientAutocomplete';
 import { ChevronLeft, Save, Trash2, Paperclip, Loader2 } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
+import { validationMessages } from '../../../utils/validationMessages';
+import { confirmMessages } from '../../../utils/confirmMessages';
+import { actionMessages } from '../../../utils/actionMessages';
+import { uiMessages } from '../../../utils/uiMessages';
 
 export const DocumentForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,7 +63,7 @@ export const DocumentForm: React.FC = () => {
         }
       } catch (err) {
         console.error(err);
-        setError("Erro ao carregar dados.");
+        setError(actionMessages.loadError('dados'));
       } finally {
         setLoading(false);
       }
@@ -98,7 +102,7 @@ export const DocumentForm: React.FC = () => {
     setError('');
 
     if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      setError("A data de início não pode ser posterior à data de fim.");
+      setError(validationMessages.dateRange);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -112,7 +116,7 @@ export const DocumentForm: React.FC = () => {
       await storageService.saveDocument(document, !id);
 
       // Feedback via Toast
-      showToast(id ? 'Documento atualizado com sucesso!' : 'Documento criado com sucesso!', 'success');
+      showToast(id ? actionMessages.updateSuccess('Documento') : actionMessages.createSuccess('Documento'), 'success');
 
       // Redirecionamento inteligente baseado na origem
       const originPath = location.state?.from ||
@@ -121,8 +125,7 @@ export const DocumentForm: React.FC = () => {
       navigate(originPath);
     } catch (e: any) {
       console.error(e);
-      setError(e.message || "Erro ao salvar documento");
-      showToast("Erro ao salvar documento.", "error");
+      setError(e.message || actionMessages.saveError('documento'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
@@ -133,10 +136,10 @@ export const DocumentForm: React.FC = () => {
     if (!id) return;
     try {
       await storageService.deleteDocument(id);
-      showToast("Documento excluído com sucesso!", "success");
+      showToast(actionMessages.deleteSuccess('Documento'), 'success');
       navigate('/documents');
     } catch (error) {
-      showToast("Erro ao excluir documento.", "error");
+      showToast(actionMessages.deleteError('documento'), 'error');
     } finally {
       setShowDeleteDialog(false);
     }
@@ -171,11 +174,7 @@ export const DocumentForm: React.FC = () => {
     { value: 'Mitsui Sumitomo', label: 'Mitsui Sumitomo' },
   ];
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  if (loading) return <LoadingState label="Carregando documento..." />;
 
   return (
     <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-0">
@@ -183,29 +182,32 @@ export const DocumentForm: React.FC = () => {
         isOpen={showDeleteDialog}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteDialog(false)}
-        title="Excluir Documento"
-        message="Tem certeza que deseja excluir este documento permanentemente? Esta ação não pode ser desfeita."
+        title="Excluir documento"
+        message={confirmMessages.deleteDefault('este documento')}
         confirmText="Excluir"
         cancelText="Cancelar"
         variant="danger"
       />
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500">
+      <PageHeader
+        title={id ? 'Editar proposta ou apólice' : 'Nova proposta ou apólice'}
+        subtitle={id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}
+        leading={(
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-neutral-100 rounded-full text-neutral-500"
+            aria-label={uiMessages.common.back}
+            title={uiMessages.common.back}
+          >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{id ? 'Editar Proposta/Apólice' : 'Nova Proposta/Apólice'}</h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">{id ? 'Atualize as informações da proposta ou apólice.' : 'Preencha as informações para cadastrar uma nova proposta ou apólice.'}</p>
-          </div>
-        </div>
-        {id && (
+        )}
+        action={id ? (
           <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
             <Trash2 className="w-4 h-4 mr-2" /> Excluir
           </Button>
-        )}
-      </div>
+        ) : undefined}
+      />
 
       {error && (
         <Alert variant="error">{error}</Alert>
@@ -225,7 +227,7 @@ export const DocumentForm: React.FC = () => {
 
             <div>
               <Select
-                label="Tipo de Seguro *"
+                label="Tipo de Seguro"
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
@@ -235,7 +237,7 @@ export const DocumentForm: React.FC = () => {
             </div>
             <div>
               <Select
-                label="Seguradora *"
+                label="Seguradora"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
@@ -247,7 +249,7 @@ export const DocumentForm: React.FC = () => {
 
             <div className="sm:col-span-2">
               <Input
-                label="Número da Proposta/Apólice"
+                label="Número da Proposta ou Apólice"
                 name="documentNumber"
                 value={formData.documentNumber || ''}
                 onChange={handleChange}
@@ -259,7 +261,7 @@ export const DocumentForm: React.FC = () => {
 
             <div>
               <DateInput
-                label="Início de Vigência *"
+                label="Início de Vigência"
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
@@ -270,7 +272,7 @@ export const DocumentForm: React.FC = () => {
 
             <div>
               <DateInput
-                label="Fim de Vigência *"
+                label="Fim de Vigência"
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
@@ -281,7 +283,7 @@ export const DocumentForm: React.FC = () => {
 
             <div>
               <Select
-                label="Status *"
+                label="Status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
@@ -291,36 +293,23 @@ export const DocumentForm: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1.5">Anexo (PDF/Imagem)</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
-                <div className="space-y-1 text-center">
-                  <Paperclip className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                      <span>Upload de arquivo</span>
-                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} autoComplete="off" />
-                    </label>
-                    <p className="pl-1">ou arraste e solte</p>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, PDF até 10MB
-                  </p>
-                  {formData.attachmentName && (
-                    <p className="text-sm text-green-600 font-medium mt-2">
-                      Selecionado: {formData.attachmentName}
-                    </p>
-                  )}
-                </div>
-              </div>
+              <FileDropzone
+                id="file-upload"
+                name="file-upload"
+                label="Anexo (PDF/Imagem)"
+                helperText="PNG, JPG, PDF até 10MB."
+                selectedFileName={formData.attachmentName}
+                icon={<Paperclip className="h-12 w-12" />}
+                onFileChange={handleFileChange}
+              />
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações</label>
-              <textarea
+              <TextArea
                 id="notes"
                 rows={3}
                 name="notes"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-gray-900"
+                label="Observações"
                 value={formData.notes || ''}
                 onChange={handleChange}
                 autoComplete="off"
@@ -330,11 +319,11 @@ export const DocumentForm: React.FC = () => {
           </div>
         </Card>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-neutral-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50 mt-6">
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
           <Button type="submit" isLoading={saving}>
             <Save className="w-4 h-4 mr-2" />
-            Salvar Documento
+            Salvar
           </Button>
         </div>
       </form>

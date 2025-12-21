@@ -44,16 +44,16 @@ describe('ClientForm page', () => {
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Joao Teste' } });
     fireEvent.change(screen.getByLabelText(/^CPF/i), { target: { value: '390.533.447-05' } });
     fireEvent.change(screen.getByLabelText(/Data de Nascimento/i), { target: { value: '01/01/1990' } });
-    fireEvent.change(screen.getByLabelText(/Email \*/i), { target: { value: 'joao@example.com' } });
+    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'joao@example.com' } });
     fireEvent.change(screen.getByLabelText(/Telefone\/Celular/i), { target: { value: '(11) 99999-9999' } });
-    fireEvent.change(screen.getByLabelText(/CEP/i), { target: { value: '01001-000' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^CEP/i }), { target: { value: '01001-000' } });
     fireEvent.change(screen.getByLabelText(/Logradouro/i), { target: { value: 'Rua Exemplo' } });
     fireEvent.change(screen.getByLabelText(/Número/i), { target: { value: '123' } });
     fireEvent.change(screen.getByLabelText(/Bairro/i), { target: { value: 'Centro' } });
     fireEvent.change(screen.getByLabelText(/Cidade/i), { target: { value: 'Sao Paulo' } });
     fireEvent.change(screen.getByLabelText(/UF/i), { target: { value: 'SP' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /Salvar Dados/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
 
     await waitFor(() => {
       expect(saveClientMock).toHaveBeenCalled();

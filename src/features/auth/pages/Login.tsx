@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, AlertCircle } from 'lucide-react';
-import { Button, Input } from '../../../shared/components/UIComponents';
+import { ShieldCheck } from 'lucide-react';
+import { Button, Input, Alert } from '../../../shared/components/UIComponents';
 import { storageService } from '../../../services/storage';
+import { authMessages } from '../../../utils/authMessages';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -24,31 +25,30 @@ export const Login: React.FC = () => {
         login(user);
         navigate('/');
       } else {
-        setError('Email ou senha inválidos.');
+        setError(authMessages.invalidCredentials);
       }
     } catch (err) {
-      setError('Erro ao realizar login.');
+      setError(authMessages.loginError);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden border border-neutral-200">
         <div className="px-6 py-8">
           <div className="flex justify-center mb-6">
-            <div className="bg-blue-50 p-3 rounded-full">
-              <ShieldCheck className="w-10 h-10 text-blue-600" />
+            <div className="bg-brand-50 p-3 rounded-full">
+              <ShieldCheck className="w-10 h-10 text-brand-600" />
             </div>
           </div>
-          <h2 className="text-center text-xl sm:text-2xl font-bold text-slate-900 mb-2">SegFlow</h2>
-          <p className="text-center text-slate-600 mb-8">Acesse sua conta</p>
+          <h2 className="text-center text-xl sm:text-2xl font-bold text-neutral-900 mb-2">Entrar</h2>
+          <p className="text-center text-neutral-600 mb-8">{authMessages.loginSubtitle}</p>
 
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              <span className="text-sm">{error}</span>
+            <div className="mb-4">
+              <Alert variant="error">{error}</Alert>
             </div>
           )}
 
@@ -81,9 +81,9 @@ export const Login: React.FC = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-neutral-600">
               Não tem uma conta?{' '}
-              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link to="/register" className="font-medium text-brand-600 hover:text-brand-500">
                 Cadastre-se
               </Link>
             </p>

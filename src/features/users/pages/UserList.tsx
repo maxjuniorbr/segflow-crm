@@ -1,14 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Search, Users } from 'lucide-react';
-import { Button, Card } from '../../../shared/components/UIComponents';
+import { Plus, Pencil, Trash2, Users } from 'lucide-react';
+import { Button, Card, SearchInput, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
 import { userService } from '../../../services/userService';
 import { User } from '../../../types';
 import { maskCPF } from '../../../utils/formatters';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { confirmMessages } from '../../../utils/confirmMessages';
+import { actionMessages } from '../../../utils/actionMessages';
+import { searchMessages } from '../../../utils/searchMessages';
+import { emptyStateMessages } from '../../../utils/emptyStateMessages';
 
 export const UserList: React.FC = () => {
     const navigate = useNavigate();
@@ -18,6 +22,7 @@ export const UserList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+    const [loadError, setLoadError] = useState('');
     const { showToast } = useToast();
 
     const loadUsers = async () => {
@@ -26,8 +31,12 @@ export const UserList: React.FC = () => {
             const data = await userService.getUsers();
             setUsers(data);
             setFilteredUsers(data);
+            setLoadError('');
         } catch (error: any) {
-            showToast(error.message || 'Erro ao carregar usuários', 'error');
+            const message = error.message || actionMessages.loadError('usuários');
+            setLoadError(message);
+            setUsers([]);
+            setFilteredUsers([]);
         } finally {
             setLoading(false);
         }
@@ -52,88 +61,82 @@ export const UserList: React.FC = () => {
 
         const userToDelete = users.find(u => u.id === deleteUserId);
         if (currentUser?.email === userToDelete?.email) {
-            showToast('Você não pode excluir seu próprio usuário', 'error');
+            showToast(actionMessages.deleteBlockedSelf('usuário'), 'error');
             setDeleteUserId(null);
             return;
         }
 
         try {
             await userService.deleteUser(deleteUserId);
-            showToast('Usuário excluído com sucesso', 'success');
+            showToast(actionMessages.deleteSuccess('Usuário'), 'success');
             setDeleteUserId(null);
             await loadUsers();
         } catch (error: any) {
-            showToast(error.message || 'Erro ao excluir usuário', 'error');
+            showToast(error.message || actionMessages.deleteError('usuário'), 'error');
         }
     };
 
     return (
         <div className="space-y-4 sm:space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Usuários</h1>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie os usuários do sistema</p>
-                </div>
-                <Link to="/settings/users/new">
-                    <Button className="w-full sm:w-auto whitespace-nowrap">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Novo Usuário
-                    </Button>
-                </Link>
-            </div>
+            <PageHeader
+                title="Usuários"
+                subtitle="Gerencie os usuários do sistema."
+                action={(
+                    <Link to="/settings/users/new">
+                        <Button className="w-full sm:w-auto whitespace-nowrap">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Novo usuário
+                        </Button>
+                    </Link>
+                )}
+            />
+
+            {loadError && (
+                <Alert variant="error">{loadError}</Alert>
+            )}
 
             <Card>
-                <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <div className="flex-1 relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
+                <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
+                    <div className="flex-1">
+                        <SearchInput
                             id="search-users"
                             name="search-users"
-                            className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Buscar por nome, CPF ou email..."
+                            label="Buscar"
+                            placeholder={searchMessages.users.placeholder}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            aria-label={searchMessages.users.ariaLabel}
                         />
                     </div>
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-500">Carregando usuários...</p>
-                    </div>
+                    <LoadingState label="Carregando usuários..." className="min-h-[220px]" />
                 ) : filteredUsers.length === 0 ? (
-                    <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                        <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                        <h3 className="text-sm font-medium text-gray-900">Nenhum usuário encontrado</h3>
-                        <p className="mt-1 text-xs sm:text-sm text-gray-500">
-                            {searchTerm ? 'Ajuste sua busca para encontrar usuários.' : 'Aguarde cadastros de novos usuários.'}
-                        </p>
-                    </div>
+                    <EmptyState
+                        icon={<Users className="h-12 w-12" />}
+                        title={emptyStateMessages.users.title}
+                        description={emptyStateMessages.users.description(!!searchTerm)}
+                    />
                 ) : (
                     <>
                         <div className="space-y-3 sm:hidden">
                             {filteredUsers.map((user) => (
-                                <button
+                                <MobileListCard
                                     key={user.id}
-                                    type="button"
-                                    className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                                     onClick={() => navigate(`/settings/users/${user.id}`)}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <span className="text-blue-700 font-semibold text-sm">{user.name?.charAt(0) || '?'}</span>
+                                        <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-full flex items-center justify-center">
+                                            <span className="text-brand-700 font-semibold text-sm">{user.name?.charAt(0) || '?'}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center justify-between gap-2">
-                                                <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-                                                <span className="text-xs text-slate-500">{maskCPF(user.cpf)}</span>
+                                                <p className="text-sm font-semibold text-neutral-900 truncate">{user.name}</p>
+                                                <span className="text-xs text-neutral-500">{maskCPF(user.cpf)}</span>
                                             </div>
-                                            <p className="mt-2 text-sm text-gray-700 truncate">{user.email}</p>
-                                            <p className="mt-1 text-xs text-slate-500">{user.username}</p>
+                                            <p className="mt-2 text-sm text-neutral-700 truncate">{user.email}</p>
+                                            <p className="mt-1 text-xs text-neutral-500">{user.username}</p>
                                         </div>
                                     </div>
                                     <div className="mt-3 flex justify-end">
@@ -143,62 +146,63 @@ export const UserList: React.FC = () => {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (user.id === currentUser?.id) {
-                                                    showToast('Você não pode excluir sua própria conta', 'error');
+                                                    showToast(actionMessages.deleteBlockedAccount, 'error');
                                                 } else {
                                                     setDeleteUserId(user.id!);
                                                 }
                                             }}
-                                            className="text-red-600 hover:bg-red-50 hover:border-red-300"
+                                            className="text-danger-600 hover:bg-danger-50 hover:border-danger-200"
                                             disabled={user.id === currentUser?.id}
                                         >
                                             <Trash2 className="w-4 h-4 mr-1" />
                                             Excluir
                                         </Button>
                                     </div>
-                                </button>
+                                </MobileListCard>
                             ))}
                         </div>
 
                         <div className="hidden sm:block overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableHeaderCell>
                                         Nome / CPF
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    </TableHeaderCell>
+                                    <TableHeaderCell>
                                         Email
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    </TableHeaderCell>
+                                    <TableHeaderCell className="text-right">
                                         Ações
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                                    </TableHeaderCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
                                 {filteredUsers.map((user) => (
-                                    <tr
+                                    <TableRow
                                         key={user.id}
                                         onClick={() => navigate(`/settings/users/${user.id}`)}
-                                        className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                        className="cursor-pointer"
+                                        hover
                                     >
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <TableCell className="text-neutral-900">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                                    <span className="text-indigo-700 font-medium">{user.name?.charAt(0) || '?'}</span>
+                                                <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-full flex items-center justify-center">
+                                                    <span className="text-brand-700 font-medium">{user.name?.charAt(0) || '?'}</span>
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900 max-w-[200px] truncate" title={user.name}>
+                                                    <div className="text-sm font-medium text-neutral-900 max-w-[200px] truncate" title={user.name}>
                                                         {user.name}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">{maskCPF(user.cpf)}</div>
+                                                    <div className="text-sm text-neutral-500">{maskCPF(user.cpf)}</div>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900 max-w-[200px] truncate" title={user.email}>{user.email}</div>
-                                            <div className="text-sm text-gray-500">{user.username}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        </TableCell>
+                                        <TableCell className="text-neutral-900">
+                                            <div className="text-sm text-neutral-900 max-w-[200px] truncate" title={user.email}>{user.email}</div>
+                                            <div className="text-sm text-neutral-500">{user.username}</div>
+                                        </TableCell>
+                                        <TableCell className="text-right text-sm font-medium">
                                             <div className="flex justify-end gap-2">
                                                 <Button
                                                     size="sm"
@@ -206,23 +210,23 @@ export const UserList: React.FC = () => {
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         if (user.id === currentUser?.id) {
-                                                            showToast('Você não pode excluir sua própria conta', 'error');
+                                                            showToast(actionMessages.deleteBlockedAccount, 'error');
                                                         } else {
                                                             setDeleteUserId(user.id!);
                                                         }
                                                     }}
-                                                    className="text-red-600 hover:bg-red-50 hover:border-red-300"
+                                                    className="text-danger-600 hover:bg-danger-50 hover:border-danger-200"
                                                     disabled={user.id === currentUser?.id}
                                                 >
                                                     <Trash2 className="w-4 h-4 mr-1" />
                                                     Excluir
                                                 </Button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ))}
-                            </tbody>
-                        </table>
+                            </TableBody>
+                        </Table>
                         </div>
                     </>
                 )}
@@ -230,12 +234,12 @@ export const UserList: React.FC = () => {
 
             <ConfirmDialog
                 isOpen={deleteUserId !== null}
-                onClose={() => setDeleteUserId(null)}
+                onCancel={() => setDeleteUserId(null)}
                 onConfirm={handleDelete}
-                title="Excluir Usuário"
-                message="Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
+                title="Excluir usuário"
+                message={confirmMessages.deleteDefault('este usuário')}
                 confirmText="Excluir"
-                type="danger"
+                variant="danger"
             />
         </div>
     );

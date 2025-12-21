@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, AlertCircle } from 'lucide-react';
-import { Button, Input } from '../../../shared/components/UIComponents';
+import { ShieldCheck } from 'lucide-react';
+import { Button, Input, Alert } from '../../../shared/components/UIComponents';
 import { storageService } from '../../../services/storage';
 import { maskCPF } from '../../../utils/formatters';
 import { isValidCPF, isValidEmail } from '../../../utils/validators';
+import { validationMessages } from '../../../utils/validationMessages';
+import { authMessages } from '../../../utils/authMessages';
 
 export const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -27,37 +29,37 @@ export const Register: React.FC = () => {
     setError('');
 
     if (!name.trim()) {
-      setError('Nome é obrigatório.');
+      setError(validationMessages.required('Nome'));
       return;
     }
 
     if (!cpf.trim()) {
-      setError('CPF é obrigatório.');
+      setError(validationMessages.required('CPF'));
       return;
     }
 
     if (!isValidCPF(cpf)) {
-      setError('CPF inválido.');
+      setError(validationMessages.invalid('CPF'));
       return;
     }
 
     if (!email.trim()) {
-      setError('Email é obrigatório.');
+      setError(validationMessages.required('Email'));
       return;
     }
 
     if (!isValidEmail(email)) {
-      setError('Email inválido.');
+      setError(validationMessages.invalid('Email'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('As senhas não conferem.');
+      setError(validationMessages.passwordMismatch);
       return;
     }
 
     if (password.length < 6) {
-      setError('A senha deve ter no mínimo 6 caracteres.');
+      setError(validationMessages.passwordMinLength(6));
       return;
     }
 
@@ -70,7 +72,7 @@ export const Register: React.FC = () => {
         navigate('/login');
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Erro ao criar conta.');
+      setError(err.message || authMessages.registerError);
     } finally {
       setLoading(false);
     }
@@ -78,34 +80,33 @@ export const Register: React.FC = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center border border-slate-200">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-            <ShieldCheck className="h-6 w-6 text-green-600" />
+      <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center border border-neutral-200">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-success-50 mb-4">
+            <ShieldCheck className="h-6 w-6 text-success-600" />
           </div>
-          <h3 className="text-lg font-medium text-slate-900">Conta Criada!</h3>
-          <p className="mt-2 text-sm text-slate-500">Redirecionando para o login...</p>
+          <h3 className="text-lg font-medium text-neutral-900">Conta Criada!</h3>
+          <p className="mt-2 text-sm text-neutral-500">Redirecionando para o login...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden border border-neutral-200">
         <div className="px-6 py-8">
           <div className="flex justify-center mb-6">
-            <div className="bg-blue-50 p-3 rounded-full">
-              <ShieldCheck className="w-10 h-10 text-blue-600" />
+            <div className="bg-brand-50 p-3 rounded-full">
+              <ShieldCheck className="w-10 h-10 text-brand-600" />
             </div>
           </div>
-          <h2 className="text-center text-xl sm:text-2xl font-bold text-slate-900 mb-2">Criar Conta</h2>
-          <p className="text-center text-slate-600 mb-8">Cadastre-se no SegFlow</p>
+          <h2 className="text-center text-xl sm:text-2xl font-bold text-neutral-900 mb-2">Cadastrar</h2>
+          <p className="text-center text-neutral-600 mb-8">{authMessages.registerSubtitle}</p>
 
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              <span className="text-sm">{error}</span>
+            <div className="mb-4">
+              <Alert variant="error">{error}</Alert>
             </div>
           )}
 
@@ -170,9 +171,9 @@ export const Register: React.FC = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-neutral-600">
               Já tem uma conta?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+              <Link to="/login" className="font-medium text-brand-600 hover:text-brand-500">
                 Faça login
               </Link>
             </p>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { Button, Input } from '../../../shared/components/UIComponents';
+import { Button, Input, HelperText, SectionTitle } from '../../../shared/components/UIComponents';
+import { validationMessages } from '../../../utils/validationMessages';
+import { uiMessages } from '../../../utils/uiMessages';
 
 interface ChangePasswordModalProps {
     isOpen: boolean;
@@ -28,19 +30,19 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
         const newErrors: Record<string, string> = {};
 
         if (!currentPassword) {
-            newErrors.currentPassword = 'Senha atual é obrigatória';
+            newErrors.currentPassword = validationMessages.currentPasswordRequired;
         }
 
         if (!newPassword) {
-            newErrors.newPassword = 'Nova senha é obrigatória';
+            newErrors.newPassword = validationMessages.newPasswordRequired;
         } else if (newPassword.length < 8 || !/(?=.*[A-Za-z])(?=.*\d)/.test(newPassword)) {
-            newErrors.newPassword = 'Senha deve ter ao menos 8 caracteres, com letras e números';
+            newErrors.newPassword = validationMessages.passwordMinLengthStrong(8);
         }
 
         if (!confirmPassword) {
-            newErrors.confirmPassword = 'Confirmação de senha é obrigatória';
+            newErrors.confirmPassword = validationMessages.confirmPasswordRequired;
         } else if (newPassword !== confirmPassword) {
-            newErrors.confirmPassword = 'As senhas não coincidem';
+            newErrors.confirmPassword = validationMessages.passwordMismatch;
         }
 
         setErrors(newErrors);
@@ -68,12 +70,14 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-                <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Alterar Senha</h3>
+                <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+                    <SectionTitle>Alterar senha</SectionTitle>
                     <button
                         onClick={handleClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-neutral-400 hover:text-neutral-600 transition-colors"
                         type="button"
+                        aria-label={uiMessages.common.close}
+                        title={uiMessages.common.close}
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -122,9 +126,9 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
                         required
                     />
 
-                    <p className="text-sm text-gray-500">
+                    <HelperText>
                         A nova senha deve ter no mínimo 8 caracteres, combinando letras e números.
-                    </p>
+                    </HelperText>
 
                     <div className="flex gap-3 pt-4">
                         <Button type="submit" isLoading={loading} className="flex-1">

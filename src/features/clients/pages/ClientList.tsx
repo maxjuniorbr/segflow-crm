@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
 import { Client, PersonType } from '../../../types';
-import { Card, Button, Input } from '../../../shared/components/UIComponents';
-import { Plus, Search, ChevronDown, ChevronUp, Users } from 'lucide-react';
+import { Card, Button, SearchInput, Select, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
+import { Plus, Users } from 'lucide-react';
+import { actionMessages } from '../../../utils/actionMessages';
+import { searchMessages } from '../../../utils/searchMessages';
+import { emptyStateMessages } from '../../../utils/emptyStateMessages';
 
 export const ClientList: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +15,13 @@ export const ClientList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [personTypeFilter, setPersonTypeFilter] = useState<'all' | PersonType>('all');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  const personTypeOptions = [
+    { value: 'all', label: 'Todos' },
+    { value: 'Física', label: 'Pessoa Física' },
+    { value: 'Jurídica', label: 'Pessoa Jurídica' }
+  ];
 
   useEffect(() => {
     const loadClients = async () => {
@@ -22,6 +32,7 @@ export const ClientList: React.FC = () => {
         setFilteredClients(sorted);
       } catch (error) {
         console.error("Erro ao carregar clientes:", error);
+        setLoadError(actionMessages.loadError('clientes'));
         setClients([]);
         setFilteredClients([]);
       } finally {
@@ -48,138 +59,143 @@ export const ClientList: React.FC = () => {
     setFilteredClients(filtered);
   }, [searchTerm, personTypeFilter, clients]);
 
+  const isFiltering = !!searchTerm || personTypeFilter !== 'all';
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Clientes</h1>
-          <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie sua base de clientes.</p>
-        </div>
-        <Link to="/clients/new">
-          <Button className="w-full sm:w-auto whitespace-nowrap">
-            <Plus className="w-4 h-4 mr-2" />
-            Novo Cliente
-          </Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Clientes"
+        subtitle="Gerencie sua base de clientes."
+        action={(
+          <Link to="/clients/new">
+            <Button className="w-full sm:w-auto whitespace-nowrap">
+              <Plus className="w-4 h-4 mr-2" />
+              Novo cliente
+            </Button>
+          </Link>
+        )}
+      />
+
+      {loadError && (
+        <Alert variant="error">{loadError}</Alert>
+      )}
 
       <Card>
-        <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row">
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
+        <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-end">
+          <div className="flex-1 sm:flex-[2]">
+            <SearchInput
               id="search-clients"
               name="search-clients"
-              className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              placeholder="Buscar por nome, documento ou email..."
+              label="Buscar"
+              placeholder={searchMessages.clients.placeholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label={searchMessages.clients.ariaLabel}
             />
           </div>
-          <select
-            id="person-type-filter"
-            name="person-type-filter"
-            value={personTypeFilter}
-            onChange={(e) => setPersonTypeFilter(e.target.value as 'all' | PersonType)}
-            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">Todos</option>
-            <option value="Física">Pessoa Física</option>
-            <option value="Jurídica">Pessoa Jurídica</option>
-          </select>
+          <div className="sm:w-56">
+            <Select
+              id="person-type-filter"
+              name="person-type-filter"
+              value={personTypeFilter}
+              onChange={(e) => setPersonTypeFilter(e.target.value as 'all' | PersonType)}
+              options={personTypeOptions}
+              aria-label="Filtrar por tipo de pessoa"
+              label="Tipo de pessoa"
+            />
+          </div>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-500">Carregando clientes...</p>
-          </div>
+          <LoadingState label="Carregando clientes..." className="min-h-[220px]" />
         ) : filteredClients.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-            <h3 className="text-sm font-medium text-gray-900">Nenhum cliente encontrado</h3>
-            <p className="mt-1 text-xs sm:text-sm text-gray-500">
-              {searchTerm ? 'Ajuste sua busca para encontrar clientes.' : 'Comece adicionando um novo cliente.'}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Users className="h-12 w-12" />}
+            title={emptyStateMessages.clients.title}
+            description={emptyStateMessages.clients.description(isFiltering)}
+            action={!isFiltering ? (
+              <Link to="/clients/new">
+                <Button className="whitespace-nowrap">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo cliente
+                </Button>
+              </Link>
+            ) : undefined}
+          />
         ) : (
           <>
             <div className="space-y-3 sm:hidden">
               {filteredClients.map(client => (
-                <button
+                <MobileListCard
                   key={client.id}
-                  type="button"
-                  className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                   onClick={() => navigate(`/clients/${client.id}`)}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-700 font-semibold text-sm">{client.name.charAt(0).toUpperCase()}</span>
+                    <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-full flex items-center justify-center">
+                      <span className="text-brand-700 font-semibold text-sm">{client.name.charAt(0).toUpperCase()}</span>
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-semibold text-gray-900 truncate">{client.name}</p>
-                        <span className="text-xs text-slate-500">{client.personType}</span>
+                        <p className="text-sm font-semibold text-neutral-900 truncate">{client.name}</p>
+                        <span className="text-xs text-neutral-500">{client.personType}</span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-600">
+                      <p className="mt-1 text-xs text-neutral-600">
                         {client.personType === 'Jurídica' ? client.cnpj : client.cpf}
                       </p>
-                      <p className="mt-2 text-sm text-gray-700 truncate">{client.email}</p>
-                      <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
+                      <p className="mt-2 text-sm text-neutral-700 truncate">{client.email}</p>
+                      <div className="mt-2 flex items-center justify-between text-xs text-neutral-500">
                         <span>{client.phone}</span>
                         <span>{client.address?.city}, {client.address?.state}</span>
                       </div>
                     </div>
                   </div>
-                </button>
+                </MobileListCard>
               ))}
             </div>
 
             <div className="hidden sm:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localização</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Cliente</TableHeaderCell>
+                  <TableHeaderCell>Contato</TableHeaderCell>
+                  <TableHeaderCell>Localização</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filteredClients.map(client => (
-                  <tr
+                  <TableRow
                     key={client.id}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="cursor-pointer"
+                    hover
                     onClick={() => navigate(`/clients/${client.id}`)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <TableCell className="text-neutral-900">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-700 font-semibold text-sm">{client.name.charAt(0).toUpperCase()}</span>
+                        <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-full flex items-center justify-center">
+                          <span className="text-brand-700 font-semibold text-sm">{client.name.charAt(0).toUpperCase()}</span>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 max-w-[250px] truncate" title={client.name}>
+                          <div className="text-sm font-medium text-neutral-900 max-w-[250px] truncate" title={client.name}>
                             {client.name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-neutral-500">
                             {client.personType === 'Jurídica' ? client.cnpj : client.cpf}
                           </div>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 max-w-[200px] truncate" title={client.email}>{client.email}</div>
-                      <div className="text-sm text-gray-500">{client.phone}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    </TableCell>
+                    <TableCell className="text-neutral-900">
+                      <div className="text-sm text-neutral-900 max-w-[200px] truncate" title={client.email}>{client.email}</div>
+                      <div className="text-sm text-neutral-500">{client.phone}</div>
+                    </TableCell>
+                    <TableCell className="text-neutral-500">
                       {client.address?.city}, {client.address?.state}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           </>
         )}

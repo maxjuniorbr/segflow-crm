@@ -43,8 +43,8 @@ describe('Login page', () => {
             </MemoryRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'teste@example.com' } });
-        fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'senha123' } });
+        fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'teste@example.com' } });
+        fireEvent.change(screen.getByLabelText(/^Senha/i), { target: { value: 'senha123' } });
         fireEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
         await waitFor(() => {
@@ -65,8 +65,8 @@ describe('Login page', () => {
             </MemoryRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'teste@example.com' } });
-        fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'senha123' } });
+        fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'teste@example.com' } });
+        fireEvent.change(screen.getByLabelText(/^Senha/i), { target: { value: 'senha123' } });
         fireEvent.click(screen.getByRole('button', { name: /entrar/i }));
 
         await waitFor(() => {

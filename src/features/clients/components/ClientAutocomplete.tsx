@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Client } from '../../../types';
-import { Search, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { HelperText, SearchInput } from '../../../shared/components/UIComponents';
+import { uiMessages } from '../../../utils/uiMessages';
+import { searchMessages } from '../../../utils/searchMessages';
 
 interface ClientAutocompleteProps {
     clients: Client[];
@@ -123,30 +126,28 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
     return (
         <div ref={wrapperRef} className="relative">
             {selectedClient ? (
-                <span className="block text-sm font-medium text-slate-700 mb-1">
-                    Cliente {required && <span className="text-red-500">*</span>}
+                <span className="block text-sm font-medium text-neutral-700 mb-1">
+                    {uiMessages.labels.client} {required && <span className="text-danger-500">*</span>}
                 </span>
-            ) : (
-                <label htmlFor="client-search" className="block text-sm font-medium text-slate-700 mb-1">
-                    Cliente {required && <span className="text-red-500">*</span>}
-                </label>
-            )}
+            ) : null}
 
             {selectedClient ? (
-                <div className="flex items-center justify-between bg-blue-50 border border-blue-300 rounded-md px-3 py-2">
+                <div className="flex items-center justify-between bg-info-50 border border-info-200 rounded-md px-3 py-2">
                     <div className="flex-1">
-                        <p className="font-medium text-slate-900">{selectedClient.name}</p>
-                        <p className="text-sm text-slate-600">
+                        <p className="font-medium text-neutral-900">{selectedClient.name}</p>
+                        <p className="text-sm text-neutral-600">
                             {selectedClient.personType === 'Jurídica'
-                                ? selectedClient.cnpj || 'CNPJ não informado'
-                                : selectedClient.cpf || 'CPF não informado'}
+                                ? selectedClient.cnpj || uiMessages.placeholders.notInformed
+                                : selectedClient.cpf || uiMessages.placeholders.notInformed}
                         </p>
                     </div>
                     {!disabled && (
                         <button
                             type="button"
                             onClick={handleClearSelection}
-                            className="ml-2 p-1 hover:bg-blue-100 rounded-full text-slate-500 hover:text-slate-700"
+                            className="ml-2 p-1 hover:bg-info-100 rounded-full text-neutral-500 hover:text-neutral-700"
+                            aria-label={uiMessages.common.close}
+                            title={uiMessages.common.close}
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -154,47 +155,42 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                 </div>
             ) : (
                 <>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search className="h-4 w-4 text-slate-400" />
-                        </div>
-                        <input
-                            type="text"
-                            id="client-search"
-                            name="client-search"
-                            autoComplete="off"
-                            value={searchTerm}
-                            onChange={handleInputChange}
-                            disabled={disabled}
-                            placeholder="Digite pelo menos 3 caracteres para buscar..."
-                            className="bg-white text-slate-900 block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-slate-100 disabled:cursor-not-allowed"
-                        />
-                    </div>
+                    <SearchInput
+                        id="client-search"
+                        name="client-search"
+                        label={uiMessages.labels.client}
+                        required={required}
+                        autoComplete="off"
+                        value={searchTerm}
+                        onChange={handleInputChange}
+                        disabled={disabled}
+                        placeholder={searchMessages.validation.minLength(3)}
+                    />
                     {searchTerm.length > 0 && searchTerm.length < 3 && (
-                        <p className="mt-1 text-xs text-slate-500">
-                            Digite mais {3 - searchTerm.length} caractere{3 - searchTerm.length > 1 ? 's' : ''} para buscar
-                        </p>
+                        <HelperText className="mt-1 text-xs">
+                            {searchMessages.validation.typeMore(3 - searchTerm.length)}
+                        </HelperText>
                     )}
                 </>
             )}
 
             {isOpen && filteredClients.length > 0 && (
-                <div className="absolute z-50 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-50 mt-1 w-full bg-white border border-neutral-300 rounded-md shadow-lg max-h-60 overflow-auto">
                     {filteredClients.map(client => (
                         <button
                             key={client.id}
                             type="button"
                             onClick={() => handleSelectClient(client)}
-                            className="w-full text-left px-4 py-4 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
+                            className="w-full text-left px-4 py-4 hover:bg-info-50 border-b border-neutral-100 last:border-0 transition-colors"
                         >
-                            <p className="font-medium text-slate-900">{client.name}</p>
-                            <p className="text-sm text-slate-600">
+                            <p className="font-medium text-neutral-900">{client.name}</p>
+                            <p className="text-sm text-neutral-600">
                                 {client.personType === 'Jurídica'
-                                    ? `CNPJ: ${client.cnpj || 'Não informado'}`
-                                    : `CPF: ${client.cpf || 'Não informado'}`}
+                                    ? `CNPJ: ${client.cnpj || uiMessages.placeholders.notInformed}`
+                                    : `CPF: ${client.cpf || uiMessages.placeholders.notInformed}`}
                             </p>
                             {client.email && (
-                                <p className="text-xs text-slate-500 mt-1">{client.email}</p>
+                                <p className="text-xs text-neutral-500 mt-1">{client.email}</p>
                             )}
                         </button>
                     ))}
@@ -202,8 +198,8 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
             )}
 
             {isOpen && searchTerm.length >= 3 && filteredClients.length === 0 && (
-                <div className="absolute z-10 mt-1 w-full bg-white border border-slate-300 rounded-md shadow-lg p-4 text-center text-slate-500">
-                    Nenhum cliente encontrado
+                <div className="absolute z-10 mt-1 w-full bg-white border border-neutral-300 rounded-md shadow-lg p-4 text-center text-neutral-500">
+                    {searchMessages.noResults(uiMessages.labels.client.toLowerCase())}
                 </div>
             )}
 

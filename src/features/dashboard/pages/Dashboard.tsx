@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { storageService } from '../../../services/storage';
 import { Client, Document } from '../../../types';
-import { Card } from '../../../shared/components/UIComponents';
-import { Users, FileText, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Card, LoadingState, Button, SectionTitle, HelperText, PageHeader } from '../../../shared/components/UIComponents';
+import { Users, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { dashboardMessages } from '../../../utils/dashboardMessages';
+import { uiMessages } from '../../../utils/uiMessages';
 
 interface DocumentWithClient extends Document {
   clientName?: string;
@@ -75,30 +77,26 @@ export const Dashboard: React.FC = () => {
     loadData();
   }, []);
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  if (loading) return <LoadingState label={uiMessages.placeholders.loading} />;
 
   const statCards = [
-    { title: 'Total de Clientes', value: stats.totalClients, icon: Users, color: 'bg-blue-500' },
-    { title: 'Apólices Ativas', value: stats.activeProposals, icon: CheckCircle, color: 'bg-green-500' },
-    { title: 'Propostas Pendentes', value: stats.pendingProposals, icon: FileText, color: 'bg-yellow-500' },
-    { title: 'A Vencer (30 dias)', value: stats.expiringSoon, icon: AlertCircle, color: 'bg-red-500' },
+    { title: dashboardMessages.stats.totalClients, value: stats.totalClients, icon: Users, color: 'bg-brand-500' },
+    { title: dashboardMessages.stats.activeProposals, value: stats.activeProposals, icon: CheckCircle, color: 'bg-success-500' },
+    { title: dashboardMessages.stats.pendingProposals, value: stats.pendingProposals, icon: FileText, color: 'bg-warning-500' },
+    { title: dashboardMessages.stats.expiringSoon, value: stats.expiringSoon, icon: AlertCircle, color: 'bg-danger-500' },
   ];
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Dashboard</h1>
+      <PageHeader title={dashboardMessages.title} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((stat, index) => (
-          <Card key={index} className="border-l-4 border-l-blue-500 h-full">
+          <Card key={index} className="border-l-4 border-l-brand-500 h-full">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-500">{stat.title}</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">{stat.value}</p>
+                <p className="text-sm font-medium text-neutral-500">{stat.title}</p>
+                <p className="text-3xl font-bold text-neutral-900 mt-1">{stat.value}</p>
               </div>
               <div className={`p-3 rounded-full ${stat.color} bg-opacity-10`}>
                 <stat.icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')}`} />
@@ -110,29 +108,29 @@ export const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Próximos Vencimentos</h3>
+          <SectionTitle className="mb-4">{dashboardMessages.sections.upcomingExpirations}</SectionTitle>
           {recentDocuments.length === 0 ? (
-            <p className="text-slate-500">Nenhuma apólice a vencer em breve.</p>
+            <HelperText>{dashboardMessages.emptyStates.noExpirations}</HelperText>
           ) : (
             <div className="space-y-3">
               {recentDocuments.map(doc => (
                 <div
                   key={doc.id}
-                  className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200"
+                  className="flex items-start justify-between gap-4 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm transition hover:border-brand-200"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 truncate">{doc.clientName}</p>
-                    <p className="text-xs sm:text-sm text-slate-600 truncate">{doc.type} - {doc.company}</p>
-                    <p className="mt-2 text-xs text-slate-500">
-                      Vence em: {doc.endDate ? new Date(doc.endDate).toLocaleDateString('pt-BR') : '-'}
+                    <p className="text-sm font-semibold text-neutral-900 truncate">{doc.clientName}</p>
+                    <p className="text-xs sm:text-sm text-neutral-600 truncate">{doc.type} - {doc.company}</p>
+                    <p className="mt-2 text-xs text-neutral-500">
+                      {doc.endDate ? uiMessages.documents.expiresIn(new Date(doc.endDate).toLocaleDateString('pt-BR')) : '-'}
                     </p>
                   </div>
                   <Link
                     to={`/documents/edit/${doc.id}`}
-                    className="text-sm font-medium text-blue-600 hover:underline whitespace-nowrap"
+                    className="text-sm font-medium text-brand-600 hover:underline whitespace-nowrap"
                     state={{ from: '/documents' }}
                   >
-                    Ver
+                    {uiMessages.documents.viewDetails}
                   </Link>
                 </div>
               ))}
@@ -141,13 +139,13 @@ export const Dashboard: React.FC = () => {
         </Card>
 
         <Card>
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Ações Rápidas</h3>
+          <SectionTitle className="mb-4">{dashboardMessages.sections.quickActions}</SectionTitle>
           <div className="space-y-3">
-            <Link to="/clients/new" className="block w-full p-3 text-center bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 font-medium transition-colors">
-              Novo Cliente
+            <Link to="/clients/new" className="block">
+              <Button className="w-full">{dashboardMessages.actions.newClient}</Button>
             </Link>
-            <Link to="/documents/new" className="block w-full p-3 text-center bg-slate-50 text-slate-700 rounded-md hover:bg-slate-100 font-medium transition-colors">
-              Nova Proposta
+            <Link to="/documents/new" className="block">
+              <Button variant="outline" className="w-full">{dashboardMessages.actions.newDocument}</Button>
             </Link>
           </div>
         </Card>

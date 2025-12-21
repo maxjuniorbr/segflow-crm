@@ -11,6 +11,6 @@ vi.mock('./services/api', () => ({
 describe('App', () => {
     it('renders without crashing', async () => {
         render(<App />);
-        expect(await screen.findByText('Acesse sua conta')).toBeInTheDocument();
+        expect(await screen.findByText(/Acesse sua conta/i)).toBeInTheDocument();
     });
 });

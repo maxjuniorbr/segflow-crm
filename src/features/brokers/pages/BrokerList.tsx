@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
 import { Broker } from '../../../types';
-import { Card, Button } from '../../../shared/components/UIComponents';
-import { Loader2, Search, Building2 } from 'lucide-react';
+import { Card, Button, SearchInput, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
+import { Building2 } from 'lucide-react';
+import { searchMessages } from '../../../utils/searchMessages';
+import { emptyStateMessages } from '../../../utils/emptyStateMessages';
+import { actionMessages } from '../../../utils/actionMessages';
 
 export const BrokerList: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +14,7 @@ export const BrokerList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(searchTerm), 300);
@@ -23,6 +27,11 @@ export const BrokerList: React.FC = () => {
       try {
         const data = await storageService.getBrokers();
         setBrokers(data);
+        setLoadError('');
+      } catch (error) {
+        console.error('Erro ao carregar corretoras:', error);
+        setBrokers([]);
+        setLoadError(actionMessages.loadError('corretoras'));
       } finally {
         setLoading(false);
       }
@@ -43,115 +52,109 @@ export const BrokerList: React.FC = () => {
   });
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
+    return <LoadingState label="Carregando corretoras..." />;
   }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Corretoras</h1>
-          <p className="mt-1 text-xs sm:text-sm text-gray-500">Gerencie as corretoras parceiras do SegFlow.</p>
-        </div>
-        <Link to="/settings/brokers/new">
-          <Button className="w-full sm:w-auto whitespace-nowrap">
-            <Building2 className="w-4 h-4 mr-2" />
-            Nova Corretora
-          </Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Corretoras"
+        subtitle="Gerencie as corretoras parceiras do SegFlow."
+        action={(
+          <Link to="/settings/brokers/new">
+            <Button className="w-full sm:w-auto whitespace-nowrap">
+              <Building2 className="w-4 h-4 mr-2" />
+              Nova corretora
+            </Button>
+          </Link>
+        )}
+      />
+
+      {loadError && (
+        <Alert variant="error">{loadError}</Alert>
+      )}
 
       <Card>
-        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
+          <div className="flex-1">
+            <SearchInput
               id="search-brokers"
               name="search-brokers"
-              className="bg-white block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-              placeholder="Buscar por nome, CNPJ, contato..."
+              label="Buscar"
+              placeholder={searchMessages.brokers.placeholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label={searchMessages.brokers.ariaLabel}
             />
           </div>
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <Building2 className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-            <h3 className="text-sm font-medium text-gray-900">Nenhuma corretora encontrada</h3>
-            <p className="mt-1 text-xs sm:text-sm text-gray-500">
-              {searchTerm ? 'Ajuste sua busca para encontrar corretoras.' : 'Cadastre uma nova corretora para começar.'}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Building2 className="h-12 w-12" />}
+            title={emptyStateMessages.brokers.title}
+            description={emptyStateMessages.brokers.description(!!searchTerm)}
+          />
         ) : (
           <>
             <div className="space-y-3 sm:hidden">
               {filtered.map((broker) => (
-                <button
+                <MobileListCard
                   key={broker.id}
-                  type="button"
-                  className="w-full text-left border border-slate-200 rounded-lg bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
                   onClick={() => navigate(`/settings/brokers/${broker.id}`)}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{broker.tradeName}</p>
-                      <p className="mt-1 text-xs text-slate-500 truncate">{broker.corporateName}</p>
+                      <p className="text-sm font-semibold text-neutral-900 truncate">{broker.tradeName}</p>
+                      <p className="mt-1 text-xs text-neutral-500 truncate">{broker.corporateName}</p>
                     </div>
-                    <div className="text-xs text-slate-500 text-right">
+                    <div className="text-xs text-neutral-500 text-right">
                       <p>{broker.cnpj || '-'}</p>
                       <p>SUSEP: {broker.susepCode || '-'}</p>
                     </div>
                   </div>
-                  <div className="mt-3 text-sm text-gray-700 truncate">
+                  <div className="mt-3 text-sm text-neutral-700 truncate">
                     {broker.contactName || 'Contato não informado'}
                   </div>
-                  <div className="mt-1 text-xs text-slate-500 truncate">{broker.email || '-'}</div>
-                </button>
+                  <div className="mt-1 text-xs text-neutral-500 truncate">{broker.email || '-'}</div>
+                </MobileListCard>
               ))}
             </div>
 
             <div className="hidden sm:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome Fantasia</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Razão Social</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CNPJ</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código SUSEP</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Nome Fantasia</TableHeaderCell>
+                  <TableHeaderCell>Razão Social</TableHeaderCell>
+                  <TableHeaderCell>CNPJ</TableHeaderCell>
+                  <TableHeaderCell>Código SUSEP</TableHeaderCell>
+                  <TableHeaderCell>Contato</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {filtered.map((broker) => (
-                  <tr
+                  <TableRow
                     key={broker.id}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="cursor-pointer"
+                    hover
                     onClick={() => navigate(`/settings/brokers/${broker.id}`)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{broker.tradeName}</div>
-                      <div className="text-xs text-gray-500">{broker.createdAt ? new Date(broker.createdAt).toLocaleDateString('pt-BR') : '-'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{broker.corporateName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{broker.cnpj || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{broker.susepCode || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{broker.contactName || '-'}</div>
-                      <div className="text-sm text-gray-500">{broker.email}</div>
-                    </td>
-                  </tr>
+                    <TableCell className="text-neutral-900">
+                      <div className="text-sm font-medium text-neutral-900">{broker.tradeName}</div>
+                      <div className="text-xs text-neutral-500">{broker.createdAt ? new Date(broker.createdAt).toLocaleDateString('pt-BR') : '-'}</div>
+                    </TableCell>
+                    <TableCell className="text-neutral-900">{broker.corporateName}</TableCell>
+                    <TableCell className="text-neutral-900">{broker.cnpj || '-'}</TableCell>
+                    <TableCell className="text-neutral-900">{broker.susepCode || '-'}</TableCell>
+                    <TableCell className="text-neutral-900">
+                      <div className="text-sm font-medium text-neutral-900">{broker.contactName || '-'}</div>
+                      <div className="text-sm text-neutral-500">{broker.email}</div>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           </>
         )}

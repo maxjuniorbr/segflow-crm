@@ -49,17 +49,17 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     const styles = {
-        success: 'bg-green-50 text-green-800 border-green-200',
-        error: 'bg-red-50 text-red-800 border-red-200',
-        warning: 'bg-yellow-50 text-yellow-800 border-yellow-200',
-        info: 'bg-blue-50 text-blue-800 border-blue-200'
+        success: 'bg-success-50 text-success-700 border-success-200',
+        error: 'bg-danger-50 text-danger-700 border-danger-200',
+        warning: 'bg-warning-50 text-warning-700 border-warning-200',
+        info: 'bg-info-50 text-info-700 border-info-200'
     };
 
     const iconColors = {
-        success: 'text-green-500',
-        error: 'text-red-500',
-        warning: 'text-yellow-500',
-        info: 'text-blue-500'
+        success: 'text-success-500',
+        error: 'text-danger-500',
+        warning: 'text-warning-500',
+        info: 'text-info-500'
     };
 
     return (
@@ -78,7 +78,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                             <p className="text-sm font-medium flex-1">{toast.message}</p>
                             <button
                                 onClick={() => removeToast(toast.id)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                className="text-neutral-400 hover:text-neutral-600 transition-colors"
                             >
                                 <X className="w-4 h-4" />
                             </button>

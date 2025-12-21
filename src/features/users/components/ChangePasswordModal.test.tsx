@@ -13,12 +13,12 @@ describe('ChangePasswordModal', () => {
             />
         );
 
-        fireEvent.change(screen.getByLabelText('Senha Atual'), { target: { value: '12345678' } });
-        fireEvent.change(screen.getByLabelText('Nova Senha'), { target: { value: '1234567' } });
-        fireEvent.change(screen.getByLabelText('Confirmar Nova Senha'), { target: { value: '1234567' } });
+        fireEvent.change(screen.getByLabelText(/Senha Atual/i), { target: { value: '12345678' } });
+        fireEvent.change(screen.getByLabelText(/^Nova Senha/i), { target: { value: '1234567' } });
+        fireEvent.change(screen.getByLabelText(/^Confirmar Nova Senha/i), { target: { value: '1234567' } });
         fireEvent.click(screen.getByRole('button', { name: /alterar senha/i }));
 
-        expect(await screen.findByText('Senha deve ter ao menos 8 caracteres, com letras e números')).toBeInTheDocument();
+        expect(await screen.findByText('A nova senha deve ter no mínimo 8 caracteres, combinando letras e números.', { selector: 'p.text-danger-600' })).toBeInTheDocument();
         expect(onConfirm).not.toHaveBeenCalled();
     });
 
@@ -33,9 +33,9 @@ describe('ChangePasswordModal', () => {
             />
         );
 
-        fireEvent.change(screen.getByLabelText('Senha Atual'), { target: { value: 'SenhaAtual1' } });
-        fireEvent.change(screen.getByLabelText('Nova Senha'), { target: { value: 'SenhaNova1' } });
-        fireEvent.change(screen.getByLabelText('Confirmar Nova Senha'), { target: { value: 'SenhaNova1' } });
+        fireEvent.change(screen.getByLabelText(/Senha Atual/i), { target: { value: 'SenhaAtual1' } });
+        fireEvent.change(screen.getByLabelText(/^Nova Senha/i), { target: { value: 'SenhaNova1' } });
+        fireEvent.change(screen.getByLabelText(/^Confirmar Nova Senha/i), { target: { value: 'SenhaNova1' } });
         fireEvent.click(screen.getByRole('button', { name: /alterar senha/i }));
 
         await waitFor(() => {

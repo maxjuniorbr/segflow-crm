@@ -74,7 +74,7 @@ describe('DocumentForm page', () => {
     fireEvent.change(screen.getByLabelText(/Início de Vigência/i), { target: { value: '01/01/2025' } });
     fireEvent.change(screen.getByLabelText(/Fim de Vigência/i), { target: { value: '31/12/2025' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /Salvar Documento/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
 
     await waitFor(() => {
       expect(saveDocumentMock).toHaveBeenCalled();

@@ -3,11 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
 import { externalService } from '../../../services/external';
 import { Client, ClientFormData } from '../../../types';
-import { Card, Input, Button, Select, Alert, DateInput } from '../../../shared/components/UIComponents';
-import { ChevronLeft, Save, Loader2, Search } from 'lucide-react';
+import { Card, Input, Button, Select, Alert, DateInput, TextArea, PageHeader, LoadingState, InputWithButton, HelperText } from '../../../shared/components/UIComponents';
+import { ChevronLeft, Save, Search } from 'lucide-react';
 import { maskCPF, maskCNPJ, maskPhone, maskCEP } from '../../../utils/formatters';
-import { isValidCPF, isValidCNPJ } from '../../../utils/validators';
+import { isValidCPF, isValidCNPJ, isValidEmail } from '../../../utils/validators';
 import { useToast } from '../../../contexts/ToastContext';
+import { validationMessages } from '../../../utils/validationMessages';
+import { actionMessages } from '../../../utils/actionMessages';
+import { scrollToFirstError } from '../../../utils/domUtils';
+import { uiMessages } from '../../../utils/uiMessages';
 
 export const ClientForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +22,7 @@ export const ClientForm: React.FC = () => {
   const [cepLoading, setCepLoading] = useState(false);
   const [calculatedAge, setCalculatedAge] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const streetInputRef = useRef<HTMLInputElement>(null);
   const numberInputRef = useRef<HTMLInputElement>(null);
@@ -96,7 +101,7 @@ export const ClientForm: React.FC = () => {
         setLoading(false);
       }).catch(err => {
         console.error(err);
-        setError("Erro ao carregar dados do cliente.");
+        setError(actionMessages.loadError('dados do cliente'));
         setLoading(false);
       });
     }
@@ -123,15 +128,35 @@ export const ClientForm: React.FC = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+
+    if (name === 'personType') {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next.cpf;
+        delete next.cnpj;
+        return next;
+      });
+    }
   };
 
   const handleCpfBlur = () => {
     if (formData.cpf && formData.cpf.trim() !== '') {
       if (!isValidCPF(formData.cpf)) {
-        setError('CPF inválido. Verifique os números digitados.');
-        showToast('CPF inválido', 'error');
+        setFieldErrors(prev => ({ ...prev, cpf: validationMessages.cpfInvalidDetails }));
       } else {
-        setError('');
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next.cpf;
+          return next;
+        });
       }
     }
   };
@@ -139,10 +164,13 @@ export const ClientForm: React.FC = () => {
   const handleCnpjBlur = () => {
     if (formData.cnpj && formData.cnpj.trim() !== '') {
       if (!isValidCNPJ(formData.cnpj)) {
-        setError('CNPJ inválido. Verifique os números digitados.');
-        showToast('CNPJ inválido', 'error');
+        setFieldErrors(prev => ({ ...prev, cnpj: validationMessages.cnpjInvalidDetails }));
       } else {
-        setError('');
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next.cnpj;
+          return next;
+        });
       }
     }
   };
@@ -221,10 +249,60 @@ export const ClientForm: React.FC = () => {
     fetchAddress();
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!formData.name.trim()) errors.name = validationMessages.required('Nome completo');
+
+    if (formData.personType === 'Física') {
+      if (!formData.cpf.trim()) {
+        errors.cpf = validationMessages.required('CPF');
+      } else if (!isValidCPF(formData.cpf)) {
+        errors.cpf = validationMessages.cpfInvalidDetails;
+      }
+
+      if (!formData.birthDate) errors.birthDate = validationMessages.required('Data de nascimento');
+    }
+
+    if (formData.personType === 'Jurídica') {
+      if (!formData.cnpj.trim()) {
+        errors.cnpj = validationMessages.required('CNPJ');
+      } else if (!isValidCNPJ(formData.cnpj)) {
+        errors.cnpj = validationMessages.cnpjInvalidDetails;
+      }
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = validationMessages.required('Email');
+    } else if (!isValidEmail(formData.email)) {
+      errors.email = validationMessages.invalid('Email');
+    }
+
+    if (!formData.phone.trim()) errors.phone = validationMessages.required('Telefone/Celular');
+
+    if (!formData.address.zipCode.trim()) errors['addr.zipCode'] = validationMessages.required('CEP');
+    if (!formData.address.street.trim()) errors['addr.street'] = validationMessages.required('Logradouro');
+    if (!formData.address.number.trim()) errors['addr.number'] = validationMessages.required('Número');
+    if (!formData.address.neighborhood.trim()) errors['addr.neighborhood'] = validationMessages.required('Bairro');
+    if (!formData.address.city.trim()) errors['addr.city'] = validationMessages.required('Cidade');
+    if (!formData.address.state.trim()) errors['addr.state'] = validationMessages.required('UF');
+
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError('');
+
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      setSaving(false);
+      requestAnimationFrame(() => scrollToFirstError());
+      return;
+    }
+
     try {
       const clientToSave: Client = {
         id: id || '',
@@ -233,13 +311,12 @@ export const ClientForm: React.FC = () => {
       };
       await storageService.saveClient(clientToSave, !id);
 
-      showToast(id ? 'Cliente atualizado com sucesso!' : 'Cliente criado com sucesso!', 'success');
+      showToast(id ? actionMessages.updateSuccess('Cliente') : actionMessages.createSuccess('Cliente'), 'success');
 
       navigate(id ? `/clients/${id}` : '/clients');
     } catch (error: any) {
       console.error("Error saving client:", error);
-      setError(error.message || 'Erro desconhecido ao salvar cliente.');
-      showToast("Erro ao salvar cliente.", "error");
+      setError(error.message || actionMessages.saveError('cliente'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
@@ -254,42 +331,41 @@ export const ClientForm: React.FC = () => {
     { value: 'União Estável', label: 'União Estável' },
   ];
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-    </div>
-  );
+  if (loading) return <LoadingState label="Carregando cliente..." />;
 
   return (
     <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-24 sm:pb-0">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
-        <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
+      <PageHeader
+        title={id ? 'Editar cliente' : 'Cadastrar cliente'}
+        subtitle="Preencha as informações abaixo para registrar um novo segurado."
+        leading={(
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-neutral-200 rounded-full text-neutral-500 transition-colors"
+            aria-label={uiMessages.common.back}
+            title={uiMessages.common.back}
+          >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{id ? 'Editar Cliente' : 'Cadastrar Cliente'}</h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Preencha as informações abaixo para registrar um novo segurado.</p>
-          </div>
-        </div>
-      </div>
+        )}
+      />
 
       {error && (
         <Alert variant="error">
           {error}
           {error.includes('email') && (
-            <p className="mt-2 text-sm">Verifique se o email já não está cadastrado.</p>
+            <p className="mt-2 text-sm">{validationMessages.emailAlreadyExistsHint}</p>
           )}
         </Alert>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
 
-        <Card title="Tipo de Pessoa">
+        <Card title="Tipo de pessoa">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
               <Select
-                label="Tipo de Pessoa *"
+                label="Tipo de Pessoa"
                 name="personType"
                 value={formData.personType}
                 onChange={handleChange}
@@ -303,20 +379,20 @@ export const ClientForm: React.FC = () => {
           </div>
         </Card>
 
-        <Card title="Documentação e Identificação">
+        <Card title="Documentação e identificação">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
-              <Input label="Nome Completo *" name="name" value={formData.name} onChange={handleChange} required maxLength={200} />
+              <Input label="Nome Completo" name="name" value={formData.name} onChange={handleChange} required maxLength={200} error={fieldErrors.name} />
             </div>
 
             {formData.personType === 'Física' ? (
               <>
                 <div className="sm:col-span-3">
-                  <Input label="CPF *" name="cpf" value={formData.cpf || ''} onChange={handleChange} onBlur={handleCpfBlur} required maxLength={14} />
+                  <Input label="CPF" name="cpf" value={formData.cpf || ''} onChange={handleChange} onBlur={handleCpfBlur} required maxLength={14} error={fieldErrors.cpf} />
                 </div>
                 <div className="sm:col-span-3">
                   <Select
-                    label="Estado Civil *"
+                    label="Estado Civil"
                     name="maritalStatus"
                     value={formData.maritalStatus || 'Solteiro(a)'}
                     onChange={handleChange}
@@ -329,7 +405,7 @@ export const ClientForm: React.FC = () => {
                   <Input label="RG" name="rg" value={formData.rg || ''} onChange={handleChange} maxLength={20} />
                 </div>
                 <div className="sm:col-span-3">
-                  <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="ex: SSP/SP" maxLength={20} />
+                  <Input label="Órgão Expedidor" name="rgIssuer" value={formData.rgIssuer || ''} onChange={handleChange} placeholder="Ex.: SSP/SP" maxLength={20} />
                 </div>
                 <div className="sm:col-span-3">
                   <DateInput label="Data Expedição" name="rgDispatchDate" value={formData.rgDispatchDate || ''} onChange={handleChange} />
@@ -337,15 +413,15 @@ export const ClientForm: React.FC = () => {
                 <div className="sm:col-span-3"></div>
 
                 <div className="sm:col-span-3">
-                  <DateInput label="Data de Nascimento *" name="birthDate" value={formData.birthDate || ''} onChange={handleChange} required />
+                  <DateInput label="Data de Nascimento" name="birthDate" value={formData.birthDate || ''} onChange={handleChange} required error={fieldErrors.birthDate} />
                 </div>
                 <div className="sm:col-span-2">
-                  <Input label="Idade" name="age" id="age" value={calculatedAge} readOnly className="bg-gray-50" />
+                  <Input label="Idade" name="age" id="age" value={calculatedAge} readOnly className="bg-neutral-50" />
                 </div>
               </>
             ) : (
               <div className="sm:col-span-6">
-                <Input label="CNPJ *" name="cnpj" value={formData.cnpj || ''} onChange={handleChange} onBlur={handleCnpjBlur} required maxLength={18} />
+                <Input label="CNPJ" name="cnpj" value={formData.cnpj || ''} onChange={handleChange} onBlur={handleCnpjBlur} required maxLength={18} error={fieldErrors.cnpj} />
               </div>
             )}
           </div>
@@ -354,10 +430,10 @@ export const ClientForm: React.FC = () => {
         <Card title="Contatos">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-6">
-              <Input type="email" label="Email *" name="email" value={formData.email} onChange={handleChange} required maxLength={254} />
+              <Input type="email" label="Email" name="email" value={formData.email} onChange={handleChange} required maxLength={254} error={fieldErrors.email} />
             </div>
             <div className="sm:col-span-6">
-              <Input type="tel" label="Telefone/Celular *" name="phone" value={formData.phone} onChange={handleChange} required maxLength={15} />
+              <Input type="tel" label="Telefone/Celular" name="phone" value={formData.phone} onChange={handleChange} required maxLength={15} error={fieldErrors.phone} />
             </div>
           </div>
         </Card>
@@ -365,32 +441,29 @@ export const ClientForm: React.FC = () => {
         <Card title="Endereço">
           <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-12">
             <div className="sm:col-span-3">
-              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-1.5">CEP *</label>
-              <div className="flex rounded-md shadow-sm">
-                <input
-                  id="zipCode"
-                  name="addr.zipCode"
-                  value={formData.address.zipCode}
-                  onChange={handleChange}
-                  onBlur={handleCepBlur}
-                  required
-                  maxLength={9}
-                  className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white text-gray-900"
-                />
-                <button
-                  type="button"
-                  onClick={fetchAddress}
-                  className="-ml-px inline-flex items-center space-x-2 px-3 py-2 border border-l-0 border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                >
-                  {cepLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                </button>
-              </div>
-              {cepLoading && <p className="text-xs text-blue-600 mt-1">Buscando endereço...</p>}
+              <InputWithButton
+                id="zipCode"
+                name="addr.zipCode"
+                label="CEP"
+                value={formData.address.zipCode}
+                onChange={handleChange}
+                onBlur={handleCepBlur}
+                required
+                maxLength={9}
+                error={fieldErrors['addr.zipCode']}
+                buttonIcon={<Search className="h-4 w-4" />}
+                buttonAriaLabel="Buscar endereço pelo CEP"
+                buttonLoading={cepLoading}
+                onButtonClick={fetchAddress}
+              />
+              {cepLoading && (
+                <HelperText className="mt-1 text-xs text-brand-600">Buscando endereço...</HelperText>
+              )}
             </div>
 
             <div className="sm:col-span-6">
               <Input
-                label="Logradouro *"
+                label="Logradouro"
                 name="addr.street"
                 value={formData.address.street}
                 onChange={handleChange}
@@ -398,18 +471,20 @@ export const ClientForm: React.FC = () => {
                 readOnly={lockedFields.street}
                 ref={streetInputRef}
                 maxLength={200}
+                error={fieldErrors['addr.street']}
               />
             </div>
 
             <div className="sm:col-span-3">
               <Input
-                label="Número *"
+                label="Número"
                 name="addr.number"
                 value={formData.address.number}
                 onChange={handleChange}
                 required
                 ref={numberInputRef}
                 maxLength={20}
+                error={fieldErrors['addr.number']}
               />
             </div>
 
@@ -419,59 +494,61 @@ export const ClientForm: React.FC = () => {
 
             <div className="sm:col-span-4">
               <Input
-                label="Bairro *"
+                label="Bairro"
                 name="addr.neighborhood"
                 value={formData.address.neighborhood}
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.neighborhood}
                 maxLength={100}
+                error={fieldErrors['addr.neighborhood']}
               />
             </div>
 
             <div className="sm:col-span-3">
               <Input
-                label="Cidade *"
+                label="Cidade"
                 name="addr.city"
                 value={formData.address.city}
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.city}
                 maxLength={100}
+                error={fieldErrors['addr.city']}
               />
             </div>
             <div className="sm:col-span-1">
               <Input
-                label="UF *"
+                label="UF"
                 name="addr.state"
                 value={formData.address.state}
                 onChange={handleChange}
                 required
                 readOnly={lockedFields.state}
                 maxLength={2}
+                error={fieldErrors['addr.state']}
               />
             </div>
           </div>
         </Card>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações Adicionais</label>
-          <textarea
+        <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm">
+          <TextArea
             id="notes"
             rows={3}
             name="notes"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors bg-white text-gray-900"
+            label="Observações Adicionais"
             value={formData.notes}
             onChange={handleChange}
             maxLength={1000}
           />
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-neutral-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
           <Button type="submit" isLoading={saving}>
             <Save className="w-4 h-4 mr-2" />
-            Salvar Dados
+            Salvar
           </Button>
         </div>
       </form>

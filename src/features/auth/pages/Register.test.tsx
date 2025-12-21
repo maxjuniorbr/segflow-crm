@@ -35,7 +35,7 @@ describe('Register page', () => {
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Joao Teste' } });
     fireEvent.change(screen.getByLabelText(/^CPF/i), { target: { value: '123.456.789-00' } });
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'joao@example.com' } });
-    fireEvent.change(screen.getByLabelText(/^Senha$/i), { target: { value: 'Senha123' } });
+    fireEvent.change(screen.getByLabelText(/^Senha/i), { target: { value: 'Senha123' } });
     fireEvent.change(screen.getByLabelText(/Confirmar Senha/i), { target: { value: 'Senha123' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Cadastrar/i }));
@@ -56,7 +56,7 @@ describe('Register page', () => {
     fireEvent.change(screen.getByLabelText(/Nome Completo/i), { target: { value: 'Joao Teste' } });
     fireEvent.change(screen.getByLabelText(/^CPF/i), { target: { value: '390.533.447-05' } });
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'joao@example.com' } });
-    fireEvent.change(screen.getByLabelText(/^Senha$/i), { target: { value: 'Senha123' } });
+    fireEvent.change(screen.getByLabelText(/^Senha/i), { target: { value: 'Senha123' } });
     fireEvent.change(screen.getByLabelText(/Confirmar Senha/i), { target: { value: 'Senha123' } });
 
     fireEvent.click(screen.getByRole('button', { name: /Cadastrar/i }));

@@ -1,3 +1,5 @@
+import { toastBus } from './toastBus';
+
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 const defaultHeaders = {
@@ -99,14 +101,12 @@ const request = async (endpoint: string, init: RequestInit, options?: ApiRequest
     } catch (error) {
         if (error instanceof ApiError) {
             if (!options?.suppressToast) {
-                const { toastBus } = await import('./toastBus');
                 toastBus.notify({ message: error.message, type: 'error' });
             }
             throw error;
         }
         const apiError = new ApiError(networkErrorMessage);
         if (!options?.suppressToast) {
-            const { toastBus } = await import('./toastBus');
             toastBus.notify({ message: apiError.message, type: 'error' });
         }
         throw apiError;

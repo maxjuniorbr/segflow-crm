@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Key, Loader2 } from 'lucide-react';
-import { Button, Input, Card, Alert } from '../../../shared/components/UIComponents';
+import { ChevronLeft, Key } from 'lucide-react';
+import { Button, Input, Card, Alert, PageHeader, LoadingState } from '../../../shared/components/UIComponents';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { userService } from '../../../services/userService';
 import { FormErrors, UserFormData } from '../../../types';
@@ -9,6 +9,8 @@ import { maskCPF } from '../../../utils/formatters';
 import { isValidCPF, isValidEmail } from '../../../utils/validators';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { validationMessages } from '../../../utils/validationMessages';
+import { actionMessages } from '../../../utils/actionMessages';
 
 export const UserForm: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -47,7 +49,7 @@ export const UserForm: React.FC = () => {
                     });
                 }
             } catch (error: any) {
-                const message = error.message || 'Erro ao carregar usuário';
+                const message = error.message || actionMessages.loadError('usuário');
                 showToast(message, 'error');
                 setFormError(message);
                 navigate('/settings/users');
@@ -75,7 +77,7 @@ export const UserForm: React.FC = () => {
 
     const handleCpfBlur = () => {
         if (formData.cpf && !isValidCPF(formData.cpf)) {
-            setErrors(prev => ({ ...prev, cpf: 'CPF inválido' }));
+            setErrors(prev => ({ ...prev, cpf: validationMessages.invalid('CPF') }));
         }
     };
 
@@ -83,23 +85,23 @@ export const UserForm: React.FC = () => {
         const newErrors: FormErrors<UserFormData> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'Nome é obrigatório';
+            newErrors.name = validationMessages.required('Nome');
         }
 
         if (!formData.cpf.trim()) {
-            newErrors.cpf = 'CPF é obrigatório';
+            newErrors.cpf = validationMessages.required('CPF');
         } else if (!isValidCPF(formData.cpf)) {
-            newErrors.cpf = 'CPF inválido';
+            newErrors.cpf = validationMessages.invalid('CPF');
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email é obrigatório';
+            newErrors.email = validationMessages.required('Email');
         } else if (!isValidEmail(formData.email)) {
-            newErrors.email = 'Email inválido';
+            newErrors.email = validationMessages.invalid('Email');
         }
 
         if (!id && !formData.password?.trim()) {
-            newErrors.password = 'Senha é obrigatória para novos usuários';
+            newErrors.password = validationMessages.passwordRequiredNewUser;
         }
 
         setErrors(newErrors);
@@ -119,16 +121,15 @@ export const UserForm: React.FC = () => {
         try {
             if (parsedId) {
                 await userService.updateUser(parsedId, formData);
-                showToast('Usuário atualizado com sucesso', 'success');
+                showToast(actionMessages.updateSuccess('Usuário'), 'success');
             } else {
                 await userService.createUser(formData);
-                showToast('Usuário criado com sucesso', 'success');
+                showToast(actionMessages.createSuccess('Usuário'), 'success');
             }
             navigate('/settings/users');
         } catch (error: any) {
-            const message = error.message || 'Erro ao salvar usuário';
+            const message = error.message || actionMessages.saveError('usuário');
             setFormError(message);
-            showToast(message, 'error');
         } finally {
             setLoading(false);
         }
@@ -141,7 +142,7 @@ export const UserForm: React.FC = () => {
         }
         try {
             await userService.changePassword(parsedId, currentPassword, newPassword);
-            showToast('Senha alterada com sucesso', 'success');
+            showToast(actionMessages.passwordChangeSuccess, 'success');
         } catch (error: any) {
             const errorMessage = error.message || 'Erro ao alterar senha';
             showToast(errorMessage, 'error');
@@ -150,26 +151,25 @@ export const UserForm: React.FC = () => {
     };
 
     if (loadingData) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            </div>
-        );
+        return <LoadingState label="Carregando usuário..." />;
     }
 
     return (
         <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-0">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
-                <div className="flex items-center">
-                    <button onClick={() => navigate(-1)} className="mr-4 p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+            <PageHeader
+                title={id ? 'Editar usuário' : 'Novo usuário'}
+                subtitle={id ? 'Atualize os dados do usuário.' : 'Preencha os dados do usuário.'}
+                leading={(
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="p-2 hover:bg-neutral-100 rounded-full text-neutral-500 transition-colors"
+                        aria-label="Voltar"
+                        title="Voltar"
+                    >
                         <ChevronLeft className="w-6 h-6" />
                     </button>
-                    <div>
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{id ? 'Editar Usuário' : 'Novo Usuário'}</h1>
-                        <p className="mt-1 text-xs sm:text-sm text-gray-500">{id ? 'Atualize os dados do usuário' : 'Cadastre um novo usuário'}</p>
-                    </div>
-                </div>
-            </div>
+                )}
+            />
 
             {formError && (
                 <Alert variant="error">{formError}</Alert>
@@ -182,7 +182,7 @@ export const UserForm: React.FC = () => {
                             <Input
                                 id="name"
                                 name="name"
-                                label="Nome Completo *"
+                                label="Nome Completo"
                                 type="text"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -194,7 +194,7 @@ export const UserForm: React.FC = () => {
                             <Input
                                 id="cpf"
                                 name="cpf"
-                                label="CPF *"
+                                label="CPF"
                                 type="text"
                                 value={formData.cpf}
                                 onChange={handleChange}
@@ -208,7 +208,7 @@ export const UserForm: React.FC = () => {
                         <Input
                             id="email"
                             name="email"
-                            label="Email *"
+                            label="Email"
                             type="email"
                             value={formData.email}
                             onChange={handleChange}
@@ -221,7 +221,7 @@ export const UserForm: React.FC = () => {
                             <Input
                                 id="password"
                                 name="password"
-                                label="Senha Inicial *"
+                                label="Senha Inicial"
                                 type="password"
                                 value={formData.password || ''}
                                 onChange={handleChange}
@@ -232,12 +232,12 @@ export const UserForm: React.FC = () => {
                     </div>
                 </Card>
 
-                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
+                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-neutral-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
                     <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                         Cancelar
                     </Button>
                     <Button type="submit" isLoading={loading}>
-                        Salvar Alterações
+                        Salvar
                     </Button>
                 </div>
             </form>
@@ -246,8 +246,8 @@ export const UserForm: React.FC = () => {
                 <Card>
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-sm font-medium text-gray-900">Segurança</h3>
-                            <p className="mt-1 text-sm text-gray-500">Gerencie a senha de acesso</p>
+                            <h3 className="text-sm font-medium text-neutral-900">Segurança</h3>
+                            <p className="mt-1 text-sm text-neutral-500">Gerencie a senha de acesso.</p>
                         </div>
                         <div className="flex justify-between items-center">
                             <Button
