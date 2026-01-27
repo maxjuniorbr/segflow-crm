@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Client } from '../../../types';
 import { X } from 'lucide-react';
 import { HelperText, SearchInput } from '../../../shared/components/UIComponents';
@@ -26,6 +26,16 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
+    // Optimize: Pre-process clients for search to avoid repeated calculations
+    const searchIndex = useMemo(() => {
+        return clients.map(client => ({
+            client,
+            nameLower: client.name.toLowerCase(),
+            cpfDigits: client.cpf?.replace(/\D/g, '') || '',
+            cnpjDigits: client.cnpj?.replace(/\D/g, '') || ''
+        }));
+    }, [clients]);
+
     // Find and set the selected client based on value prop
     useEffect(() => {
         if (value) {
@@ -43,20 +53,19 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
     // Filter clients when search term changes
     useEffect(() => {
         if (searchTerm.length >= 3) {
+            const searchTermLower = searchTerm.toLowerCase();
             // Split search term into words
-            const searchWords = searchTerm.toLowerCase().trim().split(/\s+/);
+            const searchWords = searchTermLower.trim().split(/\s+/);
+            const searchDigits = searchTerm.replace(/\D/g, '');
 
             // Filter and score clients
-            const scoredClients = clients.map(client => {
-                const nameLower = client.name.toLowerCase();
-                const cpfDigits = client.cpf?.replace(/\D/g, '') || '';
-                const cnpjDigits = client.cnpj?.replace(/\D/g, '') || '';
-                const searchDigits = searchTerm.replace(/\D/g, '');
+            const scoredClients = searchIndex.map(item => {
+                const { client, nameLower, cpfDigits, cnpjDigits } = item;
 
                 let score = 0;
 
                 // Check if name starts with search term (highest priority)
-                if (nameLower.startsWith(searchTerm.toLowerCase())) {
+                if (nameLower.startsWith(searchTermLower)) {
                     score += 100;
                 }
 
@@ -88,7 +97,7 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
             setFilteredClients([]);
             setIsOpen(false);
         }
-    }, [searchTerm, clients]);
+    }, [searchTerm, searchIndex]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
