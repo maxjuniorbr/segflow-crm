@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useId } from 'react';
+import React, { useState, useCallback, useId } from 'react';
 import { X } from 'lucide-react';
 import { Button, Input, HelperText, SectionTitle } from '../../../shared/components/UIComponents';
 import { isStrongPassword } from '../../../utils/validators';
 import { validationMessages } from '../../../utils/validationMessages';
 import { uiMessages } from '../../../utils/uiMessages';
+import { useModalBehavior } from '../../../shared/hooks/useModalBehavior';
 
 interface ChangePasswordModalProps {
     isOpen: boolean;
@@ -67,50 +68,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
         }
     };
 
-    const dialogRef = useRef<HTMLDivElement>(null);
-
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            handleClose();
-            return;
-        }
-        if (e.key === 'Tab' && dialogRef.current) {
-            const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            if (focusable.length === 0) return;
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        }
-    }, [handleClose]);
-
-    const previousFocusRef = useRef<HTMLElement | null>(null);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        previousFocusRef.current = document.activeElement as HTMLElement | null;
-        document.addEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = 'hidden';
-
-        requestAnimationFrame(() => {
-            const firstInput = dialogRef.current?.querySelector<HTMLElement>('input');
-            firstInput?.focus();
-        });
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'unset';
-            previousFocusRef.current?.focus();
-        };
-    }, [isOpen, handleKeyDown]);
+    const dialogRef = useModalBehavior({ isOpen, onClose: handleClose, autoFocusSelector: 'input' });
 
     if (!isOpen) return null;
 

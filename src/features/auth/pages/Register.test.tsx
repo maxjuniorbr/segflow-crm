@@ -22,6 +22,30 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+async function fillRegisterForm(
+  user: ReturnType<typeof userEvent.setup>,
+  overrides: { cpf?: string } = {}
+) {
+  const cpf = overrides.cpf ?? '390.533.447-05';
+
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')), 'Test Corretora');
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')), 'Test Fantasia');
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')), '11.222.333/0001-81');
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')), 'Joao Teste');
+  await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')), cpf);
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')), 'joao@example.com');
+  await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')), 'SenhaForte123');
+  await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')));
+  await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')), 'SenhaForte123');
+}
+
 describe('Register page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,22 +60,7 @@ describe('Register page', () => {
       </MemoryRouter>
     );
 
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')), 'Test Corretora');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')), 'Test Fantasia');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')), '11.222.333/0001-81');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')), 'Joao Teste');
-    await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')), '123.456.789-00');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')), 'joao@example.com');
-    await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')), 'SenhaForte123');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')), 'SenhaForte123');
+    await fillRegisterForm(user, { cpf: '123.456.789-00' });
 
     await user.click(screen.getByRole('button', { name: /Cadastrar/i }));
 
@@ -69,22 +78,7 @@ describe('Register page', () => {
       </MemoryRouter>
     );
 
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.corporateName, 'i')), 'Test Corretora');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.tradeName, 'i')), 'Test Fantasia');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.cnpj, 'i')), '11.222.333/0001-81');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.fullName, 'i')), 'Joao Teste');
-    await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.cpf}`, 'i')), '390.533.447-05');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.email, 'i')), 'joao@example.com');
-    await user.clear(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(`^${uiBaseMessages.labels.password}`, 'i')), 'SenhaForte123');
-    await user.clear(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')));
-    await user.type(screen.getByLabelText(new RegExp(uiBaseMessages.labels.confirmPassword, 'i')), 'SenhaForte123');
+    await fillRegisterForm(user);
 
     await user.click(screen.getByRole('button', { name: /Cadastrar/i }));
 

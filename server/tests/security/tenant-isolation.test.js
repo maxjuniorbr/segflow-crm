@@ -1,56 +1,38 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
-import app from '../../src/app.js';
 import { resetTestDb } from '../utils/testDbMock.js';
+import { app, registerBrokerRequest, loginRequest } from '../utils/integrationTestUtils.js';
+import { buildTenantBrokerA, buildTenantBrokerB } from '../utils/testFactories.js';
 
 describe('Cross-Tenant Isolation', () => {
     beforeEach(() => resetTestDb());
 
     it('prevents registration with duplicate CNPJ across brokers', async () => {
-        const brokerData = {
-            corporateName: 'Broker A',
-            tradeName: 'A',
-            cnpj: '11.222.333/0001-81',
-            contactName: 'Admin A',
-            cpf: '529.982.247-25',
-            email: 'a@test.com',
-            password: 'SenhaForte123',
-        };
+        const brokerData = buildTenantBrokerA({ email: 'a@test.com', password: 'SenhaForte123' });
 
-        const res1 = await request(app)
-            .post('/api/register-broker')
-            .send(brokerData)
-            .expect(201);
-
+        const res1 = await registerBrokerRequest(brokerData).expect(201);
         expect(res1.body.message).toBe('Corretora cadastrada com sucesso');
 
-        const res2 = await request(app)
-            .post('/api/register-broker')
-            .send({
-                ...brokerData,
-                email: 'b@test.com',
-                cpf: '390.533.447-05',
-            });
+        const res2 = await registerBrokerRequest({
+            ...brokerData,
+            email: 'b@test.com',
+            cpf: '390.533.447-05',
+        });
         expect(res2.status).toBe(400);
     });
 
     it('isolates data by broker via login flow', async () => {
-        await request(app)
-            .post('/api/register-broker')
-            .send({
+        await registerBrokerRequest(
+            buildTenantBrokerA({
                 corporateName: 'Broker Alpha',
                 tradeName: 'Alpha',
-                cnpj: '11.222.333/0001-81',
                 contactName: 'Admin Alpha',
-                cpf: '529.982.247-25',
                 email: 'alpha@test.com',
                 password: 'SenhaForte123',
             })
-            .expect(201);
+        ).expect(201);
 
-        const loginRes = await request(app)
-            .post('/api/login')
-            .send({ email: 'alpha@test.com', password: 'SenhaForte123' });
+        const loginRes = await loginRequest('alpha@test.com', 'SenhaForte123');
 
         expect(loginRes.status).toBe(200);
         expect(loginRes.body.user).toBeDefined();
@@ -61,31 +43,8 @@ describe('Cross-Tenant Isolation', () => {
         const agentA = request.agent(app);
         const agentB = request.agent(app);
 
-        await request(app)
-            .post('/api/register-broker')
-            .send({
-                corporateName: 'Broker A',
-                tradeName: 'A',
-                cnpj: '11.222.333/0001-81',
-                contactName: 'Admin A',
-                cpf: '529.982.247-25',
-                email: 'brokerA@test.com',
-                password: 'SenhaForte123!',
-            })
-            .expect(201);
-
-        await request(app)
-            .post('/api/register-broker')
-            .send({
-                corporateName: 'Broker B',
-                tradeName: 'B',
-                cnpj: '33.000.167/0001-01',
-                contactName: 'Admin B',
-                cpf: '123.456.789-09',
-                email: 'brokerB@test.com',
-                password: 'SenhaForte123!',
-            })
-            .expect(201);
+        await registerBrokerRequest(buildTenantBrokerA({ email: 'brokerA@test.com' })).expect(201);
+        await registerBrokerRequest(buildTenantBrokerB({ email: 'brokerB@test.com' })).expect(201);
 
         const loginA = await agentA
             .post('/api/login')
@@ -117,31 +76,23 @@ describe('Cross-Tenant Isolation', () => {
         const agentX = request.agent(app);
         const agentY = request.agent(app);
 
-        await request(app)
-            .post('/api/register-broker')
-            .send({
+        await registerBrokerRequest(
+            buildTenantBrokerA({
                 corporateName: 'Broker X',
                 tradeName: 'X',
-                cnpj: '11.222.333/0001-81',
                 contactName: 'Admin X',
-                cpf: '529.982.247-25',
                 email: 'brokerX@test.com',
-                password: 'SenhaForte123!',
             })
-            .expect(201);
+        ).expect(201);
 
-        await request(app)
-            .post('/api/register-broker')
-            .send({
+        await registerBrokerRequest(
+            buildTenantBrokerB({
                 corporateName: 'Broker Y',
                 tradeName: 'Y',
-                cnpj: '33.000.167/0001-01',
                 contactName: 'Admin Y',
-                cpf: '123.456.789-09',
                 email: 'brokerY@test.com',
-                password: 'SenhaForte123!',
             })
-            .expect(201);
+        ).expect(201);
 
         const loginX = await agentX
             .post('/api/login')

@@ -1,7 +1,8 @@
-import React, { useEffect, useLayoutEffect, useRef, useCallback } from 'react';
+import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { Button } from './UIComponents';
 import { uiMessages } from '../../utils/uiMessages';
+import { useModalBehavior } from '../hooks/useModalBehavior';
 
 interface ConfirmDialogProps {
     isOpen: boolean;
@@ -24,53 +25,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     cancelText = uiMessages.common.cancel,
     variant = 'danger'
 }) => {
-    const dialogRef = useRef<HTMLDivElement>(null);
+    const dialogRef = useModalBehavior({ isOpen, onClose: onCancel });
     const uniqueId = React.useId();
     const titleId = `${uniqueId}-title`;
     const messageId = `${uniqueId}-message`;
-
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            onCancel();
-            return;
-        }
-        if (e.key === 'Tab' && dialogRef.current) {
-            const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            if (focusable.length === 0) return;
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        }
-    }, [onCancel]);
-
-    const previousFocusRef = useRef<HTMLElement | null>(null);
-
-    useLayoutEffect(() => {
-        if (isOpen) {
-            previousFocusRef.current = document.activeElement as HTMLElement | null;
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        document.addEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = 'unset';
-            previousFocusRef.current?.focus();
-        };
-    }, [isOpen, handleKeyDown]);
 
     if (!isOpen) return null;
 

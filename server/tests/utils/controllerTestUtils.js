@@ -1,31 +1,5 @@
 import { vi } from 'vitest';
 
-vi.mock('../../config/db.js', () => {
-    const queryFn = vi.fn();
-    return {
-        default: {
-            query: queryFn,
-            connect: vi.fn().mockResolvedValue({
-                query: queryFn,
-                release: vi.fn(),
-            })
-        }
-    };
-});
-
-vi.mock('bcryptjs', () => ({
-    default: {
-        genSalt: vi.fn(),
-        hash: vi.fn(),
-        compare: vi.fn()
-    }
-}));
-
-import pool from '../../config/db.js';
-import bcrypt from 'bcryptjs';
-
-export { pool, bcrypt };
-
 export const createRes = () => ({
     statusCode: 200,
     payload: null,
@@ -57,4 +31,10 @@ export const createReq = (overrides = {}) => ({
     ...overrides
 });
 
-export const mockQuery = () => pool.query;
+export const resetControllerMocks = (pool, bcrypt) => {
+    vi.clearAllMocks();
+    pool.query.mockReset();
+    bcrypt.genSalt.mockReset();
+    bcrypt.hash.mockReset();
+    bcrypt.compare.mockReset();
+};

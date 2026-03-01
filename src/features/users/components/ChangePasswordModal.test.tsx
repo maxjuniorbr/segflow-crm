@@ -3,6 +3,18 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChangePasswordModal } from './ChangePasswordModal';
 
+async function fillPasswordForm(
+    user: ReturnType<typeof userEvent.setup>,
+    { current, newPwd, confirm }: { current: string; newPwd: string; confirm: string }
+) {
+    await user.clear(screen.getByLabelText(/Senha Atual/i));
+    await user.type(screen.getByLabelText(/Senha Atual/i), current);
+    await user.clear(screen.getByLabelText(/^Nova Senha/i));
+    await user.type(screen.getByLabelText(/^Nova Senha/i), newPwd);
+    await user.clear(screen.getByLabelText(/^Confirmar Nova Senha/i));
+    await user.type(screen.getByLabelText(/^Confirmar Nova Senha/i), confirm);
+}
+
 describe('ChangePasswordModal', () => {
     it('valida senha fraca antes de enviar', async () => {
         const user = userEvent.setup();
@@ -15,12 +27,7 @@ describe('ChangePasswordModal', () => {
             />
         );
 
-        await user.clear(screen.getByLabelText(/Senha Atual/i));
-        await user.type(screen.getByLabelText(/Senha Atual/i), '12345678');
-        await user.clear(screen.getByLabelText(/^Nova Senha/i));
-        await user.type(screen.getByLabelText(/^Nova Senha/i), '1234567');
-        await user.clear(screen.getByLabelText(/^Confirmar Nova Senha/i));
-        await user.type(screen.getByLabelText(/^Confirmar Nova Senha/i), '1234567');
+        await fillPasswordForm(user, { current: '12345678', newPwd: '1234567', confirm: '1234567' });
         await user.click(screen.getByRole('button', { name: /alterar senha/i }));
 
         expect(await screen.findByText('A nova senha deve ter no mínimo 10 caracteres, combinando letras e números.', { selector: 'p.text-danger-600' })).toBeInTheDocument();
@@ -39,12 +46,7 @@ describe('ChangePasswordModal', () => {
             />
         );
 
-        await user.clear(screen.getByLabelText(/Senha Atual/i));
-        await user.type(screen.getByLabelText(/Senha Atual/i), 'SenhaAtual1');
-        await user.clear(screen.getByLabelText(/^Nova Senha/i));
-        await user.type(screen.getByLabelText(/^Nova Senha/i), 'SenhaNova1');
-        await user.clear(screen.getByLabelText(/^Confirmar Nova Senha/i));
-        await user.type(screen.getByLabelText(/^Confirmar Nova Senha/i), 'SenhaNova1');
+        await fillPasswordForm(user, { current: 'SenhaAtual1', newPwd: 'SenhaNova1', confirm: 'SenhaNova1' });
         await user.click(screen.getByRole('button', { name: /alterar senha/i }));
 
         await waitFor(() => {

@@ -1,38 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-vi.mock('../../config/db.js', () => {
-    const queryFn = vi.fn();
-    return {
-        default: {
-            query: queryFn,
-            connect: vi.fn().mockResolvedValue({
-                query: queryFn,
-                release: vi.fn(),
-            })
-        }
-    };
-});
+vi.mock('../../config/db.js');
+vi.mock('bcryptjs');
 
-vi.mock('bcryptjs', () => ({
-    default: {
-        genSalt: vi.fn(),
-        hash: vi.fn(),
-        compare: vi.fn()
-    }
-}));
-
-import { createRes, createReq } from '../utils/controllerTestUtils.js';
+import { createRes, createReq, resetControllerMocks } from '../utils/controllerTestUtils.js';
 import pool from '../../config/db.js';
 import bcrypt from 'bcryptjs';
 
 import { changePassword } from '../../controllers/passwordController.js';
 
 beforeEach(() => {
-    vi.clearAllMocks();
-    pool.query.mockReset();
-    bcrypt.genSalt.mockReset();
-    bcrypt.hash.mockReset();
-    bcrypt.compare.mockReset();
+    resetControllerMocks(pool, bcrypt);
 });
 
 describe('Password Controller', () => {

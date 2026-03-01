@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Users } from 'lucide-react';
 import { Button, Card, SearchInput, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableRowButton, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
@@ -49,6 +49,28 @@ export const UserList: React.FC = () => {
         fetchUsers();
         return () => { cancelled = true; };
     }, [refreshKey]);
+
+    const handleDeleteClick = useCallback((e: React.MouseEvent, user: User) => {
+        e.stopPropagation();
+        if (user.id === currentUser?.id) {
+            showToast(actionMessages.deleteBlockedAccount, 'error');
+        } else if (user.id !== undefined) {
+            setDeleteUserId(user.id);
+        }
+    }, [currentUser?.id, showToast]);
+
+    const renderDeleteButton = (user: User) => (
+        <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => handleDeleteClick(e, user)}
+            className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 hover:border-danger-200 dark:hover:border-danger-700"
+            disabled={user.id === currentUser?.id}
+        >
+            <Trash2 className="w-4 h-4 mr-1" />
+            {uiMessages.common.delete}
+        </Button>
+    );
 
     const filteredUsers = useMemo(() => {
         const term = searchTerm.toLowerCase();
@@ -143,23 +165,7 @@ export const UserList: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="mt-3 flex justify-end">
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (user.id === currentUser?.id) {
-                                                    showToast(actionMessages.deleteBlockedAccount, 'error');
-                                                } else if (user.id !== undefined) {
-                                                    setDeleteUserId(user.id);
-                                                }
-                                            }}
-                                            className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 hover:border-danger-200 dark:hover:border-danger-700"
-                                            disabled={user.id === currentUser?.id}
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-1" />
-                                            {uiMessages.common.delete}
-                                        </Button>
+                                        {renderDeleteButton(user)}
                                     </div>
                                 </MobileListCard>
                             ))}
@@ -206,23 +212,7 @@ export const UserList: React.FC = () => {
                                         </TableCell>
                                         <TableCell className="text-right text-sm font-medium">
                                             <div className="flex justify-end gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (user.id === currentUser?.id) {
-                                                            showToast(actionMessages.deleteBlockedAccount, 'error');
-                                                        } else if (user.id !== undefined) {
-                                                            setDeleteUserId(user.id);
-                                                        }
-                                                    }}
-                                                    className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 hover:border-danger-200 dark:hover:border-danger-700"
-                                                    disabled={user.id === currentUser?.id}
-                                                >
-                                                    <Trash2 className="w-4 h-4 mr-1" />
-                                                    {uiMessages.common.delete}
-                                                </Button>
+                                                {renderDeleteButton(user)}
                                             </div>
                                         </TableCell>
                                     </TableRowButton>

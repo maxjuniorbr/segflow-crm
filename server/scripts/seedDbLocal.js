@@ -19,6 +19,31 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
+const camelToSnake = (str) => str.replace(/[A-Z]/g, (ch) => `_${ch.toLowerCase()}`);
+
+const insertRow = async (pgClient, table, data) => {
+  const entries = Object.entries(data);
+  const columns = entries.map(([k]) => camelToSnake(k));
+  const values = entries.map(([, v]) => v);
+  const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+  await pgClient.query(
+    `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`,
+    values
+  );
+};
+
+const insertBatch = async (pgClient, table, rows) => {
+  for (const row of rows) {
+    await insertRow(pgClient, table, row);
+  }
+};
+
+const addr = (zipCode, street, number, complement, neighborhood, city, state) =>
+  ({ zipCode, street, number, complement, neighborhood, city, state });
+
+const doc = (id, type, company, documentNumber, startDate, endDate, status, attachmentName, notes) =>
+  ({ id, type, company, documentNumber, startDate, endDate, status, attachmentName, notes });
+
 const adminPassword = 'lucas8bc';
 
 const brokerSeed = [
@@ -74,39 +99,15 @@ const clientSeed = [
     maritalStatus: 'Casada',
     email: 'marina.soares@example.com',
     phone: '(11) 98888-1001',
-    address: {
-      zipCode: '04094-050',
-      street: 'Rua Inhambu',
-      number: '920',
-      complement: 'Ap 82',
-      neighborhood: 'Moema',
-      city: 'São Paulo',
-      state: 'SP'
-    },
+    address: addr('04094-050', 'Rua Inhambu', '920', 'Ap 82', 'Moema', 'São Paulo', 'SP'),
     notes: 'Cliente com foco em renovações automotivas.',
     documents: [
-      {
-        id: 'd0000001-0000-4000-a000-000000000001',
-        type: 'Auto',
-        company: 'Porto Seguro',
-        documentNumber: 'AUTO-2024-001',
-        startDate: '2025-12-01',
-        endDate: '2026-11-30',
-        status: 'Apólice',
-        attachmentName: 'auto-marina-2024.pdf',
-        notes: 'Cobertura completa com carro reserva.'
-      },
-      {
-        id: 'd0000002-0000-4000-a000-000000000002',
-        type: 'Vida',
-        company: 'SulAmérica',
-        documentNumber: 'VIDA-2023-014',
-        startDate: '2025-12-15',
-        endDate: '2026-12-14',
-        status: 'Proposta',
-        attachmentName: 'vida-marina.pdf',
-        notes: 'Aguardando assinatura digital.'
-      }
+      doc('d0000001-0000-4000-a000-000000000001', 'Auto', 'Porto Seguro',
+        'AUTO-2024-001', '2025-12-01', '2026-11-30',
+        'Apólice', 'auto-marina-2024.pdf', 'Cobertura completa com carro reserva.'),
+      doc('d0000002-0000-4000-a000-000000000002', 'Vida', 'SulAmérica',
+        'VIDA-2023-014', '2025-12-15', '2026-12-14',
+        'Proposta', 'vida-marina.pdf', 'Aguardando assinatura digital.')
     ]
   },
   {
@@ -123,28 +124,12 @@ const clientSeed = [
     maritalStatus: 'Casado',
     email: 'gustavo.azevedo@example.com',
     phone: '(21) 97777-3322',
-    address: {
-      zipCode: '20040-020',
-      street: 'Avenida Rio Branco',
-      number: '123',
-      complement: 'Sala 1004',
-      neighborhood: 'Centro',
-      city: 'Rio de Janeiro',
-      state: 'RJ'
-    },
+    address: addr('20040-020', 'Avenida Rio Branco', '123', 'Sala 1004', 'Centro', 'Rio de Janeiro', 'RJ'),
     notes: 'Empresário do setor de tecnologia.',
     documents: [
-      {
-        id: 'd0000003-0000-4000-a000-000000000003',
-        type: 'Residencial',
-        company: 'Bradesco Seguros',
-        documentNumber: 'RES-2024-045',
-        startDate: '2025-11-10',
-        endDate: '2026-11-09',
-        status: 'Apólice',
-        attachmentName: 'residencial-gustavo.pdf',
-        notes: 'Apartamento na região central.'
-      }
+      doc('d0000003-0000-4000-a000-000000000003', 'Residencial', 'Bradesco Seguros',
+        'RES-2024-045', '2025-11-10', '2026-11-09',
+        'Apólice', 'residencial-gustavo.pdf', 'Apartamento na região central.')
     ]
   },
   {
@@ -161,28 +146,12 @@ const clientSeed = [
     maritalStatus: 'Solteira',
     email: 'clara.batista@example.com',
     phone: '(31) 98800-4445',
-    address: {
-      zipCode: '30130-010',
-      street: 'Rua da Bahia',
-      number: '600',
-      complement: 'Ap 301',
-      neighborhood: 'Funcionários',
-      city: 'Belo Horizonte',
-      state: 'MG'
-    },
+    address: addr('30130-010', 'Rua da Bahia', '600', 'Ap 301', 'Funcionários', 'Belo Horizonte', 'MG'),
     notes: 'Profissional liberal e viajante frequente.',
     documents: [
-      {
-        id: 'd0000004-0000-4000-a000-000000000004',
-        type: 'Viagem',
-        company: 'Allianz',
-        documentNumber: 'TRAVEL-2024-012',
-        startDate: '2026-02-01',
-        endDate: '2026-04-30',
-        status: 'Apólice',
-        attachmentName: 'viagem-clara.pdf',
-        notes: 'Plano anual com cobertura global.'
-      }
+      doc('d0000004-0000-4000-a000-000000000004', 'Viagem', 'Allianz',
+        'TRAVEL-2024-012', '2026-02-01', '2026-04-30',
+        'Apólice', 'viagem-clara.pdf', 'Plano anual com cobertura global.')
     ]
   },
   {
@@ -199,50 +168,18 @@ const clientSeed = [
     maritalStatus: null,
     email: 'suporte@inovabank.com.br',
     phone: '(11) 3003-8080',
-    address: {
-      zipCode: '01310-200',
-      street: 'Avenida Paulista',
-      number: '1578',
-      complement: 'Torre Norte',
-      neighborhood: 'Bela Vista',
-      city: 'São Paulo',
-      state: 'SP'
-    },
+    address: addr('01310-200', 'Avenida Paulista', '1578', 'Torre Norte', 'Bela Vista', 'São Paulo', 'SP'),
     notes: 'Cliente PJ com demandas recorrentes de grandes apólices.',
     documents: [
-      {
-        id: 'd0000005-0000-4000-a000-000000000005',
-        type: 'Patrimonial',
-        company: 'Tokio Marine',
-        documentNumber: 'PATR-2024-220',
-        startDate: '2025-12-01',
-        endDate: '2026-12-01',
-        status: 'Apólice',
-        attachmentName: 'patrimonial-inova.pdf',
-        notes: 'Cobertura da sede administrativa.'
-      },
-      {
-        id: 'd0000006-0000-4000-a000-000000000006',
-        type: 'Responsabilidade Civil',
-        company: 'HDI',
-        documentNumber: 'RC-2024-031',
-        startDate: '2026-01-01',
-        endDate: '2026-12-31',
-        status: 'Apólice',
-        attachmentName: 'rc-inova.pdf',
-        notes: 'Cobertura para diretores e executivos.'
-      },
-      {
-        id: 'd0000011-0000-4000-a000-000000000011',
-        type: 'Garantia',
-        company: 'Junto Seguros',
-        documentNumber: 'GAR-2024-001',
-        startDate: '2025-11-15',
-        endDate: '2026-11-14',
-        status: 'Apólice',
-        attachmentName: 'garantia-inova.pdf',
-        notes: 'Garantia judicial para processo trabalhista.'
-      }
+      doc('d0000005-0000-4000-a000-000000000005', 'Patrimonial', 'Tokio Marine',
+        'PATR-2024-220', '2025-12-01', '2026-12-01',
+        'Apólice', 'patrimonial-inova.pdf', 'Cobertura da sede administrativa.'),
+      doc('d0000006-0000-4000-a000-000000000006', 'Responsabilidade Civil', 'HDI',
+        'RC-2024-031', '2026-01-01', '2026-12-31',
+        'Apólice', 'rc-inova.pdf', 'Cobertura para diretores e executivos.'),
+      doc('d0000011-0000-4000-a000-000000000011', 'Garantia', 'Junto Seguros',
+        'GAR-2024-001', '2025-11-15', '2026-11-14',
+        'Apólice', 'garantia-inova.pdf', 'Garantia judicial para processo trabalhista.')
     ]
   },
   {
@@ -259,28 +196,12 @@ const clientSeed = [
     maritalStatus: 'Divorciada',
     email: 'fernanda.pires@example.com',
     phone: '(71) 99122-6677',
-    address: {
-      zipCode: '40015-010',
-      street: 'Rua Chile',
-      number: '20',
-      complement: 'Cobertura',
-      neighborhood: 'Centro Histórico',
-      city: 'Salvador',
-      state: 'BA'
-    },
+    address: addr('40015-010', 'Rua Chile', '20', 'Cobertura', 'Centro Histórico', 'Salvador', 'BA'),
     notes: 'Cliente interessada em planos familiares.',
     documents: [
-      {
-        id: 'd0000007-0000-4000-a000-000000000007',
-        type: 'Saúde',
-        company: 'Bradesco Saúde',
-        documentNumber: 'SAUDE-2024-088',
-        startDate: '2025-12-10',
-        endDate: '2026-12-09',
-        status: 'Apólice',
-        attachmentName: 'saude-fernanda.pdf',
-        notes: 'Plano familiar com 3 dependentes.'
-      }
+      doc('d0000007-0000-4000-a000-000000000007', 'Saúde', 'Bradesco Saúde',
+        'SAUDE-2024-088', '2025-12-10', '2026-12-09',
+        'Apólice', 'saude-fernanda.pdf', 'Plano familiar com 3 dependentes.')
     ]
   },
   {
@@ -297,39 +218,15 @@ const clientSeed = [
     maritalStatus: 'Solteiro',
     email: 'roberto.almeida@example.com',
     phone: '(11) 97777-8888',
-    address: {
-      zipCode: '04530-000',
-      street: 'Rua Joaquim Floriano',
-      number: '100',
-      complement: 'Ap 12',
-      neighborhood: 'Itaim Bibi',
-      city: 'São Paulo',
-      state: 'SP'
-    },
+    address: addr('04530-000', 'Rua Joaquim Floriano', '100', 'Ap 12', 'Itaim Bibi', 'São Paulo', 'SP'),
     notes: 'Cliente novo vindo de indicação.',
     documents: [
-      {
-        id: 'd0000012-0000-4000-a000-000000000012',
-        type: 'Auto',
-        company: 'Azul Seguros',
-        documentNumber: 'AUTO-2024-099',
-        startDate: '2025-12-01',
-        endDate: '2026-11-30',
-        status: 'Proposta',
-        attachmentName: 'auto-roberto.pdf',
-        notes: 'Cotação inicial aprovada.'
-      },
-      {
-        id: 'd0000013-0000-4000-a000-000000000013',
-        type: 'Vida',
-        company: 'Icatu',
-        documentNumber: 'VIDA-2024-055',
-        startDate: '2026-01-01',
-        endDate: '2026-12-31',
-        status: 'Apólice',
-        attachmentName: 'vida-roberto.pdf',
-        notes: 'Cobertura básica.'
-      }
+      doc('d0000012-0000-4000-a000-000000000012', 'Auto', 'Azul Seguros',
+        'AUTO-2024-099', '2025-12-01', '2026-11-30',
+        'Proposta', 'auto-roberto.pdf', 'Cotação inicial aprovada.'),
+      doc('d0000013-0000-4000-a000-000000000013', 'Vida', 'Icatu',
+        'VIDA-2024-055', '2026-01-01', '2026-12-31',
+        'Apólice', 'vida-roberto.pdf', 'Cobertura básica.')
     ]
   },
   // ========== Clientes da Nordeste (broker 2) ==========
@@ -347,28 +244,12 @@ const clientSeed = [
     maritalStatus: 'Casado',
     email: 'eduardo.lima@example.com',
     phone: '(41) 99660-0101',
-    address: {
-      zipCode: '80240-030',
-      street: 'Avenida Iguaçu',
-      number: '1815',
-      complement: 'Casa 2',
-      neighborhood: 'Água Verde',
-      city: 'Curitiba',
-      state: 'PR'
-    },
+    address: addr('80240-030', 'Avenida Iguaçu', '1815', 'Casa 2', 'Água Verde', 'Curitiba', 'PR'),
     notes: 'Possui frota com dois veículos premium.',
     documents: [
-      {
-        id: 'd0000008-0000-4000-a000-000000000008',
-        type: 'Auto',
-        company: 'Sompo',
-        documentNumber: 'AUTO-2024-078',
-        startDate: '2026-01-05',
-        endDate: '2026-12-31',
-        status: 'Apólice',
-        attachmentName: 'auto-eduardo.pdf',
-        notes: 'Inclui cobertura para PCD.'
-      }
+      doc('d0000008-0000-4000-a000-000000000008', 'Auto', 'Sompo',
+        'AUTO-2024-078', '2026-01-05', '2026-12-31',
+        'Apólice', 'auto-eduardo.pdf', 'Inclui cobertura para PCD.')
     ]
   },
   {
@@ -385,39 +266,15 @@ const clientSeed = [
     maritalStatus: null,
     email: 'contato@nortesullog.com.br',
     phone: '(92) 4002-0909',
-    address: {
-      zipCode: '69005-070',
-      street: 'Avenida Constantino Nery',
-      number: '2450',
-      complement: 'Galpão 3',
-      neighborhood: 'São Geraldo',
-      city: 'Manaus',
-      state: 'AM'
-    },
+    address: addr('69005-070', 'Avenida Constantino Nery', '2450', 'Galpão 3', 'São Geraldo', 'Manaus', 'AM'),
     notes: 'Operação de transporte refrigerado na região Norte.',
     documents: [
-      {
-        id: 'd0000009-0000-4000-a000-000000000009',
-        type: 'Frota',
-        company: 'Mapfre',
-        documentNumber: 'FROTA-2024-045',
-        startDate: '2025-12-20',
-        endDate: '2026-12-19',
-        status: 'Apólice',
-        attachmentName: 'frota-nortesul.pdf',
-        notes: '30 veículos cadastrados.'
-      },
-      {
-        id: 'd0000010-0000-4000-a000-000000000010',
-        type: 'Equipamentos',
-        company: 'Liberty',
-        documentNumber: 'EQP-2023-119',
-        startDate: '2025-11-01',
-        endDate: '2026-10-31',
-        status: 'Apólice',
-        attachmentName: 'equipamentos-nortesul.pdf',
-        notes: 'Cobertura para câmaras frias.'
-      }
+      doc('d0000009-0000-4000-a000-000000000009', 'Frota', 'Mapfre',
+        'FROTA-2024-045', '2025-12-20', '2026-12-19',
+        'Apólice', 'frota-nortesul.pdf', '30 veículos cadastrados.'),
+      doc('d0000010-0000-4000-a000-000000000010', 'Equipamentos', 'Liberty',
+        'EQP-2023-119', '2025-11-01', '2026-10-31',
+        'Apólice', 'equipamentos-nortesul.pdf', 'Cobertura para câmaras frias.')
     ]
   },
   {
@@ -434,28 +291,12 @@ const clientSeed = [
     maritalStatus: 'Solteira',
     email: 'paola.andrade@example.com',
     phone: '(61) 98110-3030',
-    address: {
-      zipCode: '70040-010',
-      street: 'SBS Quadra 2',
-      number: 'Bloco Q',
-      complement: 'Sala 203',
-      neighborhood: 'Asa Sul',
-      city: 'Brasília',
-      state: 'DF'
-    },
+    address: addr('70040-010', 'SBS Quadra 2', 'Bloco Q', 'Sala 203', 'Asa Sul', 'Brasília', 'DF'),
     notes: 'Consultora jurídica especializada em direito digital.',
     documents: [
-      {
-        id: 'd0000014-0000-4000-a000-000000000014',
-        type: 'Responsabilidade Civil Profissional',
-        company: 'Chubb',
-        documentNumber: 'RC-PAOLA-2024',
-        startDate: '2026-01-10',
-        endDate: '2027-01-09',
-        status: 'Apólice',
-        attachmentName: 'rc-paola.pdf',
-        notes: 'Cobertura para consultorias remotas.'
-      }
+      doc('d0000014-0000-4000-a000-000000000014', 'Responsabilidade Civil Profissional', 'Chubb',
+        'RC-PAOLA-2024', '2026-01-10', '2027-01-09',
+        'Apólice', 'rc-paola.pdf', 'Cobertura para consultorias remotas.')
     ]
   },
   {
@@ -472,50 +313,18 @@ const clientSeed = [
     maritalStatus: null,
     email: 'financeiro@vitalysaude.com.br',
     phone: '(85) 3232-4545',
-    address: {
-      zipCode: '60115-282',
-      street: 'Avenida Santos Dumont',
-      number: '2828',
-      complement: '7º andar',
-      neighborhood: 'Aldeota',
-      city: 'Fortaleza',
-      state: 'CE'
-    },
+    address: addr('60115-282', 'Avenida Santos Dumont', '2828', '7º andar', 'Aldeota', 'Fortaleza', 'CE'),
     notes: 'Rede de clínicas em expansão nacional.',
     documents: [
-      {
-        id: 'd0000015-0000-4000-a000-000000000015',
-        type: 'Patrimonial',
-        company: 'Zurich',
-        documentNumber: 'PATR-2024-301',
-        startDate: '2025-12-01',
-        endDate: '2026-11-30',
-        status: 'Apólice',
-        attachmentName: 'patr-vitaly.pdf',
-        notes: 'Inclui 4 unidades próprias.'
-      },
-      {
-        id: 'd0000016-0000-4000-a000-000000000016',
-        type: 'Cyber',
-        company: 'AIG',
-        documentNumber: 'CYBER-2024-044',
-        startDate: '2026-02-15',
-        endDate: '2027-02-14',
-        status: 'Proposta',
-        attachmentName: 'cyber-vitaly.pdf',
-        notes: 'Em processo de análise de risco.'
-      },
-      {
-        id: 'd0000017-0000-4000-a000-000000000017',
-        type: 'Saúde',
-        company: 'SulAmérica',
-        documentNumber: 'SAUDE-VIT-002',
-        startDate: '2026-03-01',
-        endDate: '2027-02-28',
-        status: 'Proposta',
-        attachmentName: 'saude-vitaly-2.pdf',
-        notes: 'Expansão para nova filial.'
-      }
+      doc('d0000015-0000-4000-a000-000000000015', 'Patrimonial', 'Zurich',
+        'PATR-2024-301', '2025-12-01', '2026-11-30',
+        'Apólice', 'patr-vitaly.pdf', 'Inclui 4 unidades próprias.'),
+      doc('d0000016-0000-4000-a000-000000000016', 'Cyber', 'AIG',
+        'CYBER-2024-044', '2026-02-15', '2027-02-14',
+        'Proposta', 'cyber-vitaly.pdf', 'Em processo de análise de risco.'),
+      doc('d0000017-0000-4000-a000-000000000017', 'Saúde', 'SulAmérica',
+        'SAUDE-VIT-002', '2026-03-01', '2027-02-28',
+        'Proposta', 'saude-vitaly-2.pdf', 'Expansão para nova filial.')
     ]
   }
 ];
@@ -547,72 +356,18 @@ async function seed() {
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
     for (const broker of brokerSeed) {
-      await client.query(
-        `INSERT INTO brokers (id, corporate_name, trade_name, cnpj, susep_code, contact_name, email, phone, mobile)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [
-          broker.id,
-          broker.corporateName,
-          broker.tradeName,
-          broker.cnpj,
-          broker.susepCode,
-          broker.contactName,
-          broker.email,
-          broker.phone,
-          broker.mobile
-        ]
-      );
-
-      await client.query(
-        `INSERT INTO users (broker_id, name, cpf, email, username, password)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [broker.id, broker.user.name, broker.user.cpf, broker.user.email, broker.user.username, passwordHash]
-      );
+      const { user, ...brokerRow } = broker;
+      await insertRow(client, 'brokers', brokerRow);
+      await insertRow(client, 'users', { brokerId: broker.id, ...user, password: passwordHash });
     }
 
     console.log('Creating clients and documents...');
-    for (const clientData of clientSeed) {
-      await client.query(
-        `INSERT INTO clients (id, broker_id, name, person_type, cpf, cnpj, rg, rg_dispatch_date, rg_issuer, birth_date, marital_status, email, phone, address, notes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-        [
-          clientData.id,
-          clientData.brokerId,
-          clientData.name,
-          clientData.personType,
-          clientData.cpf,
-          clientData.cnpj,
-          clientData.rg,
-          clientData.rgDispatchDate,
-          clientData.rgIssuer,
-          clientData.birthDate,
-          clientData.maritalStatus,
-          clientData.email,
-          clientData.phone,
-          JSON.stringify(clientData.address),
-          clientData.notes
-        ]
+    for (const c of clientSeed) {
+      const { documents, address, ...clientRow } = c;
+      await insertRow(client, 'clients', { ...clientRow, address: JSON.stringify(address) });
+      await insertBatch(client, 'documents',
+        documents.map(d => ({ ...d, clientId: c.id, brokerId: c.brokerId }))
       );
-
-      for (const doc of clientData.documents) {
-        await client.query(
-          `INSERT INTO documents (id, client_id, broker_id, type, company, document_number, start_date, end_date, status, attachment_name, notes)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-          [
-            doc.id,
-            clientData.id,
-            clientData.brokerId,
-            doc.type,
-            doc.company,
-            doc.documentNumber,
-            doc.startDate,
-            doc.endDate,
-            doc.status,
-            doc.attachmentName,
-            doc.notes
-          ]
-        );
-      }
     }
 
     const atlasClients = clientSeed.filter(c => c.brokerId === 'b0000001-0000-4000-a000-000000000001');

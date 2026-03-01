@@ -55,3 +55,35 @@ export const buildBrokerRegistrationPayload = (overrides = {}) => ({
     password: 'SenhaForte123',
     ...overrides
 });
+
+export const buildTestAddress = (overrides = {}) => ({
+    street: 'Rua Teste',
+    number: '123',
+    neighborhood: 'Centro',
+    city: 'São Paulo',
+    state: 'SP',
+    zipCode: '01310-100',
+    ...overrides
+});
+
+export const buildTenantBrokerA = (overrides = {}) => ({
+    corporateName: 'Broker A',
+    tradeName: 'A',
+    cnpj: '11.222.333/0001-81',
+    contactName: 'Admin A',
+    cpf: '529.982.247-25',
+    email: 'brokerA@test.com',
+    password: 'SenhaForte123!',
+    ...overrides,
+});
+
+export const buildTenantBrokerB = (overrides = {}) => ({
+    corporateName: 'Broker B',
+    tradeName: 'B',
+    cnpj: '33.000.167/0001-01',
+    contactName: 'Admin B',
+    cpf: '123.456.789-09',
+    email: 'brokerB@test.com',
+    password: 'SenhaForte123!',
+    ...overrides,
+});
