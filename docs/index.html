@@ -102,7 +102,36 @@
     #timeline .glass { transition: all 0.3s ease, border-color 0.3s ease; }
     #timeline .glass:hover { transform: translateX(4px); }
 
+    /* Destruction Game */
+    #game-trigger { position: fixed; bottom: 24px; left: 24px; z-index: 40; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; pointer-events: none; }
+    #game-trigger.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #game-trigger button { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #f87171; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; animation: pulse-red 2s ease-in-out infinite; }
+    #game-trigger button:hover { background: rgba(239,68,68,0.3); transform: scale(1.15); }
+    @keyframes pulse-red { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
+
+    .game-active { cursor: crosshair !important; overflow: hidden !important; user-select: none !important; }
+    .game-active * { cursor: crosshair !important; }
+
+    #game-hud { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(239,68,68,0.3); padding: 12px 24px; display: none; align-items: center; justify-content: space-between; }
+    #game-hud.show { display: flex; }
+
+    .explosion { position: fixed; pointer-events: none; z-index: 9998; }
+    .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: particleFly 0.7s ease-out forwards; }
+    @keyframes particleFly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); } }
+
+    .destroyed { animation: shatter 0.5s ease-out forwards !important; transform-origin: center; pointer-events: none !important; }
+    @keyframes shatter { 0% { opacity: 1; transform: scale(1) rotate(0deg); filter: brightness(3); } 30% { filter: brightness(2); } 100% { opacity: 0; transform: scale(0.3) rotate(var(--rot, 15deg)); filter: brightness(0.5); } }
+
+    .crack-overlay { position: fixed; inset: 0; z-index: 9997; pointer-events: none; opacity: 0; background: radial-gradient(circle at var(--cx) var(--cy), rgba(239,68,68,0.15) 0%, transparent 40%); transition: opacity 0.1s; }
+    .crack-overlay.flash { opacity: 1; }
+
+    #game-prompt-modal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 24px; }
+    #game-prompt-modal.show { display: flex; }
+    #game-prompt-modal .modal-content { max-width: 600px; width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; max-height: 80vh; overflow-y: auto; }
+
     @media (max-width: 640px) {
+      #game-trigger { bottom: 16px; left: 16px; }
+      #game-trigger button { width: 40px; height: 40px; }
       #mascot svg { width: 56px; height: 56px; }
       #mascot { bottom: 16px; right: 16px; }
       #mascot-bubble { font-size: 12px; padding: 6px 10px; }
@@ -599,6 +628,39 @@
     </div>
   </section>
 
+  <!-- DESTRUCTION GAME -->
+  <div id="game-trigger">
+    <button id="game-start-btn" aria-label="Start destruction game">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+    </button>
+  </div>
+
+  <div id="game-hud">
+    <div class="flex items-center gap-4">
+      <span class="text-red-400 font-mono text-sm font-bold" data-i18n="game.title">DESTRUCTION MODE</span>
+      <span class="text-slate-400 text-sm">Score: <strong class="text-white" id="game-score">0</strong></span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="game-prompt-btn" class="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2" data-i18n="game.prompt">How I asked for this</button>
+      <button id="game-exit-btn" class="px-3 py-1.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg text-xs font-medium hover:bg-red-500/30 transition-all">ESC</button>
+    </div>
+  </div>
+
+  <div class="crack-overlay" id="crack-overlay"></div>
+
+  <div id="game-prompt-modal">
+    <div class="modal-content">
+      <h3 class="text-lg font-semibold text-white mb-3" data-i18n="game.promptTitle">The prompt that built this game</h3>
+      <p class="text-xs text-slate-500 mb-4 font-mono" data-i18n="game.promptSub">Single prompt → Cursor Agent → working game</p>
+      <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-brand-500 pl-4 mb-6">
+        "Se o usuário chegar até o fim da página, quero que apareça algo (ícone, desenho, etc.) em algum lugar da tela que permita o usuário jogar um game feito também com o cursor. Pensei em algo assim pro jogo, simples, básico. Seria legal se ele apenas congelasse a tela e permitisse atirar em tudo, destruindo a página."
+      </blockquote>
+      <div class="flex justify-end">
+        <button id="game-prompt-close" class="px-4 py-2 glass-strong rounded-lg text-sm text-white hover:bg-white/10 transition-all" data-i18n="game.close">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="py-16 border-t border-white/5" data-mascot-section="footer">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -673,6 +735,11 @@
         'auth.title': 'Authentication <span class="gradient-text">Flow</span>',
         'auth.sub': 'Brokerage registration, secure login, and full access control.',
         'footer.text': 'Insurance brokerage management system.<br>Built with Cursor IDE — 90% AI-generated code.',
+        'game.title': 'DESTRUCTION MODE',
+        'game.prompt': 'How I asked for this',
+        'game.promptTitle': 'The prompt that built this game',
+        'game.promptSub': 'Single prompt → Cursor Agent → working game',
+        'game.close': 'Close',
       },
       pt: {
         'nav.features': 'Features', 'nav.arch': 'Arquitetura',
@@ -722,6 +789,11 @@
         'auth.title': 'Fluxo de <span class="gradient-text">Autenticação</span>',
         'auth.sub': 'Registro de corretora, login seguro e controle de acesso completo.',
         'footer.text': 'Sistema de gestão para corretoras de seguros.<br>Construído com Cursor IDE — 90% do código gerado por IA.',
+        'game.title': 'MODO DESTRUIÇÃO',
+        'game.prompt': 'Como eu pedi isso',
+        'game.promptTitle': 'O prompt que criou este jogo',
+        'game.promptSub': 'Um único prompt → Cursor Agent → jogo funcionando',
+        'game.close': 'Fechar',
       }
     };
 
@@ -924,6 +996,109 @@
         glow.style.transform = `translateY(${y * speed}px)`;
       });
     }, { passive: true });
+
+    // Destruction Game
+    const gameTrigger = document.getElementById('game-trigger');
+    const gameHud = document.getElementById('game-hud');
+    const gameScoreEl = document.getElementById('game-score');
+    const crackOverlay = document.getElementById('crack-overlay');
+    const promptModal = document.getElementById('game-prompt-modal');
+    let gameActive = false;
+    let gameScore = 0;
+
+    const footerObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting && !gameActive) gameTrigger.classList.add('show'); });
+    }, { threshold: 0.3 });
+    const footerEl = document.querySelector('footer');
+    if (footerEl) footerObs.observe(footerEl);
+
+    function startGame() {
+      gameActive = true;
+      gameScore = 0;
+      gameScoreEl.textContent = '0';
+      document.body.classList.add('game-active');
+      gameHud.classList.add('show');
+      gameTrigger.classList.remove('show');
+      mascot.style.display = 'none';
+    }
+
+    function endGame() {
+      gameActive = false;
+      document.body.classList.remove('game-active');
+      gameHud.classList.remove('show');
+      mascot.style.display = '';
+      document.querySelectorAll('.destroyed').forEach(el => {
+        el.classList.remove('destroyed');
+        el.style.opacity = '';
+        el.style.transform = '';
+        el.style.pointerEvents = '';
+      });
+    }
+
+    function spawnExplosion(x, y) {
+      const container = document.createElement('div');
+      container.className = 'explosion';
+      container.style.left = x + 'px';
+      container.style.top = y + 'px';
+      const colors = ['#ef4444','#f97316','#eab308','#f472b6','#60a5fa'];
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const angle = (Math.PI * 2 / 12) * i + Math.random() * 0.5;
+        const dist = 40 + Math.random() * 60;
+        p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+        p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+        p.style.width = (3 + Math.random() * 5) + 'px';
+        p.style.height = p.style.width;
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        container.appendChild(p);
+      }
+      document.body.appendChild(container);
+      setTimeout(() => container.remove(), 800);
+    }
+
+    function flashCrack(x, y) {
+      crackOverlay.style.setProperty('--cx', x + 'px');
+      crackOverlay.style.setProperty('--cy', y + 'px');
+      crackOverlay.classList.add('flash');
+      setTimeout(() => crackOverlay.classList.remove('flash'), 150);
+    }
+
+    function destroyElement(el, x, y) {
+      if (el.classList.contains('destroyed') || el === document.body || el === document.documentElement) return;
+      if (el.closest('#game-hud') || el.closest('#game-prompt-modal') || el.closest('#crack-overlay')) return;
+
+      const target = el.closest('.glass, .browser-frame, .phone-frame, .stat-card, .tech-card, .feature-tab, [class*="rounded-2xl"], h1, h2, h3, p, img, blockquote, .gradient-text, a, button:not(#game-exit-btn):not(#game-prompt-btn):not(#game-prompt-close), svg, footer, nav');
+      if (!target || target.classList.contains('destroyed')) return;
+      if (target.closest('#game-hud') || target.closest('#game-prompt-modal')) return;
+
+      const rot = (Math.random() - 0.5) * 30;
+      target.style.setProperty('--rot', rot + 'deg');
+      target.classList.add('destroyed');
+      spawnExplosion(x, y);
+      flashCrack(x, y);
+      gameScore++;
+      gameScoreEl.textContent = gameScore;
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!gameActive) return;
+      if (e.target.closest('#game-hud') || e.target.closest('#game-prompt-modal')) return;
+      destroyElement(e.target, e.clientX, e.clientY);
+    });
+
+    document.getElementById('game-start-btn').addEventListener('click', (e) => { e.stopPropagation(); startGame(); });
+    document.getElementById('game-exit-btn').addEventListener('click', (e) => { e.stopPropagation(); endGame(); });
+    document.getElementById('game-prompt-btn').addEventListener('click', (e) => { e.stopPropagation(); promptModal.classList.add('show'); });
+    document.getElementById('game-prompt-close').addEventListener('click', (e) => { e.stopPropagation(); promptModal.classList.remove('show'); });
+    promptModal.addEventListener('click', (e) => { if (e.target === promptModal) promptModal.classList.remove('show'); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (promptModal.classList.contains('show')) { promptModal.classList.remove('show'); return; }
+        if (gameActive) endGame();
+      }
+    });
 
     setLang('en');
   </script>
