@@ -28,3 +28,6 @@ stress-test-results.json
 
 # Review prompts (local only)
 REVIEW_PROMPT.md
+
+# Temporary files
+temp/
