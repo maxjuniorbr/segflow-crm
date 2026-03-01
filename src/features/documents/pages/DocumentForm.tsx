@@ -1,0 +1,350 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { storageService } from '../../../services/storage';
+import { Document, DocumentFormData } from '../../../types';
+import { Card, Input, Button, Select, Alert, DateInput, TextArea, PageHeader, LoadingState, FileDropzone } from '../../../shared/components/UIComponents';
+import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
+import { ClientAutocomplete } from '../../clients/components/ClientAutocomplete';
+import { ChevronLeft, Save, Trash2, Paperclip } from 'lucide-react';
+import { useToast } from '../../../contexts/ToastContext';
+import { validationMessages } from '../../../utils/validationMessages';
+import { confirmMessages } from '../../../utils/confirmMessages';
+import { actionMessages } from '../../../utils/actionMessages';
+import { uiMessages } from '../../../utils/uiMessages';
+
+export const DocumentForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const preselectedClientId = searchParams.get('clientId');
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [error, setError] = useState('');
+
+  // ... (rest of state)
+
+  const emptyDocument: DocumentFormData = {
+    clientId: preselectedClientId || '',
+    type: 'Auto',
+    company: 'Porto Seguro',
+    documentNumber: '',
+    startDate: '',
+    endDate: '',
+    status: uiMessages.statuses.proposal,
+    notes: '',
+    attachmentName: ''
+  };
+
+  const [formData, setFormData] = useState(emptyDocument);
+
+  useEffect(() => {
+    let cancelled = false;
+    const init = async () => {
+      setLoading(true);
+      try {
+        if (id) {
+          const d = await storageService.getDocumentById(id);
+          if (!cancelled && d) {
+            const { id: pid, ...rest } = d;
+            setFormData({
+              ...emptyDocument,
+              ...rest,
+              startDate: rest.startDate ? rest.startDate.split('T')[0] : '',
+              endDate: rest.endDate ? rest.endDate.split('T')[0] : ''
+            });
+          }
+        } else if (!cancelled) {
+          setFormData(emptyDocument);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error(err);
+          setError(actionMessages.loadError('dados'));
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    init();
+    return () => { cancelled = true; };
+  }, [id, preselectedClientId]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    let { name, value } = e.target;
+
+    // Automação de vigência: se mudou a data de início, calcular fim automaticamente (+1 ano)
+    if (name === 'startDate' && value) {
+      const startDate = new Date(value);
+      const endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        endDate: endDate.toISOString().split('T')[0]
+      }));
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({ ...prev, attachmentName: e.target.files![0].name }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!formData.clientId) {
+      setError(validationMessages.required('Cliente'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!formData.startDate) {
+      setError(validationMessages.required('Início de Vigência'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!formData.endDate) {
+      setError(validationMessages.required('Fim de Vigência'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (new Date(formData.startDate) > new Date(formData.endDate)) {
+      setError(validationMessages.dateRange);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const document: Document = {
+        id: id || '',
+        ...formData
+      };
+      await storageService.saveDocument(document, !id);
+
+      // Feedback via Toast
+      showToast(id ? actionMessages.updateSuccess('Documento') : actionMessages.createSuccess('Documento'), 'success');
+
+      // Redirecionamento inteligente baseado na origem
+      const originPath = location.state?.from ||
+        (formData.clientId ? `/clients/${formData.clientId}` : '/documents');
+
+      navigate(originPath);
+    } catch (e: unknown) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : actionMessages.saveError('documento'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+    try {
+      await storageService.deleteDocument(id);
+      showToast(actionMessages.deleteSuccess('Documento'), 'success');
+      navigate('/documents');
+    } catch (error) {
+      showToast(actionMessages.deleteError('documento'), 'error');
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
+
+  // ... (options arrays)
+
+  const typeOptions = [
+    { value: 'Auto', label: 'Automóvel' },
+    { value: 'Life', label: 'Vida' },
+    { value: 'Residential', label: 'Residencial' },
+    { value: 'Corporate', label: 'Empresarial' },
+    { value: 'Health', label: 'Saúde' },
+    { value: 'Travel', label: 'Viagem' },
+  ];
+
+  const statusOptions = [
+    { value: uiMessages.statuses.proposal, label: uiMessages.statuses.proposal },
+    { value: uiMessages.statuses.policy, label: uiMessages.statuses.policy },
+    { value: uiMessages.statuses.endorsement, label: uiMessages.statuses.endorsement },
+    { value: uiMessages.statuses.canceled, label: uiMessages.statuses.canceled },
+    { value: uiMessages.statuses.expired, label: uiMessages.statuses.expired },
+  ];
+
+  const companyOptions = [
+    { value: 'Porto Seguro', label: 'Porto Seguro' },
+    { value: 'Azul Seguros', label: 'Azul Seguros' },
+    { value: 'Itaú Seguros', label: 'Itaú Seguros' },
+    { value: 'Allianz', label: 'Allianz' },
+    { value: 'Tokio Marine', label: 'Tokio Marine' },
+    { value: 'HDI Seguros', label: 'HDI Seguros' },
+    { value: 'Mapfre', label: 'Mapfre' },
+    { value: 'Bradesco Seguros', label: 'Bradesco Seguros' },
+    { value: 'Mitsui Sumitomo', label: 'Mitsui Sumitomo' },
+  ];
+
+  if (loading) return <LoadingState label={actionMessages.loading('documento')} />;
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-0">
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+        title={uiMessages.confirmTitles.deleteDocument}
+        message={confirmMessages.deleteDefault('este documento')}
+        confirmText={uiMessages.common.delete}
+        cancelText={uiMessages.common.cancel}
+        variant="danger"
+      />
+
+      <PageHeader
+        title={id ? uiMessages.pages.documents.form.editTitle : uiMessages.pages.documents.form.newTitle}
+        subtitle={id ? uiMessages.pages.documents.form.editSubtitle : uiMessages.pages.documents.form.newSubtitle}
+        leading={(
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full text-muted transition-colors"
+            aria-label={uiMessages.common.back}
+            title={uiMessages.common.back}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        )}
+        action={id ? (
+          <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
+            <Trash2 className="w-4 h-4 mr-2" /> {uiMessages.common.delete}
+          </Button>
+        ) : undefined}
+      />
+
+      {error && (
+        <Alert variant="error">{error}</Alert>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <Card>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <ClientAutocomplete
+                value={formData.clientId}
+                onChange={(clientId) => setFormData(prev => ({ ...prev, clientId }))}
+                required
+              />
+            </div>
+
+            <div>
+              <Select
+                label={uiMessages.labels.insuranceType}
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                options={typeOptions}
+                required
+              />
+            </div>
+            <div>
+              <Select
+                label={uiMessages.labels.insuranceCompany}
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                options={companyOptions}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Input
+                label={uiMessages.labels.documentNumber}
+                name="documentNumber"
+                value={formData.documentNumber || ''}
+                onChange={handleChange}
+                placeholder={uiMessages.placeholders.optional}
+                autoComplete="off"
+                maxLength={50}
+              />
+            </div>
+
+            <div>
+              <DateInput
+                label={uiMessages.labels.startDate}
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <DateInput
+                label={uiMessages.labels.endDate}
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                required
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <Select
+                label={uiMessages.labels.status}
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                options={statusOptions}
+                required
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <FileDropzone
+                id="file-upload"
+                name="file-upload"
+                label={uiMessages.labels.attachment}
+                helperText={uiMessages.placeholders.fileUploadHelper}
+                selectedFileName={formData.attachmentName}
+                icon={<Paperclip className="h-12 w-12" />}
+                onFileChange={handleFileChange}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <TextArea
+                id="notes"
+                rows={3}
+                name="notes"
+                label={uiMessages.labels.notes}
+                value={formData.notes || ''}
+                onChange={handleChange}
+                autoComplete="off"
+                maxLength={1000}
+              />
+            </div>
+          </div>
+        </Card>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-card p-4 border-t border-border shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 flex justify-end space-x-4 z-50">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>{uiMessages.common.cancel}</Button>
+          <Button type="submit" isLoading={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            {uiMessages.common.save}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};

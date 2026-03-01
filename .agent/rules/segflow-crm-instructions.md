@@ -1,0 +1,84 @@
+---
+trigger: always_on
+---
+
+# Instrucoes do agente (SegFlow CRM)
+
+## Linguagem e tom
+- Codigo em ingles; interface, textos e mensagens ao usuario em pt-BR.
+- Mensagens curtas e objetivas, tom profissional e consistente.
+
+## Design System (estado atual)
+- Tokens base em `src/index.css`: `brand`, `neutral`, `success`, `warning`, `danger`, `info` — com variantes `dark:`.
+- Evitar cores fora dos tokens (ex.: `gray-*`); preferir `neutral-*`.
+- Componentes base em `src/shared/components/UIComponents.tsx`, com variantes via CVA (`cva()`).
+- Usar `cn()` de `src/utils/cn.ts` (clsx + tailwind-merge) para compor classes; nao concatenar strings manualmente.
+- `ErrorBoundary` em `src/shared/components/ErrorBoundary.tsx` envolve a app para captura de erros nao tratados.
+- Layout principal em `src/shared/components/Layout.tsx`: sidebar escura no desktop e header mobile sticky.
+- Dark mode: componentes ja possuem variantes `dark:`; respeitar esse padrao ao criar ou editar componentes.
+- Padrao de listas:
+  - `PageHeader` + `Card` com filtros; `SearchInput` + `Select` como filtros principais.
+  - `SearchInput` usa `label="Buscar"` e row de filtros usa `sm:items-end`.
+  - Mobile com `MobileListCard` e tabela a partir de `sm`.
+  - `TableRowButton` para linhas clicaveis com navegacao por teclado.
+- Padrao de formularios:
+  - `max-w-*`, `space-y-4 sm:space-y-6`, `Card` por secao; `Input/Select/TextArea/DateInput`.
+  - `InputWithButton` para campos com acao (ex.: CEP); `FileDropzone` para upload.
+  - Barra de acoes fixa no mobile e estatica no desktop.
+- Padrao de feedback:
+  - `Alert` inline (variantes via CVA: `error`, `warning`, `info`, `success`) para erro de formulario/carregamento local.
+  - `Toast` (`useToast`) para sucesso/erro de acao.
+- Padroes de status:
+  - `Badge` para status de documento; `Tag` para categorias leves.
+- Estado de menu:
+  - Item "Configuracoes" so fica ativo quando rota inicia com `/settings`; nao manter estilo ativo fora dessas rotas.
+- Contraste:
+  - Em fundos claros, evitar `text-neutral-400` para textos de apoio; preferir `text-neutral-500`/`text-neutral-600`.
+
+## Mensagens
+- Centralizar mensagens em `src/utils/*Messages.ts`; evitar hardcode fora desses arquivos (exceto labels muito especificas).
+- `uiMessages` = agregador de `uiBaseMessages`, `uiNavigationMessages`, `uiPageMessages`; evitar colisoes de chaves.
+- Copys de pagina: `uiMessages.pages.<feature>.actions` e `.form`; `tableHeaders` reaproveita `uiBaseMessages.labels`.
+- Erros: `validationMessages` + labels de `uiMessages`/`uiBaseMessages`.
+- Frontend: erro por campo via `error`; `Alert` so para erro geral; `Toast` para sucesso/erro de acao.
+- Backend: erros lancados via `AppError` (`NotFoundError`, `UnauthorizedError`, `ValidationError`, `ConflictError`); handler centralizado converte em respostas HTTP. Validacao de entrada via Zod + middleware `validate`.
+
+## Responsividade
+- `sm` define a troca de cards moveis para tabela.
+- Formularios usam `pb-24` para evitar overlay da barra fixa no mobile.
+
+## ConfirmDialog
+- API atual: `isOpen`, `onConfirm`, `onCancel`, `title`, `message`, `confirmText`, `cancelText`, `variant`.
+- Nao usar props `onClose`/`type` (nao suportadas).
+- Implementa focus trap e atributos ARIA (`role="alertdialog"`, `aria-labelledby`, `aria-describedby`).
+
+## Regras tecnicas (backend e qualidade)
+- Codigo deve ser autoexplicativo; evitar comentarios. Comentarios apenas quando estritamente necessario.
+- Seguir Clean Architecture e padroes de codificacao definidos pela comunidade da tecnologia.
+- Manter tecnologias atuais (React+TS, Vite, Tailwind, Express, PostgreSQL, Zod, Vitest).
+- Preservar a estrutura atual de pastas.
+- Backend segue Clean Architecture:
+  - Controllers apenas orquestram e chamam use cases.
+  - Use cases concentram regras de negocio.
+  - Repositories isolam acesso ao banco.
+  - Entidades em `server/src/domain/entities` com `fromDatabase()` e `toJSON()`.
+- Validacoes de entrada com Zod + middleware `validate`; erros de negocio via subclasses de `AppError` (`server/src/application/errors/AppError.js`).
+- Autenticacao via JWT com access token (curta duracao) + refresh token (rotacao automatica). Rotas protegidas exigem `authMiddleware`. Rotas de auth sob `/api/auth/*`.
+- Banco local descartavel: sem migrations incrementais; recriacao completa no startup.
+- Nomes de tabelas/colunas em lowercase; FKs com cascade quando aplicavel; indices unicos refletem regra de negocio.
+- Backend permanece em JavaScript (JSDoc + `checkJs`), nao migrar para TS.
+- Listagens e autocompletes devem usar busca remota com paginacao; evitar carregar listas completas no frontend.
+- Itens de lista clicaveis (mobile e tabela) devem ser navegaveis por teclado e expor `aria-label` quando necessario.
+
+## Documentacao e processos
+- Deve existir apenas um `README.md` na raiz; nao criar READMEs em subpastas.
+- Atualizar README apenas quando houver impacto real em estrutura, fluxo ou setup.
+
+## Seguranca
+- Todas as entradas devem ser validadas e sanitizadas.
+- Preparar contra SQL Injection, IDOR, Mass Assignment e Broken Access Control.
+- Senhas com hash seguro; segredos em variaveis de ambiente.
+- Rate limiting e CORS configurados corretamente.
+
+## Observacoes de consistencia (estado atual)
+- Nenhuma observacao aberta; manter padroes atuais sem introduzir excecoes.
