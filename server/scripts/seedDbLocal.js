@@ -19,7 +19,7 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-const camelToSnake = (str) => str.replace(/[A-Z]/g, (ch) => `_${ch.toLowerCase()}`);
+const camelToSnake = (str) => str.replaceAll(/[A-Z]/g, (ch) => `_${ch.toLowerCase()}`);
 
 const insertRow = async (pgClient, table, data) => {
   const entries = Object.entries(data);
@@ -41,7 +41,7 @@ const insertBatch = async (pgClient, table, rows) => {
 const addr = (zipCode, street, number, complement, neighborhood, city, state) =>
   ({ zipCode, street, number, complement, neighborhood, city, state });
 
-const doc = (id, type, company, documentNumber, startDate, endDate, status, attachmentName, notes) =>
+const doc = ({ id, type, company, documentNumber, startDate, endDate, status, attachmentName = null, notes = null }) =>
   ({ id, type, company, documentNumber, startDate, endDate, status, attachmentName, notes });
 
 const adminPassword = 'lucas8bc';
@@ -102,12 +102,12 @@ const clientSeed = [
     address: addr('04094-050', 'Rua Inhambu', '920', 'Ap 82', 'Moema', 'São Paulo', 'SP'),
     notes: 'Cliente com foco em renovações automotivas.',
     documents: [
-      doc('d0000001-0000-4000-a000-000000000001', 'Auto', 'Porto Seguro',
-        'AUTO-2024-001', '2025-12-01', '2026-11-30',
-        'Apólice', 'auto-marina-2024.pdf', 'Cobertura completa com carro reserva.'),
-      doc('d0000002-0000-4000-a000-000000000002', 'Vida', 'SulAmérica',
-        'VIDA-2023-014', '2025-12-15', '2026-12-14',
-        'Proposta', 'vida-marina.pdf', 'Aguardando assinatura digital.')
+      doc({ id: 'd0000001-0000-4000-a000-000000000001', type: 'Auto', company: 'Porto Seguro',
+        documentNumber: 'AUTO-2024-001', startDate: '2025-12-01', endDate: '2026-11-30',
+        status: 'Apólice', attachmentName: 'auto-marina-2024.pdf', notes: 'Cobertura completa com carro reserva.' }),
+      doc({ id: 'd0000002-0000-4000-a000-000000000002', type: 'Vida', company: 'SulAmérica',
+        documentNumber: 'VIDA-2023-014', startDate: '2025-12-15', endDate: '2026-12-14',
+        status: 'Proposta', attachmentName: 'vida-marina.pdf', notes: 'Aguardando assinatura digital.' })
     ]
   },
   {
@@ -127,9 +127,9 @@ const clientSeed = [
     address: addr('20040-020', 'Avenida Rio Branco', '123', 'Sala 1004', 'Centro', 'Rio de Janeiro', 'RJ'),
     notes: 'Empresário do setor de tecnologia.',
     documents: [
-      doc('d0000003-0000-4000-a000-000000000003', 'Residencial', 'Bradesco Seguros',
-        'RES-2024-045', '2025-11-10', '2026-11-09',
-        'Apólice', 'residencial-gustavo.pdf', 'Apartamento na região central.')
+      doc({ id: 'd0000003-0000-4000-a000-000000000003', type: 'Residencial', company: 'Bradesco Seguros',
+        documentNumber: 'RES-2024-045', startDate: '2025-11-10', endDate: '2026-11-09',
+        status: 'Apólice', attachmentName: 'residencial-gustavo.pdf', notes: 'Apartamento na região central.' })
     ]
   },
   {
@@ -149,9 +149,9 @@ const clientSeed = [
     address: addr('30130-010', 'Rua da Bahia', '600', 'Ap 301', 'Funcionários', 'Belo Horizonte', 'MG'),
     notes: 'Profissional liberal e viajante frequente.',
     documents: [
-      doc('d0000004-0000-4000-a000-000000000004', 'Viagem', 'Allianz',
-        'TRAVEL-2024-012', '2026-02-01', '2026-04-30',
-        'Apólice', 'viagem-clara.pdf', 'Plano anual com cobertura global.')
+      doc({ id: 'd0000004-0000-4000-a000-000000000004', type: 'Viagem', company: 'Allianz',
+        documentNumber: 'TRAVEL-2024-012', startDate: '2026-02-01', endDate: '2026-04-30',
+        status: 'Apólice', attachmentName: 'viagem-clara.pdf', notes: 'Plano anual com cobertura global.' })
     ]
   },
   {
@@ -171,15 +171,15 @@ const clientSeed = [
     address: addr('01310-200', 'Avenida Paulista', '1578', 'Torre Norte', 'Bela Vista', 'São Paulo', 'SP'),
     notes: 'Cliente PJ com demandas recorrentes de grandes apólices.',
     documents: [
-      doc('d0000005-0000-4000-a000-000000000005', 'Patrimonial', 'Tokio Marine',
-        'PATR-2024-220', '2025-12-01', '2026-12-01',
-        'Apólice', 'patrimonial-inova.pdf', 'Cobertura da sede administrativa.'),
-      doc('d0000006-0000-4000-a000-000000000006', 'Responsabilidade Civil', 'HDI',
-        'RC-2024-031', '2026-01-01', '2026-12-31',
-        'Apólice', 'rc-inova.pdf', 'Cobertura para diretores e executivos.'),
-      doc('d0000011-0000-4000-a000-000000000011', 'Garantia', 'Junto Seguros',
-        'GAR-2024-001', '2025-11-15', '2026-11-14',
-        'Apólice', 'garantia-inova.pdf', 'Garantia judicial para processo trabalhista.')
+      doc({ id: 'd0000005-0000-4000-a000-000000000005', type: 'Patrimonial', company: 'Tokio Marine',
+        documentNumber: 'PATR-2024-220', startDate: '2025-12-01', endDate: '2026-12-01',
+        status: 'Apólice', attachmentName: 'patrimonial-inova.pdf', notes: 'Cobertura da sede administrativa.' }),
+      doc({ id: 'd0000006-0000-4000-a000-000000000006', type: 'Responsabilidade Civil', company: 'HDI',
+        documentNumber: 'RC-2024-031', startDate: '2026-01-01', endDate: '2026-12-31',
+        status: 'Apólice', attachmentName: 'rc-inova.pdf', notes: 'Cobertura para diretores e executivos.' }),
+      doc({ id: 'd0000011-0000-4000-a000-000000000011', type: 'Garantia', company: 'Junto Seguros',
+        documentNumber: 'GAR-2024-001', startDate: '2025-11-15', endDate: '2026-11-14',
+        status: 'Apólice', attachmentName: 'garantia-inova.pdf', notes: 'Garantia judicial para processo trabalhista.' })
     ]
   },
   {
@@ -199,9 +199,9 @@ const clientSeed = [
     address: addr('40015-010', 'Rua Chile', '20', 'Cobertura', 'Centro Histórico', 'Salvador', 'BA'),
     notes: 'Cliente interessada em planos familiares.',
     documents: [
-      doc('d0000007-0000-4000-a000-000000000007', 'Saúde', 'Bradesco Saúde',
-        'SAUDE-2024-088', '2025-12-10', '2026-12-09',
-        'Apólice', 'saude-fernanda.pdf', 'Plano familiar com 3 dependentes.')
+      doc({ id: 'd0000007-0000-4000-a000-000000000007', type: 'Saúde', company: 'Bradesco Saúde',
+        documentNumber: 'SAUDE-2024-088', startDate: '2025-12-10', endDate: '2026-12-09',
+        status: 'Apólice', attachmentName: 'saude-fernanda.pdf', notes: 'Plano familiar com 3 dependentes.' })
     ]
   },
   {
@@ -221,12 +221,12 @@ const clientSeed = [
     address: addr('04530-000', 'Rua Joaquim Floriano', '100', 'Ap 12', 'Itaim Bibi', 'São Paulo', 'SP'),
     notes: 'Cliente novo vindo de indicação.',
     documents: [
-      doc('d0000012-0000-4000-a000-000000000012', 'Auto', 'Azul Seguros',
-        'AUTO-2024-099', '2025-12-01', '2026-11-30',
-        'Proposta', 'auto-roberto.pdf', 'Cotação inicial aprovada.'),
-      doc('d0000013-0000-4000-a000-000000000013', 'Vida', 'Icatu',
-        'VIDA-2024-055', '2026-01-01', '2026-12-31',
-        'Apólice', 'vida-roberto.pdf', 'Cobertura básica.')
+      doc({ id: 'd0000012-0000-4000-a000-000000000012', type: 'Auto', company: 'Azul Seguros',
+        documentNumber: 'AUTO-2024-099', startDate: '2025-12-01', endDate: '2026-11-30',
+        status: 'Proposta', attachmentName: 'auto-roberto.pdf', notes: 'Cotação inicial aprovada.' }),
+      doc({ id: 'd0000013-0000-4000-a000-000000000013', type: 'Vida', company: 'Icatu',
+        documentNumber: 'VIDA-2024-055', startDate: '2026-01-01', endDate: '2026-12-31',
+        status: 'Apólice', attachmentName: 'vida-roberto.pdf', notes: 'Cobertura básica.' })
     ]
   },
   // ========== Clientes da Nordeste (broker 2) ==========
@@ -247,9 +247,9 @@ const clientSeed = [
     address: addr('80240-030', 'Avenida Iguaçu', '1815', 'Casa 2', 'Água Verde', 'Curitiba', 'PR'),
     notes: 'Possui frota com dois veículos premium.',
     documents: [
-      doc('d0000008-0000-4000-a000-000000000008', 'Auto', 'Sompo',
-        'AUTO-2024-078', '2026-01-05', '2026-12-31',
-        'Apólice', 'auto-eduardo.pdf', 'Inclui cobertura para PCD.')
+      doc({ id: 'd0000008-0000-4000-a000-000000000008', type: 'Auto', company: 'Sompo',
+        documentNumber: 'AUTO-2024-078', startDate: '2026-01-05', endDate: '2026-12-31',
+        status: 'Apólice', attachmentName: 'auto-eduardo.pdf', notes: 'Inclui cobertura para PCD.' })
     ]
   },
   {
@@ -269,12 +269,12 @@ const clientSeed = [
     address: addr('69005-070', 'Avenida Constantino Nery', '2450', 'Galpão 3', 'São Geraldo', 'Manaus', 'AM'),
     notes: 'Operação de transporte refrigerado na região Norte.',
     documents: [
-      doc('d0000009-0000-4000-a000-000000000009', 'Frota', 'Mapfre',
-        'FROTA-2024-045', '2025-12-20', '2026-12-19',
-        'Apólice', 'frota-nortesul.pdf', '30 veículos cadastrados.'),
-      doc('d0000010-0000-4000-a000-000000000010', 'Equipamentos', 'Liberty',
-        'EQP-2023-119', '2025-11-01', '2026-10-31',
-        'Apólice', 'equipamentos-nortesul.pdf', 'Cobertura para câmaras frias.')
+      doc({ id: 'd0000009-0000-4000-a000-000000000009', type: 'Frota', company: 'Mapfre',
+        documentNumber: 'FROTA-2024-045', startDate: '2025-12-20', endDate: '2026-12-19',
+        status: 'Apólice', attachmentName: 'frota-nortesul.pdf', notes: '30 veículos cadastrados.' }),
+      doc({ id: 'd0000010-0000-4000-a000-000000000010', type: 'Equipamentos', company: 'Liberty',
+        documentNumber: 'EQP-2023-119', startDate: '2025-11-01', endDate: '2026-10-31',
+        status: 'Apólice', attachmentName: 'equipamentos-nortesul.pdf', notes: 'Cobertura para câmaras frias.' })
     ]
   },
   {
@@ -294,9 +294,9 @@ const clientSeed = [
     address: addr('70040-010', 'SBS Quadra 2', 'Bloco Q', 'Sala 203', 'Asa Sul', 'Brasília', 'DF'),
     notes: 'Consultora jurídica especializada em direito digital.',
     documents: [
-      doc('d0000014-0000-4000-a000-000000000014', 'Responsabilidade Civil Profissional', 'Chubb',
-        'RC-PAOLA-2024', '2026-01-10', '2027-01-09',
-        'Apólice', 'rc-paola.pdf', 'Cobertura para consultorias remotas.')
+      doc({ id: 'd0000014-0000-4000-a000-000000000014', type: 'Responsabilidade Civil Profissional', company: 'Chubb',
+        documentNumber: 'RC-PAOLA-2024', startDate: '2026-01-10', endDate: '2027-01-09',
+        status: 'Apólice', attachmentName: 'rc-paola.pdf', notes: 'Cobertura para consultorias remotas.' })
     ]
   },
   {
@@ -316,15 +316,15 @@ const clientSeed = [
     address: addr('60115-282', 'Avenida Santos Dumont', '2828', '7º andar', 'Aldeota', 'Fortaleza', 'CE'),
     notes: 'Rede de clínicas em expansão nacional.',
     documents: [
-      doc('d0000015-0000-4000-a000-000000000015', 'Patrimonial', 'Zurich',
-        'PATR-2024-301', '2025-12-01', '2026-11-30',
-        'Apólice', 'patr-vitaly.pdf', 'Inclui 4 unidades próprias.'),
-      doc('d0000016-0000-4000-a000-000000000016', 'Cyber', 'AIG',
-        'CYBER-2024-044', '2026-02-15', '2027-02-14',
-        'Proposta', 'cyber-vitaly.pdf', 'Em processo de análise de risco.'),
-      doc('d0000017-0000-4000-a000-000000000017', 'Saúde', 'SulAmérica',
-        'SAUDE-VIT-002', '2026-03-01', '2027-02-28',
-        'Proposta', 'saude-vitaly-2.pdf', 'Expansão para nova filial.')
+      doc({ id: 'd0000015-0000-4000-a000-000000000015', type: 'Patrimonial', company: 'Zurich',
+        documentNumber: 'PATR-2024-301', startDate: '2025-12-01', endDate: '2026-11-30',
+        status: 'Apólice', attachmentName: 'patr-vitaly.pdf', notes: 'Inclui 4 unidades próprias.' }),
+      doc({ id: 'd0000016-0000-4000-a000-000000000016', type: 'Cyber', company: 'AIG',
+        documentNumber: 'CYBER-2024-044', startDate: '2026-02-15', endDate: '2027-02-14',
+        status: 'Proposta', attachmentName: 'cyber-vitaly.pdf', notes: 'Em processo de análise de risco.' }),
+      doc({ id: 'd0000017-0000-4000-a000-000000000017', type: 'Saúde', company: 'SulAmérica',
+        documentNumber: 'SAUDE-VIT-002', startDate: '2026-03-01', endDate: '2027-02-28',
+        status: 'Proposta', attachmentName: 'saude-vitaly-2.pdf', notes: 'Expansão para nova filial.' })
     ]
   }
 ];
