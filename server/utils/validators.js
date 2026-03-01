@@ -11,7 +11,7 @@
 export function isValidCPF(cpf) {
     if (!cpf) return false;
 
-    cpf = cpf.replace(/[^\d]/g, '');
+    cpf = cpf.replaceAll(/[^\d]/g, '');
 
     if (cpf.length !== 11) return false;
 
@@ -25,19 +25,19 @@ export function isValidCPF(cpf) {
 
     let sum = 0;
     for (let i = 0; i < 9; i++) {
-        sum += parseInt(cpf.charAt(i)) * (10 - i);
+        sum += Number.parseInt(cpf.charAt(i)) * (10 - i);
     }
     let checkDigit1 = 11 - (sum % 11);
     if (checkDigit1 >= 10) checkDigit1 = 0;
-    if (checkDigit1 !== parseInt(cpf.charAt(9))) return false;
+    if (checkDigit1 !== Number.parseInt(cpf.charAt(9))) return false;
 
     sum = 0;
     for (let i = 0; i < 10; i++) {
-        sum += parseInt(cpf.charAt(i)) * (11 - i);
+        sum += Number.parseInt(cpf.charAt(i)) * (11 - i);
     }
     let checkDigit2 = 11 - (sum % 11);
     if (checkDigit2 >= 10) checkDigit2 = 0;
-    if (checkDigit2 !== parseInt(cpf.charAt(10))) return false;
+    if (checkDigit2 !== Number.parseInt(cpf.charAt(10))) return false;
 
     return true;
 }
@@ -50,7 +50,7 @@ export function isValidCPF(cpf) {
 export function isValidCNPJ(cnpj) {
     if (!cnpj) return false;
 
-    cnpj = cnpj.replace(/[^\d]/g, '');
+    cnpj = cnpj.replaceAll(/[^\d]/g, '');
 
     if (cnpj.length !== 14) return false;
 
@@ -65,20 +65,20 @@ export function isValidCNPJ(cnpj) {
     let sum = 0;
     let weight = 2;
     for (let i = 11; i >= 0; i--) {
-        sum += parseInt(cnpj.charAt(i)) * weight;
+        sum += Number.parseInt(cnpj.charAt(i)) * weight;
         weight = weight === 9 ? 2 : weight + 1;
     }
     let checkDigit1 = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-    if (checkDigit1 !== parseInt(cnpj.charAt(12))) return false;
+    if (checkDigit1 !== Number.parseInt(cnpj.charAt(12))) return false;
 
     sum = 0;
     weight = 2;
     for (let i = 12; i >= 0; i--) {
-        sum += parseInt(cnpj.charAt(i)) * weight;
+        sum += Number.parseInt(cnpj.charAt(i)) * weight;
         weight = weight === 9 ? 2 : weight + 1;
     }
     let checkDigit2 = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-    if (checkDigit2 !== parseInt(cnpj.charAt(13))) return false;
+    if (checkDigit2 !== Number.parseInt(cnpj.charAt(13))) return false;
 
     return true;
 }

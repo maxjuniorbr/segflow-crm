@@ -15,12 +15,13 @@ import {
 } from '../../infrastructure/repositories/brokerRepository.js';
 import { countUsersByBroker } from '../../infrastructure/repositories/userRepository.js';
 import { countClientsByBroker } from '../../infrastructure/repositories/clientRepository.js';
+import { mapUniqueConstraintError } from '../utils/uniqueConstraintError.js';
 
 /**
  * @param {string|null|undefined} cnpj
  * @returns {string|null}
  */
-const sanitizeCnpj = (cnpj) => (cnpj ? cnpj.replace(/[^\d]/g, '') : null);
+const sanitizeCnpj = (cnpj) => (cnpj ? cnpj.replaceAll(/[^\d]/g, '') : null);
 
 /**
  * @param {string} [brokerId]
@@ -87,7 +88,7 @@ export const createBrokerUseCase = async (payload, brokerId) => {
         return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
     }
 
-    if (susepCode && susepCode.trim() !== '') {
+    if (susepCode) {
         const susepCheck = await findBrokerBySusep(susepCode);
         if (susepCheck) {
             return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
@@ -107,12 +108,11 @@ export const createBrokerUseCase = async (payload, brokerId) => {
             mobile
         });
     } catch (err) {
-        if (err.code === '23505') {
-            const detail = err.detail || '';
-            if (detail.includes('cnpj')) return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
-            if (detail.includes('susep_code')) return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
-            return { status: 400, payload: { error: [{ path: ['unknown'], message: 'Registro duplicado' }] } };
-        }
+        const result = mapUniqueConstraintError(err, [
+            ['cnpj', 'cnpj', 'CNPJ já cadastrado'],
+            ['susep_code', 'susepCode', 'Código SUSEP já cadastrado']
+        ]);
+        if (result) return result;
         throw err;
     }
 
@@ -148,7 +148,7 @@ export const updateBrokerUseCase = async (id, payload, brokerId) => {
         return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
     }
 
-    if (susepCode && susepCode.trim() !== '') {
+    if (susepCode) {
         const susepCheck = await findBrokerBySusepExcludingId(susepCode, id);
         if (susepCheck) {
             return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
@@ -168,12 +168,11 @@ export const updateBrokerUseCase = async (id, payload, brokerId) => {
             mobile
         });
     } catch (err) {
-        if (err.code === '23505') {
-            const detail = err.detail || '';
-            if (detail.includes('cnpj')) return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
-            if (detail.includes('susep_code')) return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
-            return { status: 400, payload: { error: [{ path: ['unknown'], message: 'Registro duplicado' }] } };
-        }
+        const result = mapUniqueConstraintError(err, [
+            ['cnpj', 'cnpj', 'CNPJ já cadastrado'],
+            ['susep_code', 'susepCode', 'Código SUSEP já cadastrado']
+        ]);
+        if (result) return result;
         throw err;
     }
 

@@ -1,5 +1,5 @@
 // @ts-check
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { toDocumentResponse } from '../dto/documentDto.js';
 import { buildMessageResponse } from '../dto/responseDto.js';
 import { decodeCursor, encodeCursor } from '../utils/cursorPagination.js';

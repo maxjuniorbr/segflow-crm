@@ -58,7 +58,7 @@ export const ClientDetail: React.FC = () => {
       await storageService.deleteClient(id);
       showToast(actionMessages.deleteSuccess('Cliente'), 'success');
       navigate('/clients');
-    } catch (error) {
+    } catch (_error) {
       showToast(actionMessages.deleteErrorWithHint('cliente', 'Verifique se existem propostas ativas.'), 'error');
     } finally {
       setShowDeleteDialog(false);
@@ -71,7 +71,7 @@ export const ClientDetail: React.FC = () => {
       await storageService.deleteDocument(documentToDeleteId);
       setDocuments(prev => prev.filter(d => d.id !== documentToDeleteId));
       showToast(actionMessages.deleteSuccess('Documento'), 'success');
-    } catch (error) {
+    } catch (_error) {
       showToast(actionMessages.deleteError('documento'), 'error');
     } finally {
       setShowDeleteDocumentDialog(false);

@@ -4,7 +4,7 @@ import { parseCookies } from '../src/application/utils/parseCookies.js';
 
 const extractToken = (req) => {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (authHeader?.startsWith('Bearer ')) {
         return authHeader.substring(7);
     }
     if (req.headers.cookie) {
@@ -24,7 +24,7 @@ export const authMiddleware = (req, res, next) => {
         const decoded = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
         req.user = decoded;
         next();
-    } catch (err) {
+    } catch (_err) {
         return res.status(401).json({ error: 'Token inválido.' });
     }
 };

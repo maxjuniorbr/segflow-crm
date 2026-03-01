@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Users } from 'lucide-react';
+import { Plus, Trash2, Users } from 'lucide-react';
 import { Button, Card, SearchInput, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableRowButton, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
 import { userService } from '../../../services/userService';
@@ -111,15 +111,16 @@ export const UserList: React.FC = () => {
                     </div>
                 </div>
 
-                {loading ? (
-                    <LoadingState label={actionMessages.loading('usuários')} className="min-h-[220px]" />
-                ) : filteredUsers.length === 0 ? (
-                    <EmptyState
-                        icon={<Users className="h-12 w-12" />}
-                        title={emptyStateMessages.users.title}
-                        description={emptyStateMessages.users.description(!!searchTerm)}
-                    />
-                ) : (
+                {(() => {
+                    if (loading) return <LoadingState label={actionMessages.loading('usuários')} className="min-h-[220px]" />;
+                    if (filteredUsers.length === 0) return (
+                        <EmptyState
+                            icon={<Users className="h-12 w-12" />}
+                            title={emptyStateMessages.users.title}
+                            description={emptyStateMessages.users.description(!!searchTerm)}
+                        />
+                    );
+                    return (
                     <>
                         <div className="space-y-3 sm:hidden">
                             {filteredUsers.map((user) => (
@@ -149,8 +150,8 @@ export const UserList: React.FC = () => {
                                                 e.stopPropagation();
                                                 if (user.id === currentUser?.id) {
                                                     showToast(actionMessages.deleteBlockedAccount, 'error');
-                                                } else {
-                                                    setDeleteUserId(user.id!);
+                                                } else if (user.id !== undefined) {
+                                                    setDeleteUserId(user.id);
                                                 }
                                             }}
                                             className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 hover:border-danger-200 dark:hover:border-danger-700"
@@ -212,8 +213,8 @@ export const UserList: React.FC = () => {
                                                         e.stopPropagation();
                                                         if (user.id === currentUser?.id) {
                                                             showToast(actionMessages.deleteBlockedAccount, 'error');
-                                                        } else {
-                                                            setDeleteUserId(user.id!);
+                                                        } else if (user.id !== undefined) {
+                                                            setDeleteUserId(user.id);
                                                         }
                                                     }}
                                                     className="text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 hover:border-danger-200 dark:hover:border-danger-700"
@@ -230,7 +231,8 @@ export const UserList: React.FC = () => {
                         </Table>
                         </div>
                     </>
-                )}
+                    );
+                })()}
             </Card>
 
             <ConfirmDialog

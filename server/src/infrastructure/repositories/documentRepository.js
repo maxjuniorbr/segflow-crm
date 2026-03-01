@@ -22,7 +22,7 @@ const buildDocumentFilters = ({ brokerId, clientId, status, search }) => {
     }
 
     if (search) {
-        const normalized = search.toLowerCase().replace(/[%_\\]/g, '\\$&');
+        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, '\\$&');
         values.push(`%${normalized}%`);
         const param = `$${values.length}`;
         conditions.push(`(
@@ -37,9 +37,33 @@ const buildDocumentFilters = ({ brokerId, clientId, status, search }) => {
     return { values, whereClause };
 };
 
+const appendCursorCondition = (query, values, cursor, hasWhereClause) => {
+    values.push(cursor.createdAt);
+    const createdAtParam = `$${values.length}`;
+    values.push(cursor.id);
+    const idParam = `$${values.length}`;
+    const conjunction = hasWhereClause ? ' AND' : ' WHERE';
+    return query + `${conjunction} (d.created_at < ${createdAtParam} OR (d.created_at = ${createdAtParam} AND d.id < ${idParam}))`;
+};
+
+const appendLimit = (query, values, limit) => {
+    if (limit == null) return query;
+    const n = Number.parseInt(limit, 10);
+    if (Number.isNaN(n) || n <= 0) return query;
+    values.push(n);
+    return query + ` LIMIT $${values.length}`;
+};
+
+const appendOffset = (query, values, offset) => {
+    if (offset == null) return query;
+    const n = Number.parseInt(offset, 10);
+    if (Number.isNaN(n) || n < 0) return query;
+    values.push(n);
+    return query + ` OFFSET $${values.length}`;
+};
+
 export const listDocuments = async ({ brokerId, clientId, status, search, limit, offset, cursor }) => {
     const { values, whereClause } = buildDocumentFilters({ brokerId, clientId, status, search });
-
     const queryValues = [...values];
     const hasCursor = Boolean(cursor?.createdAt && cursor?.id);
     const countExpr = hasCursor ? '' : ',\n            COUNT(*) OVER() AS total_count';
@@ -66,33 +90,18 @@ export const listDocuments = async ({ brokerId, clientId, status, search, limit,
     `;
 
     if (hasCursor) {
-        queryValues.push(cursor.createdAt);
-        const createdAtParam = `$${queryValues.length}`;
-        queryValues.push(cursor.id);
-        const idParam = `$${queryValues.length}`;
-        query += `${whereClause ? ' AND' : ' WHERE'} (d.created_at < ${createdAtParam} OR (d.created_at = ${createdAtParam} AND d.id < ${idParam}))`;
+        query = appendCursorCondition(query, queryValues, cursor, Boolean(whereClause));
     }
 
     query += ' ORDER BY d.created_at DESC, d.id DESC';
+    query = appendLimit(query, queryValues, limit);
 
-    if (limit !== undefined && limit !== null) {
-        const limitNumber = parseInt(limit, 10);
-        if (!isNaN(limitNumber) && limitNumber > 0) {
-            queryValues.push(limitNumber);
-            query += ` LIMIT $${queryValues.length}`;
-        }
-    }
-
-    if (!hasCursor && offset !== undefined && offset !== null) {
-        const offsetNumber = parseInt(offset, 10);
-        if (!isNaN(offsetNumber) && offsetNumber >= 0) {
-            queryValues.push(offsetNumber);
-            query += ` OFFSET $${queryValues.length}`;
-        }
+    if (!hasCursor) {
+        query = appendOffset(query, queryValues, offset);
     }
 
     const result = await pool.query(query, queryValues);
-    const total = hasCursor ? 0 : (parseInt(result.rows[0]?.total_count, 10) || 0);
+    const total = hasCursor ? 0 : (Number.parseInt(result.rows[0]?.total_count, 10) || 0);
     return { rows: result.rows, total };
 };
 

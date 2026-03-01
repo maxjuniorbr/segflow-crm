@@ -1,5 +1,5 @@
 import pg from 'pg';
-import fs from 'fs';
+import fs from 'node:fs';
 import { isDevelopment, isTest } from '../src/config/env.js';
 
 const parseIntEnv = (value, fallback) => {

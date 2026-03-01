@@ -111,7 +111,7 @@ describe('Client Controller', () => {
     });
 
     it('updates client and validates duplicates', async () => {
-        const querySpy = pool.query
+        pool.query
             .mockResolvedValueOnce({ rows: [{ id: 'cli-1' }] })
             .mockResolvedValueOnce({ rows: [] })
             .mockResolvedValueOnce({ rows: [] });
@@ -134,7 +134,7 @@ describe('Client Controller', () => {
     });
 
     it('prevents client deletion with active proposals', async () => {
-        const querySpy = pool.query
+        pool.query
             .mockResolvedValueOnce({ rows: [{ id: 'cli-1' }] })
             .mockResolvedValueOnce({ rows: [{ count: 2 }] });
         const res = createRes();
@@ -143,7 +143,7 @@ describe('Client Controller', () => {
     });
 
     it('deletes client when no proposals', async () => {
-        const querySpy = pool.query
+        pool.query
             .mockResolvedValueOnce({ rows: [{ id: 'cli-1' }] })
             .mockResolvedValueOnce({ rows: [{ count: 0 }] })
             .mockResolvedValueOnce({ rows: [] });

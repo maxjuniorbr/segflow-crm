@@ -63,7 +63,6 @@ import jwt from 'jsonwebtoken';
 import pool from '../../../config/db.js';
 import {
     findUserByEmail,
-    findUserByCpf,
     findUserByIdMinimal
 } from '../../../src/infrastructure/repositories/userRepository.js';
 import {

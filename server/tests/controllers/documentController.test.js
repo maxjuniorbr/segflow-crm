@@ -54,7 +54,7 @@ describe('Document Controller', () => {
     });
 
     it('returns 500 when list fails', async () => {
-        const querySpy = pool.query.mockRejectedValueOnce(new Error('fail'));
+        pool.query.mockRejectedValueOnce(new Error('fail'));
         const res = createRes();
         await getDocuments(createReq(), res);
         expect(res.statusCode).toBe(500);
@@ -73,7 +73,7 @@ describe('Document Controller', () => {
     });
 
     it('creates document normalizing optional fields', async () => {
-        const querySpy = pool.query
+        pool.query
             .mockResolvedValueOnce({ rows: [{ id: 'cli-1' }] })
             .mockResolvedValueOnce({ rows: [] });
         const res = createRes();

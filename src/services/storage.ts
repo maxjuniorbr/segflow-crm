@@ -24,7 +24,7 @@ export const storageService = {
   validateUser: async (email: string, password: string): Promise<User | null> => {
     try {
       const data = await api.post('/api/login', { email, password }, { redirectOnAuthError: false, suppressToast: true });
-      if (data && data.user) {
+      if (data?.user) {
         return {
           ...data.user,
           isAuthenticated: true
@@ -56,7 +56,8 @@ export const storageService = {
     if (filters?.cursor) params.append('cursor', filters.cursor);
 
     const query = params.toString();
-    return api.get(`/api/clients${query ? `?${query}` : ''}`);
+    const url = query ? `/api/clients?${query}` : '/api/clients';
+    return api.get(url);
   },
 
   getClientById: async (id: string): Promise<Client | undefined> => {
@@ -74,12 +75,8 @@ export const storageService = {
   },
 
   deleteClient: async (id: string): Promise<boolean> => {
-    try {
-      await api.delete(`/api/clients/${id}`, { suppressToast: true });
-      return true;
-    } catch (error) {
-      throw error; // Propagate error (e.g. "active proposals")
-    }
+    await api.delete(`/api/clients/${id}`, { suppressToast: true });
+    return true;
   },
 
   // --- Proposals ---
@@ -96,7 +93,8 @@ export const storageService = {
     if (filters?.cursor) params.append('cursor', filters.cursor);
 
     const query = params.toString();
-    return api.get(`/api/documents${query ? `?${query}` : ''}`);
+    const url = query ? `/api/documents?${query}` : '/api/documents';
+    return api.get(url);
   },
 
   getDocumentById: async (id: string): Promise<Document | undefined> => {

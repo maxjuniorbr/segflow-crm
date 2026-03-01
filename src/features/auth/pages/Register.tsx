@@ -4,7 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 import { Button, Input, Alert, SectionTitle } from '../../../shared/components/UIComponents';
 import { storageService } from '../../../services/storage';
 import { maskCPF, maskCNPJ, maskPhone } from '../../../utils/formatters';
-import { isValidCPF, isValidCNPJ, isValidEmail } from '../../../utils/validators';
+import { isValidCPF, isValidCNPJ, isValidEmail, isStrongPassword } from '../../../utils/validators';
 import { validationMessages } from '../../../utils/validationMessages';
 import { authMessages } from '../../../utils/authMessages';
 import { uiBaseMessages } from '../../../utils/uiBaseMessages';
@@ -136,7 +136,7 @@ export const Register: React.FC = () => {
 
     if (!formData.password.trim()) {
       newErrors.password = validationMessages.required(uiBaseMessages.labels.password);
-    } else if (formData.password.length < 10 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+    } else if (!isStrongPassword(formData.password, 10)) {
       newErrors.password = validationMessages.passwordMinLengthStrong(10);
     }
 

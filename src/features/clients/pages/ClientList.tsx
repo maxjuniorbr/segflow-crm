@@ -156,27 +156,29 @@ export const ClientList: React.FC = () => {
           </div>
         </div>
 
-        {loading ? (
-          <LoadingState label={actionMessages.loading('clientes')} className="min-h-[220px]" />
-        ) : !hasSearched ? (
-          <EmptyState
-            icon={<Users className="h-12 w-12" />}
-            title={emptyStateMessages.clients.initialTitle}
-            description={emptyStateMessages.clients.initialDescription}
-          />
-        ) : clients.length === 0 ? (
-          <EmptyState
-            icon={<Users className="h-12 w-12" />}
-            title={emptyStateMessages.clients.title}
-            description={emptyStateMessages.clients.description(!!searchTerm)}
-            action={(
-              <Button className="whitespace-nowrap" onClick={() => navigate('/clients/new')}>
-                <Plus className="w-4 h-4 mr-2" />
-                {uiMessages.pages.clients.actions.new}
-              </Button>
-            )}
-          />
-        ) : (
+        {(() => {
+          if (loading) return <LoadingState label={actionMessages.loading('clientes')} className="min-h-[220px]" />;
+          if (!hasSearched) return (
+            <EmptyState
+              icon={<Users className="h-12 w-12" />}
+              title={emptyStateMessages.clients.initialTitle}
+              description={emptyStateMessages.clients.initialDescription}
+            />
+          );
+          if (clients.length === 0) return (
+            <EmptyState
+              icon={<Users className="h-12 w-12" />}
+              title={emptyStateMessages.clients.title}
+              description={emptyStateMessages.clients.description(!!searchTerm)}
+              action={(
+                <Button className="whitespace-nowrap" onClick={() => navigate('/clients/new')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {uiMessages.pages.clients.actions.new}
+                </Button>
+              )}
+            />
+          );
+          return (
           <>
             <div className="space-y-3 sm:hidden">
               {clients.map(client => (
@@ -255,7 +257,8 @@ export const ClientList: React.FC = () => {
               </div>
             )}
           </>
-        )}
+          );
+        })()}
       </Card>
     </div>
   );

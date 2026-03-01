@@ -205,25 +205,25 @@ describe('401 handling and token refresh', () => {
             .mockResolvedValueOnce(createResponse(401, {}, false));
 
         await expect(api.get('/api/protected')).rejects.toThrow('Sessão expirada.');
-        expect(window.location.href).toContain('#/login');
+        expect(globalThis.location.href).toContain('#/login');
     });
 
     it('does not redirect when redirectOnAuthError is false', async () => {
-        const hrefBefore = window.location.href;
+        const hrefBefore = globalThis.location.href;
         mockFetch.mockResolvedValueOnce(createResponse(401, {}, false));
 
         await expect(
             api.get('/api/test', { redirectOnAuthError: false })
         ).rejects.toThrow('Não autorizado.');
-        expect(window.location.href).toBe(hrefBefore);
+        expect(globalThis.location.href).toBe(hrefBefore);
     });
 
     it('handles 403 without redirect (not an auth failure)', async () => {
-        const hrefBefore = window.location.href;
+        const hrefBefore = globalThis.location.href;
         mockFetch.mockResolvedValueOnce(createResponse(403, { error: 'Acesso negado' }, false));
 
         await expect(api.get('/api/admin')).rejects.toThrow('Acesso negado');
-        expect(window.location.href).toBe(hrefBefore);
+        expect(globalThis.location.href).toBe(hrefBefore);
     });
 
     it('handles 403 with custom error message from server', async () => {
@@ -239,6 +239,6 @@ describe('401 handling and token refresh', () => {
             .mockResolvedValueOnce(createResponse(401, {}, false));
 
         await expect(api.get('/api/protected')).rejects.toThrow('Sessão expirada.');
-        expect(window.location.href).toContain('#/login');
+        expect(globalThis.location.href).toContain('#/login');
     });
 });

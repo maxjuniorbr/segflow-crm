@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import routes from '../routes/index.js';
 import { isDevelopment, isTest, corsAllowedOrigins } from './config/env.js';
 import { AppError } from './application/errors/AppError.js';
@@ -48,8 +48,9 @@ app.use((req, res, next) => {
 });
 
 if (isDevelopment) {
-    app.use('/api', (req, res, next) => {
-        console.log(`Request ${req.method} ${req.path}`);
+    const sanitizeLogValue = (val) => String(val).replaceAll(/[\r\n\t]/g, '_').slice(0, 200);
+    app.use('/api', (req, _res, next) => {
+        console.log('Request %s %s', sanitizeLogValue(req.method), sanitizeLogValue(req.path));
         next();
     });
 }

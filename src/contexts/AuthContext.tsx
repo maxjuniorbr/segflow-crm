@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import { User } from '../types';
 import { api } from '../services/api';
 import { storageService } from '../services/storage';
@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const response = await api.get('/api/auth/validate', { suppressToast: true, redirectOnAuthError: false });
         if (cancelled) return;
-        if (response && response.user) {
+        if (response?.user) {
           const sessionUser = { ...response.user, isAuthenticated: true };
           setUser(sessionUser);
         } else {
@@ -43,12 +43,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => { cancelled = true; };
   }, []);
 
-  const login = (userData: User) => {
+  const login = useCallback((userData: User) => {
     const sessionUser = { ...userData, isAuthenticated: true };
     setUser(sessionUser);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await storageService.logout();
     } catch (error) {
@@ -57,10 +57,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       sessionStorage.clear();
       clearSession();
     }
-  };
+  }, []);
+
+  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

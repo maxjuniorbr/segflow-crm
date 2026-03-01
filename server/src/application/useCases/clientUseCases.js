@@ -1,5 +1,5 @@
 // @ts-check
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { Client } from '../../domain/entities/Client.js';
 import { toClientResponse } from '../dto/clientDto.js';
 import { buildMessageResponse } from '../dto/responseDto.js';
@@ -17,6 +17,32 @@ import {
     deleteClient as deleteClientRepo,
     countActiveDocumentsForClient
 } from '../../infrastructure/repositories/clientRepository.js';
+import { mapUniqueConstraintError } from '../utils/uniqueConstraintError.js';
+
+const sanitizeDocument = (value) => {
+    const clean = nullifyEmpty(value);
+    return clean ? clean.replaceAll(/[^\d]/g, '') : null;
+};
+
+/**
+ * @param {import('../../types.js').ClientPayload} payload
+ */
+const sanitizeClientPayload = (payload) => ({
+    name: payload.name,
+    brokerId: payload.brokerId,
+    personType: payload.personType || 'Física',
+    maritalStatus: payload.maritalStatus || 'Solteiro(a)',
+    cpf: sanitizeDocument(payload.cpf),
+    cnpj: sanitizeDocument(payload.cnpj),
+    rg: nullifyEmpty(payload.rg),
+    rgDispatchDate: nullifyEmpty(payload.rgDispatchDate),
+    rgIssuer: nullifyEmpty(payload.rgIssuer),
+    birthDate: nullifyEmpty(payload.birthDate),
+    email: nullifyEmpty(payload.email),
+    phone: nullifyEmpty(payload.phone),
+    notes: nullifyEmpty(payload.notes),
+    addressJson: payload.address ? JSON.stringify(payload.address) : null
+});
 
 /**
  * @param {{ brokerId?: string, search?: string, personType?: string, limit?: number, offset?: number, cursor?: string }} [filters]
@@ -72,82 +98,36 @@ export const getClientByIdUseCase = async (id, brokerId) => {
  * @returns {Promise<import('../../types.js').UseCaseResult>}
  */
 export const createClientUseCase = async (payload) => {
-    let {
-        id,
-        brokerId,
-        name,
-        personType,
-        cpf,
-        cnpj,
-        rg,
-        rgDispatchDate,
-        rgIssuer,
-        birthDate,
-        maritalStatus,
-        email,
-        phone,
-        address,
-        notes
-    } = payload;
+    const clientId = payload.id || randomUUID();
+    const sanitized = sanitizeClientPayload(payload);
 
-    const clientId = id || randomUUID();
-
-    if (!personType) personType = 'Física';
-    if (!maritalStatus) maritalStatus = 'Solteiro(a)';
-
-    rgDispatchDate = nullifyEmpty(rgDispatchDate);
-    birthDate = nullifyEmpty(birthDate);
-    cpf = nullifyEmpty(cpf);
-    cnpj = nullifyEmpty(cnpj);
-    cpf = cpf ? cpf.replace(/[^\d]/g, '') : null;
-    cnpj = cnpj ? cnpj.replace(/[^\d]/g, '') : null;
-    rg = nullifyEmpty(rg);
-    rgIssuer = nullifyEmpty(rgIssuer);
-    email = nullifyEmpty(email);
-    phone = nullifyEmpty(phone);
-    notes = nullifyEmpty(notes);
-
-    const addressJson = address ? JSON.stringify(address) : null;
-
-    if (cpf) {
-        const cpfCheck = await findClientByCpf(cpf, brokerId);
+    if (sanitized.cpf) {
+        const cpfCheck = await findClientByCpf(sanitized.cpf, sanitized.brokerId);
         if (cpfCheck) {
             return { status: 400, payload: { error: [{ path: ['cpf'], message: 'CPF já cadastrado' }] } };
         }
     }
 
-    if (cnpj) {
-        const cnpjCheck = await findClientByCnpj(cnpj, brokerId);
+    if (sanitized.cnpj) {
+        const cnpjCheck = await findClientByCnpj(sanitized.cnpj, sanitized.brokerId);
         if (cnpjCheck) {
             return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
         }
     }
 
     try {
+        const { addressJson, ...fields } = sanitized;
         await createClientRepo({
             id: clientId,
-            brokerId,
-            name,
-            personType,
-            cpf,
-            cnpj,
-            rg,
-            rgDispatchDate,
-            rgIssuer,
-            birthDate,
-            maritalStatus,
-            email,
-            phone,
-            address: addressJson,
-            notes
+            ...fields,
+            address: addressJson
         });
     } catch (err) {
-        if (err.code === '23505') {
-            const detail = (err.detail || '').toLowerCase();
-            if (detail.includes('cpf')) return { status: 400, payload: { error: [{ path: ['cpf'], message: 'CPF já cadastrado' }] } };
-            if (detail.includes('cnpj')) return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
-            return { status: 400, payload: { error: [{ path: ['unknown'], message: 'Registro duplicado' }] } };
-        }
+        const result = mapUniqueConstraintError(err, [
+            ['cpf', 'cpf', 'CPF já cadastrado'],
+            ['cnpj', 'cnpj', 'CNPJ já cadastrado']
+        ]);
+        if (result) return result;
         throw err;
     }
 
@@ -163,84 +143,41 @@ export const createClientUseCase = async (payload) => {
  * @returns {Promise<import('../../types.js').UseCaseResult>}
  */
 export const updateClientUseCase = async (id, payload) => {
-    let {
-        brokerId,
-        name,
-        personType,
-        cpf,
-        cnpj,
-        rg,
-        rgDispatchDate,
-        rgIssuer,
-        birthDate,
-        maritalStatus,
-        email,
-        phone,
-        address,
-        notes
-    } = payload;
-
+    const { brokerId } = payload;
     const existing = await findClientById(id, brokerId);
     if (!existing) {
         return { status: 404, payload: { error: 'Cliente não encontrado' } };
     }
 
-    if (!personType) personType = 'Física';
-    if (!maritalStatus) maritalStatus = 'Solteiro(a)';
+    const sanitized = sanitizeClientPayload(payload);
 
-    rgDispatchDate = nullifyEmpty(rgDispatchDate);
-    birthDate = nullifyEmpty(birthDate);
-    cpf = nullifyEmpty(cpf);
-    cnpj = nullifyEmpty(cnpj);
-    cpf = cpf ? cpf.replace(/[^\d]/g, '') : null;
-    cnpj = cnpj ? cnpj.replace(/[^\d]/g, '') : null;
-    rg = nullifyEmpty(rg);
-    rgIssuer = nullifyEmpty(rgIssuer);
-    email = nullifyEmpty(email);
-    phone = nullifyEmpty(phone);
-    notes = nullifyEmpty(notes);
-
-    const addressJson = address ? JSON.stringify(address) : null;
-
-    if (cpf) {
-        const cpfCheck = await findClientByCpfExcludingId(cpf, id, brokerId);
+    if (sanitized.cpf) {
+        const cpfCheck = await findClientByCpfExcludingId(sanitized.cpf, id, sanitized.brokerId);
         if (cpfCheck) {
             return { status: 400, payload: { error: [{ path: ['cpf'], message: 'CPF já cadastrado' }] } };
         }
     }
 
-    if (cnpj) {
-        const cnpjCheck = await findClientByCnpjExcludingId(cnpj, id, brokerId);
+    if (sanitized.cnpj) {
+        const cnpjCheck = await findClientByCnpjExcludingId(sanitized.cnpj, id, sanitized.brokerId);
         if (cnpjCheck) {
             return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
         }
     }
 
     try {
+        const { addressJson, ...fields } = sanitized;
         await updateClientRepo({
             id,
-            brokerId,
-            name,
-            personType,
-            cpf,
-            cnpj,
-            rg,
-            rgDispatchDate,
-            rgIssuer,
-            birthDate,
-            maritalStatus,
-            email,
-            phone,
-            address: addressJson,
-            notes
+            ...fields,
+            address: addressJson
         });
     } catch (err) {
-        if (err.code === '23505') {
-            const detail = (err.detail || '').toLowerCase();
-            if (detail.includes('cpf')) return { status: 400, payload: { error: [{ path: ['cpf'], message: 'CPF já cadastrado' }] } };
-            if (detail.includes('cnpj')) return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
-            return { status: 400, payload: { error: [{ path: ['unknown'], message: 'Registro duplicado' }] } };
-        }
+        const result = mapUniqueConstraintError(err, [
+            ['cpf', 'cpf', 'CPF já cadastrado'],
+            ['cnpj', 'cnpj', 'CNPJ já cadastrado']
+        ]);
+        if (result) return result;
         throw err;
     }
 

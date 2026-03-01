@@ -12,8 +12,15 @@ import {
     requiredDateField
 } from './common.js';
 
-const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
-const passwordMessage = 'Senha deve ter ao menos 10 caracteres, incluindo maiúsculas, minúsculas e números';
+const PWD_MSG = 'Senha deve ter ao menos 10 caracteres, incluindo maiúsculas, minúsculas e números';
+
+const strongPasswordField = (min) =>
+    z.string()
+        .min(min, PWD_MSG)
+        .max(72, 'Senha deve ter no máximo 72 caracteres')
+        .refine(val => /[a-z]/.test(val), { message: PWD_MSG })
+        .refine(val => /[A-Z]/.test(val), { message: PWD_MSG })
+        .refine(val => /\d/.test(val), { message: PWD_MSG });
 
 export const registerSchema = z.object({
     name: requiredString({
@@ -29,10 +36,7 @@ export const registerSchema = z.object({
     email: z.string()
         .email('Email inválido')
         .max(254, 'Email deve ter no máximo 254 caracteres'),
-    password: z.string()
-        .min(10, passwordMessage)
-        .max(72, 'Senha deve ter no máximo 72 caracteres')
-        .regex(passwordPattern, passwordMessage),
+    password: strongPasswordField(10),
 }).superRefine((data, ctx) => {
     if (!isValidCPF(data.cpf)) {
         ctx.addIssue({
@@ -54,10 +58,7 @@ export const loginSchema = z.object({
 
 export const changePasswordSchema = z.object({
     currentPassword: requiredNonEmptyString('Senha atual é obrigatória'),
-    newPassword: z.string()
-        .min(10, passwordMessage)
-        .max(72, 'Senha deve ter no máximo 72 caracteres')
-        .regex(passwordPattern, passwordMessage),
+    newPassword: strongPasswordField(10),
 });
 
 export const clientSchema = z.object({
@@ -202,7 +203,7 @@ export const userSchema = z.object({
     email: z.string()
         .email('Email inválido')
         .max(254, 'Email deve ter no máximo 254 caracteres'),
-    password: optionalPasswordField(10, passwordMessage, passwordPattern, passwordMessage),
+    password: optionalPasswordField(10, PWD_MSG),
 }).superRefine((data, ctx) => {
     if (!isValidCPF(data.cpf)) {
         ctx.addIssue({
@@ -291,10 +292,7 @@ export const registerBrokerSchema = z.object({
         max: 14,
         maxMessage: 'CPF deve ter no máximo 14 caracteres'
     }),
-    password: z.string()
-        .min(10, passwordMessage)
-        .max(72, 'Senha deve ter no máximo 72 caracteres')
-        .regex(passwordPattern, passwordMessage),
+    password: strongPasswordField(10),
 }).superRefine((data, ctx) => {
     if (!isValidCNPJ(data.cnpj)) {
         ctx.addIssue({

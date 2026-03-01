@@ -16,7 +16,7 @@ export const decodeCursor = (cursor) => {
     try {
         const raw = Buffer.from(cursor, 'base64url').toString('utf8');
         const data = JSON.parse(raw);
-        if (!data || data.v !== CURSOR_VERSION) {
+        if (data?.v !== CURSOR_VERSION) {
             return null;
         }
         if (typeof data.createdAt !== 'string' || typeof data.id !== 'string') {

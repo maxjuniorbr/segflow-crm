@@ -29,7 +29,6 @@ import {
     findClientById,
     findClientByCpf,
     findClientByCnpj,
-    findClientByCpfExcludingId,
     findClientByCnpjExcludingId,
     createClient as createClientRepo,
     updateClient as updateClientRepo,

@@ -11,7 +11,7 @@
 export function isValidCPF(cpf: string): boolean {
     if (!cpf) return false;
 
-    const cleanCpf = cpf.replace(/[^\d]/g, '');
+    const cleanCpf = cpf.replaceAll(/[^\d]/g, '');
 
     if (cleanCpf.length !== 11) return false;
 
@@ -25,19 +25,19 @@ export function isValidCPF(cpf: string): boolean {
 
     let sum = 0;
     for (let i = 0; i < 9; i++) {
-        sum += parseInt(cleanCpf.charAt(i)) * (10 - i);
+        sum += Number.parseInt(cleanCpf.charAt(i)) * (10 - i);
     }
     let checkDigit1 = 11 - (sum % 11);
     if (checkDigit1 >= 10) checkDigit1 = 0;
-    if (checkDigit1 !== parseInt(cleanCpf.charAt(9))) return false;
+    if (checkDigit1 !== Number.parseInt(cleanCpf.charAt(9))) return false;
 
     sum = 0;
     for (let i = 0; i < 10; i++) {
-        sum += parseInt(cleanCpf.charAt(i)) * (11 - i);
+        sum += Number.parseInt(cleanCpf.charAt(i)) * (11 - i);
     }
     let checkDigit2 = 11 - (sum % 11);
     if (checkDigit2 >= 10) checkDigit2 = 0;
-    if (checkDigit2 !== parseInt(cleanCpf.charAt(10))) return false;
+    if (checkDigit2 !== Number.parseInt(cleanCpf.charAt(10))) return false;
 
     return true;
 }
@@ -50,7 +50,7 @@ export function isValidCPF(cpf: string): boolean {
 export function isValidCNPJ(cnpj: string): boolean {
     if (!cnpj) return false;
 
-    const cleanCnpj = cnpj.replace(/[^\d]/g, '');
+    const cleanCnpj = cnpj.replaceAll(/[^\d]/g, '');
 
     if (cleanCnpj.length !== 14) return false;
 
@@ -65,30 +65,44 @@ export function isValidCNPJ(cnpj: string): boolean {
     let sum = 0;
     let weight = 2;
     for (let i = 11; i >= 0; i--) {
-        sum += parseInt(cleanCnpj.charAt(i)) * weight;
+        sum += Number.parseInt(cleanCnpj.charAt(i)) * weight;
         weight = weight === 9 ? 2 : weight + 1;
     }
     let checkDigit1 = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-    if (checkDigit1 !== parseInt(cleanCnpj.charAt(12))) return false;
+    if (checkDigit1 !== Number.parseInt(cleanCnpj.charAt(12))) return false;
 
     sum = 0;
     weight = 2;
     for (let i = 12; i >= 0; i--) {
-        sum += parseInt(cleanCnpj.charAt(i)) * weight;
+        sum += Number.parseInt(cleanCnpj.charAt(i)) * weight;
         weight = weight === 9 ? 2 : weight + 1;
     }
     let checkDigit2 = sum % 11 < 2 ? 0 : 11 - (sum % 11);
-    if (checkDigit2 !== parseInt(cleanCnpj.charAt(13))) return false;
+    if (checkDigit2 !== Number.parseInt(cleanCnpj.charAt(13))) return false;
 
     return true;
 }
 
 /**
- * Validates basic email format
- * @param email - Email address
- * @returns true if format looks valid, false otherwise
+ * Validates basic email format without ReDoS-vulnerable regex.
+ * Uses structural checks instead of unbounded character classes.
  */
 export function isValidEmail(email: string): boolean {
-    if (!email) return false;
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!email || email.length > 254) return false;
+    const atIndex = email.indexOf('@');
+    if (atIndex < 1 || atIndex !== email.lastIndexOf('@')) return false;
+    const domain = email.slice(atIndex + 1);
+    const dotIndex = domain.lastIndexOf('.');
+    return dotIndex > 0 && dotIndex < domain.length - 1 && !email.includes(' ');
+}
+
+/**
+ * Validates password strength without ReDoS-vulnerable lookaheads.
+ * Checks each requirement individually with O(n) character class tests.
+ */
+export function isStrongPassword(password: string, minLength: number): boolean {
+    return password.length >= minLength
+        && /[a-z]/.test(password)
+        && /[A-Z]/.test(password)
+        && /\d/.test(password);
 }

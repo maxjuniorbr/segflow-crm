@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { X } from 'lucide-react';
 import { Button, Input, HelperText, SectionTitle } from '../../../shared/components/UIComponents';
+import { isStrongPassword } from '../../../utils/validators';
 import { validationMessages } from '../../../utils/validationMessages';
 import { uiMessages } from '../../../utils/uiMessages';
 
@@ -36,7 +37,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
 
         if (!newPassword) {
             newErrors.newPassword = validationMessages.newPasswordRequired;
-        } else if (newPassword.length < 10 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
+        } else if (!isStrongPassword(newPassword, 10)) {
             newErrors.newPassword = validationMessages.passwordMinLengthStrong(10);
         }
 
@@ -61,7 +62,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
         try {
             await onConfirm(currentPassword, newPassword);
             handleClose();
-        } catch (error) {
+        } catch (_error) {
             setLoading(false);
         }
     };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
-import { DocumentListItem, DocumentStatusValue, InsuranceTypeValue } from '../../../types';
+import { DocumentListItem, DocumentStatusValue } from '../../../types';
 import { Card, Button, SearchInput, Select, Badge, PageHeader, LoadingState, EmptyState, MobileListCard, Table, TableHead, TableBody, TableRow, TableRowButton, TableHeaderCell, TableCell, Alert } from '../../../shared/components/UIComponents';
 import { Plus, FileText, Search } from 'lucide-react';
 import { searchMessages } from '../../../utils/searchMessages';
@@ -163,21 +163,23 @@ export const DocumentList: React.FC = () => {
           </div>
         </div>
 
-        {loading ? (
-          <LoadingState label={actionMessages.loading('propostas e apólices')} className="min-h-[220px]" />
-        ) : !hasSearched ? (
-          <EmptyState
-            icon={<FileText className="h-12 w-12" />}
-            title={emptyStateMessages.documents.initialTitle}
-            description={emptyStateMessages.documents.initialDescription}
-          />
-        ) : documents.length === 0 ? (
-          <EmptyState
-            icon={<FileText className="h-12 w-12" />}
-            title={emptyStateMessages.documents.title}
-            description={emptyStateMessages.documents.description(!!searchTerm)}
-          />
-        ) : (
+        {(() => {
+          if (loading) return <LoadingState label={actionMessages.loading('propostas e apólices')} className="min-h-[220px]" />;
+          if (!hasSearched) return (
+            <EmptyState
+              icon={<FileText className="h-12 w-12" />}
+              title={emptyStateMessages.documents.initialTitle}
+              description={emptyStateMessages.documents.initialDescription}
+            />
+          );
+          if (documents.length === 0) return (
+            <EmptyState
+              icon={<FileText className="h-12 w-12" />}
+              title={emptyStateMessages.documents.title}
+              description={emptyStateMessages.documents.description(!!searchTerm)}
+            />
+          );
+          return (
           <>
             <div className="space-y-3 sm:hidden">
               {documents.map((d) => {
@@ -263,7 +265,8 @@ export const DocumentList: React.FC = () => {
               </div>
             )}
           </>
-        )}
+          );
+        })()}
       </Card>
     </div>
   );

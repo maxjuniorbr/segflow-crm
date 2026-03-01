@@ -13,6 +13,42 @@ import { actionMessages } from '../../../utils/actionMessages';
 import { scrollToFirstError } from '../../../utils/domUtils';
 import { uiMessages } from '../../../utils/uiMessages';
 
+const validatePersonFields = (data: ClientFormData): Record<string, string> => {
+  const errors: Record<string, string> = {};
+
+  if (data.personType === 'Física') {
+    if (!data.cpf.trim()) {
+      errors.cpf = validationMessages.required(uiMessages.labels.cpf);
+    } else if (!isValidCPF(data.cpf)) {
+      errors.cpf = validationMessages.cpfInvalidDetails;
+    }
+    if (!data.birthDate) {
+      errors.birthDate = validationMessages.required(uiMessages.labels.birthDate);
+    }
+  }
+
+  if (data.personType === 'Jurídica') {
+    if (!data.cnpj.trim()) {
+      errors.cnpj = validationMessages.required(uiMessages.labels.cnpj);
+    } else if (!isValidCNPJ(data.cnpj)) {
+      errors.cnpj = validationMessages.cnpjInvalidDetails;
+    }
+  }
+
+  return errors;
+};
+
+const validateAddressFields = (address: ClientFormData['address']): Record<string, string> => {
+  const errors: Record<string, string> = {};
+  if (!address.zipCode.trim()) errors['addr.zipCode'] = validationMessages.required(uiMessages.labels.zipCode);
+  if (!address.street.trim()) errors['addr.street'] = validationMessages.required(uiMessages.labels.street);
+  if (!address.number.trim()) errors['addr.number'] = validationMessages.required(uiMessages.labels.number);
+  if (!address.neighborhood.trim()) errors['addr.neighborhood'] = validationMessages.required(uiMessages.labels.neighborhood);
+  if (!address.city.trim()) errors['addr.city'] = validationMessages.required(uiMessages.labels.city);
+  if (!address.state.trim()) errors['addr.state'] = validationMessages.required(uiMessages.labels.state);
+  return errors;
+};
+
 const EMPTY_CLIENT: ClientFormData = {
   name: '',
   personType: 'Física',
@@ -71,7 +107,7 @@ export const ClientForm: React.FC = () => {
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
       age--;
     }
-    return isNaN(age) ? '' : age.toString();
+    return Number.isNaN(age) ? '' : age.toString();
   };
 
   useEffect(() => {
@@ -156,28 +192,28 @@ export const ClientForm: React.FC = () => {
 
   const handleCpfBlur = () => {
     if (formData.cpf && formData.cpf.trim() !== '') {
-      if (!isValidCPF(formData.cpf)) {
-        setFieldErrors(prev => ({ ...prev, cpf: validationMessages.cpfInvalidDetails }));
-      } else {
+      if (isValidCPF(formData.cpf)) {
         setFieldErrors(prev => {
           const next = { ...prev };
           delete next.cpf;
           return next;
         });
+      } else {
+        setFieldErrors(prev => ({ ...prev, cpf: validationMessages.cpfInvalidDetails }));
       }
     }
   };
 
   const handleCnpjBlur = () => {
     if (formData.cnpj && formData.cnpj.trim() !== '') {
-      if (!isValidCNPJ(formData.cnpj)) {
-        setFieldErrors(prev => ({ ...prev, cnpj: validationMessages.cnpjInvalidDetails }));
-      } else {
+      if (isValidCNPJ(formData.cnpj)) {
         setFieldErrors(prev => {
           const next = { ...prev };
           delete next.cnpj;
           return next;
         });
+      } else {
+        setFieldErrors(prev => ({ ...prev, cnpj: validationMessages.cnpjInvalidDetails }));
       }
     }
   };
@@ -189,7 +225,7 @@ export const ClientForm: React.FC = () => {
   };
 
   const fetchAddress = async () => {
-    const cep = formData.address.zipCode.replace(/\D/g, '');
+    const cep = formData.address.zipCode.replaceAll(/\D/g, '');
     if (cep.length === 8) {
       setCepLoading(true);
       try {
@@ -239,7 +275,7 @@ export const ClientForm: React.FC = () => {
           setLockedFields({ street: false, neighborhood: false, city: false, state: false });
           streetInputRef.current?.focus();
         }
-      } catch (error) {
+      } catch (_error) {
         setFormData(prev => ({
           ...prev,
           address: {
@@ -264,42 +300,15 @@ export const ClientForm: React.FC = () => {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-
     if (!formData.name.trim()) errors.name = validationMessages.required(uiMessages.labels.fullName);
-
-    if (formData.personType === 'Física') {
-      if (!formData.cpf.trim()) {
-        errors.cpf = validationMessages.required(uiMessages.labels.cpf);
-      } else if (!isValidCPF(formData.cpf)) {
-        errors.cpf = validationMessages.cpfInvalidDetails;
-      }
-
-      if (!formData.birthDate) errors.birthDate = validationMessages.required(uiMessages.labels.birthDate);
-    }
-
-    if (formData.personType === 'Jurídica') {
-      if (!formData.cnpj.trim()) {
-        errors.cnpj = validationMessages.required(uiMessages.labels.cnpj);
-      } else if (!isValidCNPJ(formData.cnpj)) {
-        errors.cnpj = validationMessages.cnpjInvalidDetails;
-      }
-    }
-
+    Object.assign(errors, validatePersonFields(formData));
     if (!formData.email.trim()) {
       errors.email = validationMessages.required(uiMessages.labels.email);
     } else if (!isValidEmail(formData.email)) {
       errors.email = validationMessages.invalid(uiMessages.labels.email);
     }
-
     if (!formData.phone.trim()) errors.phone = validationMessages.required(uiMessages.labels.phoneMobile);
-
-    if (!formData.address.zipCode.trim()) errors['addr.zipCode'] = validationMessages.required(uiMessages.labels.zipCode);
-    if (!formData.address.street.trim()) errors['addr.street'] = validationMessages.required(uiMessages.labels.street);
-    if (!formData.address.number.trim()) errors['addr.number'] = validationMessages.required(uiMessages.labels.number);
-    if (!formData.address.neighborhood.trim()) errors['addr.neighborhood'] = validationMessages.required(uiMessages.labels.neighborhood);
-    if (!formData.address.city.trim()) errors['addr.city'] = validationMessages.required(uiMessages.labels.city);
-    if (!formData.address.state.trim()) errors['addr.state'] = validationMessages.required(uiMessages.labels.state);
-
+    Object.assign(errors, validateAddressFields(formData.address));
     return errors;
   };
 

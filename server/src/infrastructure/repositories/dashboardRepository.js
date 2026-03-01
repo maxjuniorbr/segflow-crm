@@ -32,10 +32,10 @@ export const getDashboardStats = async (brokerId) => {
     `, [brokerId]);
 
     return {
-        totalClients: parseInt(counts.totalClients, 10) || 0,
-        activePolicies: parseInt(counts.activePolicies, 10) || 0,
-        pendingProposals: parseInt(counts.pendingProposals, 10) || 0,
-        expiringSoon: parseInt(counts.expiringSoon, 10) || 0,
+        totalClients: Number.parseInt(counts.totalClients, 10) || 0,
+        activePolicies: Number.parseInt(counts.activePolicies, 10) || 0,
+        pendingProposals: Number.parseInt(counts.pendingProposals, 10) || 0,
+        expiringSoon: Number.parseInt(counts.expiringSoon, 10) || 0,
         upcomingExpirations: upcomingResult.rows.map(row => ({
             id: row.id,
             clientName: row.clientName || 'Cliente não encontrado',

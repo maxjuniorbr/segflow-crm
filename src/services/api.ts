@@ -35,7 +35,7 @@ const getStatusMessage = (status: number, fallback: string) => {
 const networkErrorMessage = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
 
 const handleUnauthorized = () => {
-    window.location.href = '#/login';
+    globalThis.location.href = '#/login';
 };
 
 const parseError = async (response: Response) => {
@@ -73,7 +73,7 @@ let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
 const tryRefreshToken = async (): Promise<boolean> => {
-    if (isRefreshing && refreshPromise) return refreshPromise;
+    if (isRefreshing && refreshPromise !== null) return refreshPromise;
 
     isRefreshing = true;
     refreshPromise = fetch(`${API_URL}/api/auth/refresh`, {

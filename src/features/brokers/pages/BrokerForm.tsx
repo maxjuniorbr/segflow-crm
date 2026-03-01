@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storageService } from '../../../services/storage';
-import { Broker } from '../../../types';
+import { Broker, FormErrors } from '../../../types';
 import { Card, Input, Button, Alert, PageHeader, LoadingState } from '../../../shared/components/UIComponents';
 import { ConfirmDialog } from '../../../shared/components/ConfirmDialog';
 import { ChevronLeft, Save, Trash2 } from 'lucide-react';
@@ -12,7 +12,6 @@ import { validationMessages } from '../../../utils/validationMessages';
 import { confirmMessages } from '../../../utils/confirmMessages';
 import { actionMessages } from '../../../utils/actionMessages';
 import { uiMessages } from '../../../utils/uiMessages';
-import { FormErrors } from '../../../types';
 
 export const BrokerForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,7 +55,7 @@ export const BrokerForm: React.FC = () => {
             mobile: data.mobile || ''
           });
         }
-      } catch (err) {
+      } catch (_err) {
         if (!cancelled) setError(actionMessages.loadError('corretora'));
       } finally {
         if (!cancelled) setLoading(false);
@@ -83,10 +82,10 @@ export const BrokerForm: React.FC = () => {
 
   const handleCnpjBlur = () => {
     if (formData.cnpj && formData.cnpj.trim() !== '') {
-      if (!isValidCNPJ(formData.cnpj)) {
-        setFieldErrors(prev => ({ ...prev, cnpj: validationMessages.cnpjInvalidDetails }));
-      } else {
+      if (isValidCNPJ(formData.cnpj)) {
         setFieldErrors(prev => ({ ...prev, cnpj: '' }));
+      } else {
+        setFieldErrors(prev => ({ ...prev, cnpj: validationMessages.cnpjInvalidDetails }));
       }
     }
   };
@@ -163,7 +162,7 @@ export const BrokerForm: React.FC = () => {
       await storageService.deleteBroker(id);
       showToast(actionMessages.deleteSuccess('Corretora'), 'success');
       navigate('/settings/brokers');
-    } catch (err) {
+    } catch (_err) {
       showToast(actionMessages.deleteError('corretora'), 'error');
     } finally {
       setShowDeleteDialog(false);
@@ -200,11 +199,11 @@ export const BrokerForm: React.FC = () => {
             <ChevronLeft className="w-6 h-6" />
           </button>
         )}
-        action={!isNew ? (
+        action={isNew ? undefined : (
           <Button variant="danger" onClick={() => setShowDeleteDialog(true)} type="button" className="w-full sm:w-auto">
             <Trash2 className="w-4 h-4 mr-2" /> {uiMessages.common.delete}
           </Button>
-        ) : undefined}
+        )}
       />
 
       {error && <Alert variant="error">{error}</Alert>}

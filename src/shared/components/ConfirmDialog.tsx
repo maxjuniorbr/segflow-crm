@@ -91,7 +91,6 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <div
                 className="absolute inset-0 bg-black/50 transition-opacity"
                 onClick={onCancel}
-                role="presentation"
                 aria-hidden="true"
             />
 

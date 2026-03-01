@@ -23,7 +23,7 @@ const useTheme = () => {
       const stored = localStorage.getItem('theme');
       if (stored) return stored === 'dark';
     } catch { /* noop */ }
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+    return globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
   });
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
@@ -237,7 +237,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div
           className="fixed inset-0 bg-neutral-900/75 z-[15] md:hidden animate-in fade-in duration-200"
           onClick={handleCloseMobile}
-          role="presentation"
           aria-hidden="true"
         />
       )}

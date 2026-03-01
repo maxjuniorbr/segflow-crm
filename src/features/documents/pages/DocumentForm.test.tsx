@@ -78,7 +78,9 @@ describe('DocumentForm page', () => {
     });
 
     const clientOption = await screen.findByText(/Joao Cliente/i);
-    await user.click(clientOption.closest('button')!);
+    const clientButton = clientOption.closest('button');
+    if (!clientButton) throw new Error('Expected button parent');
+    await user.click(clientButton);
 
     await user.clear(screen.getByLabelText(/Início de Vigência/i));
     await user.type(screen.getByLabelText(/Início de Vigência/i), '01/01/2025');

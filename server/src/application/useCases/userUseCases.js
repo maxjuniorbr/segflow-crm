@@ -49,7 +49,7 @@ export const updateUserUseCase = async (id, payload) => {
         return { status: 404, payload: { error: 'Usuário não encontrado' } };
     }
 
-    const cpfClean = cpf ? cpf.replace(/[^\d]/g, '') : null;
+    const cpfClean = cpf ? cpf.replaceAll(/[^\d]/g, '') : null;
 
     if (cpfClean) {
         const cpfCheck = await findUserByCpfExcludingId(cpfClean, id, brokerId);

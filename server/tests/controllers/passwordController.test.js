@@ -82,7 +82,7 @@ describe('Password Controller', () => {
     });
 
     it('changes password successfully', async () => {
-        const querySpy = pool.query
+        pool.query
             .mockResolvedValueOnce({ rows: [{ password: 'hash' }] })
             .mockResolvedValueOnce({ rows: [] });
         bcrypt.compare.mockResolvedValue(true);

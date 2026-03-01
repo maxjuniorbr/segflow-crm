@@ -11,7 +11,7 @@ const BASE_URL = 'http://localhost:3001/api';
 // Credenciais de teste (criadas pelo seed do banco)
 const TEST_USER = {
     email: 'lucas@atlasseguros.com.br',
-    password: 'lucas8bc'
+    credential: 'lucas8bc'
 };
 
 // Métricas customizadas
@@ -74,24 +74,24 @@ export const options = {
 // =============================================================================
 
 function login() {
-    var startTime = new Date();
+    const startTime = Date.now();
 
-    var res = http.post(BASE_URL + '/login', JSON.stringify({
+    const res = http.post(BASE_URL + '/login', JSON.stringify({
         email: TEST_USER.email,
-        password: TEST_USER.password,
+        password: TEST_USER.credential,
     }), {
         headers: { 'Content-Type': 'application/json' },
     });
 
-    loginDuration.add(new Date() - startTime);
+    loginDuration.add(Date.now() - startTime);
 
-    var success = check(res, {
+    const success = check(res, {
         'login successful': function (r) { return r.status === 200; },
         'user received': function (r) {
             try {
-                var body = JSON.parse(r.body);
+                const body = JSON.parse(r.body);
                 return body.user !== undefined;
-            } catch (e) {
+            } catch (_) { /* non-JSON body */
                 return false;
             }
         },
@@ -103,11 +103,8 @@ function login() {
         return null;
     }
 
-    var cookies = res.cookies;
-    var token = null;
-    if (cookies && cookies['segflow_token'] && cookies['segflow_token'][0]) {
-        token = cookies['segflow_token'][0].value;
-    }
+    const cookies = res.cookies;
+    const token = cookies?.['segflow_token']?.[0]?.value ?? null;
 
     if (!token) {
         loginErrors.add(1);
@@ -119,25 +116,25 @@ function login() {
 }
 
 function makeAuthRequest(method, endpoint, token, body) {
-    var headers = {
+    const headers = {
         'Content-Type': 'application/json',
     };
 
-    var params = {
+    const params = {
         headers: headers,
         cookies: {
             segflow_token: token
         }
     };
 
-    var res;
+    let res;
     if (method === 'GET') {
         res = http.get(BASE_URL + endpoint, params);
     } else if (method === 'POST') {
         res = http.post(BASE_URL + endpoint, JSON.stringify(body), params);
     }
 
-    var success = res.status >= 200 && res.status < 400;
+    const success = res.status >= 200 && res.status < 400;
     successRate.add(success);
 
     if (!success) {
@@ -147,11 +144,31 @@ function makeAuthRequest(method, endpoint, token, body) {
     return res;
 }
 
+function estimateCapacity(errorRate, p95) {
+    if (errorRate < 0.01 && p95 < 200) {
+        return '200+ usuarios simultaneos (excelente performance)';
+    }
+    if (errorRate < 0.05 && p95 < 500) {
+        return '100-200 usuarios simultaneos (boa performance)';
+    }
+    if (errorRate < 0.1 && p95 < 1000) {
+        return '50-100 usuarios simultaneos (performance aceitavel)';
+    }
+    if (errorRate < 0.2) {
+        return '20-50 usuarios simultaneos (precisa otimizacao)';
+    }
+    return '<20 usuarios (problemas serios de performance)';
+}
+
+function formatMs(value) {
+    return value ? value.toFixed(2) + 'ms' : 'N/A';
+}
+
 // =============================================================================
 // FLUXO PRINCIPAL DO TESTE
 // =============================================================================
 
-export default function () {
+export default function mainFlow() {
     // 1. Login
     const token = login();
     if (!token) {
@@ -205,45 +222,30 @@ export default function () {
 // =============================================================================
 
 export function handleSummary(data) {
-    var duration = data.metrics.http_req_duration || {};
-    var failed = data.metrics.http_req_failed || {};
-    var reqs = data.metrics.http_reqs || {};
-    var durationValues = duration.values || {};
-    var failedValues = failed.values || {};
-    var reqsValues = reqs.values || {};
-    var loginErrs = (data.metrics.login_errors && data.metrics.login_errors.values) ? data.metrics.login_errors.values.count : 0;
-    var apiErrs = (data.metrics.api_errors && data.metrics.api_errors.values) ? data.metrics.api_errors.values.count : 0;
+    const durationValues = data.metrics.http_req_duration?.values ?? {};
+    const failedValues = data.metrics.http_req_failed?.values ?? {};
+    const reqsValues = data.metrics.http_reqs?.values ?? {};
+    const loginErrs = data.metrics.login_errors?.values?.count ?? 0;
+    const apiErrs = data.metrics.api_errors?.values?.count ?? 0;
 
-    var errorRate = failedValues.rate || 0;
-    var p95 = durationValues['p(95)'] || 0;
+    const errorRate = failedValues.rate ?? 0;
+    const p95 = durationValues['p(95)'] ?? 0;
+    const capacity = estimateCapacity(errorRate, p95);
 
-    var capacity = '';
-    if (errorRate < 0.01 && p95 < 200) {
-        capacity = '200+ usuarios simultaneos (excelente performance)';
-    } else if (errorRate < 0.05 && p95 < 500) {
-        capacity = '100-200 usuarios simultaneos (boa performance)';
-    } else if (errorRate < 0.10 && p95 < 1000) {
-        capacity = '50-100 usuarios simultaneos (performance aceitavel)';
-    } else if (errorRate < 0.20) {
-        capacity = '20-50 usuarios simultaneos (precisa otimizacao)';
-    } else {
-        capacity = '<20 usuarios (problemas serios de performance)';
-    }
-
-    var summary = '\n' +
+    const summary = '\n' +
         '========================================================================\n' +
         '           RESULTADO DO TESTE DE STRESS - SEGFLOW CRM                  \n' +
         '========================================================================\n' +
-        '  Requisicoes totais:     ' + (reqsValues.count || 0) + '\n' +
+        '  Requisicoes totais:     ' + (reqsValues.count ?? 0) + '\n' +
         '  Requisicoes/segundo:    ' + (reqsValues.rate ? reqsValues.rate.toFixed(2) : 'N/A') + '\n' +
         '  Taxa de erro:           ' + (errorRate * 100).toFixed(2) + '%\n' +
         '------------------------------------------------------------------------\n' +
         '  LATENCIA\n' +
-        '  Media:                  ' + (durationValues.avg ? durationValues.avg.toFixed(2) : 'N/A') + 'ms\n' +
-        '  Minima:                 ' + (durationValues.min ? durationValues.min.toFixed(2) : 'N/A') + 'ms\n' +
-        '  Maxima:                 ' + (durationValues.max ? durationValues.max.toFixed(2) : 'N/A') + 'ms\n' +
-        '  p90:                    ' + (durationValues['p(90)'] ? durationValues['p(90)'].toFixed(2) : 'N/A') + 'ms\n' +
-        '  p95:                    ' + (p95 ? p95.toFixed(2) : 'N/A') + 'ms\n' +
+        '  Media:                  ' + formatMs(durationValues.avg) + '\n' +
+        '  Minima:                 ' + formatMs(durationValues.min) + '\n' +
+        '  Maxima:                 ' + formatMs(durationValues.max) + '\n' +
+        '  p90:                    ' + formatMs(durationValues['p(90)']) + '\n' +
+        '  p95:                    ' + formatMs(p95) + '\n' +
         '------------------------------------------------------------------------\n' +
         '  ERROS\n' +
         '  Erros de login:         ' + loginErrs + '\n' +

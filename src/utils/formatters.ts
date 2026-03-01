@@ -1,15 +1,15 @@
 export const maskCPF = (value: string) => {
   return value
-    .replace(/\D/g, '')
+    .replaceAll(/\D/g, '')
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d{1,2})/, '$1-$2')
-    .replace(/(-\d{2})\d+?$/, '$1');
+    .replace(/(-\d{2})\d+$/, '$1');
 };
 
 export const maskCNPJ = (value: string) => {
   return value
-    .replace(/\D/g, '')
+    .replaceAll(/\D/g, '')
     .replace(/^(\d{2})(\d)/, '$1.$2')
     .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
     .replace(/\.(\d{3})(\d)/, '.$1/$2')
@@ -19,17 +19,17 @@ export const maskCNPJ = (value: string) => {
 
 export const maskPhone = (value: string) => {
   return value
-    .replace(/\D/g, '')
+    .replaceAll(/\D/g, '')
     .replace(/(\d{2})(\d)/, '($1) $2')
     .replace(/(\d{5})(\d)/, '$1-$2')
-    .replace(/(-\d{4})\d+?$/, '$1');
+    .replace(/(-\d{4})\d+$/, '$1');
 };
 
 export const maskCEP = (value: string) => {
   return value
-    .replace(/\D/g, '')
+    .replaceAll(/\D/g, '')
     .replace(/(\d{5})(\d)/, '$1-$2')
-    .replace(/(-\d{3})\d+?$/, '$1');
+    .replace(/(-\d{3})\d+$/, '$1');
 };
 
 export const getDocumentTypeLabel = (type: string): string => {
@@ -45,7 +45,7 @@ export const getDocumentTypeLabel = (type: string): string => {
 };
 
 export const maskCurrency = (value: string) => {
-  let val = value.replace(/\D/g, '');
+  let val = value.replaceAll(/\D/g, '');
   val = (Number(val) / 100).toFixed(2) + '';
   return val;
 };
@@ -62,8 +62,8 @@ export const formatDate = (dateString: string) => {
 
 export const maskDate = (value: string) => {
   return value
-    .replace(/\D/g, '')
+    .replaceAll(/\D/g, '')
     .replace(/(\d{2})(\d)/, '$1/$2')
     .replace(/(\d{2})(\d)/, '$1/$2')
-    .replace(/(\d{4})\d+?$/, '$1');
+    .replace(/(\d{4})\d+$/, '$1');
 };

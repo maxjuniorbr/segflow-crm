@@ -10,8 +10,8 @@ const state = {
 
 let userIdSeq = 1;
 
-const clone = (data) => JSON.parse(JSON.stringify(data));
-const normalize = (text) => text.replace(/\s+/g, ' ').trim().toUpperCase();
+const clone = (data) => structuredClone(data);
+const normalize = (text) => text.replaceAll(/\s+/g, ' ').trim().toUpperCase();
 
 export const resetTestDb = () => {
     state.users = [];
@@ -263,7 +263,7 @@ const handleQuery = (sql, params) => {
             return selectClientById(params[0]);
         }
         const brokerIdIndex = sql.includes('BROKER_ID = $1') ? 0 : null;
-        const brokerId = brokerIdIndex !== null ? params[brokerIdIndex] : null;
+        const brokerId = brokerIdIndex === null ? null : params[brokerIdIndex];
         const personType = params.find(param => param === 'Física' || param === 'Jurídica');
         let rows = state.clients
             .filter(client => !brokerId || client.broker_id === brokerId)

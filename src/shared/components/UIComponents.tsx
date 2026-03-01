@@ -224,7 +224,7 @@ export const DateInput: React.FC<DateInputProps> = ({ label, error, value, onCha
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value.replace(/\D/g, '');
+    let val = e.target.value.replaceAll(/\D/g, '');
 
     if (val.length > 8) val = val.substring(0, 8);
 
@@ -243,9 +243,9 @@ export const DateInput: React.FC<DateInputProps> = ({ label, error, value, onCha
       const month = val.substring(2, 4);
       const year = val.substring(4, 8);
 
-      const numDay = parseInt(day);
-      const numMonth = parseInt(month);
-      const numYear = parseInt(year);
+      const numDay = Number.parseInt(day);
+      const numMonth = Number.parseInt(month);
+      const numYear = Number.parseInt(year);
 
       const testDate = new Date(numYear, numMonth - 1, numDay);
       if (testDate.getFullYear() === numYear && testDate.getMonth() === numMonth - 1 && testDate.getDate() === numDay && numYear > 1900) {

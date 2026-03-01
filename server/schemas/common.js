@@ -57,11 +57,13 @@ export const emailField = ({ requiredMessage }) =>
         .max(254, 'Email deve ter no máximo 254 caracteres')
         .min(1, requiredMessage);
 
-export const optionalPasswordField = (min, message, pattern, patternMessage) =>
+export const optionalPasswordField = (min, message) =>
     z.string()
         .min(min, message)
         .max(72, 'Senha deve ter no máximo 72 caracteres')
-        .regex(pattern, patternMessage)
+        .refine(val => /[a-z]/.test(val), { message })
+        .refine(val => /[A-Z]/.test(val), { message })
+        .refine(val => /\d/.test(val), { message })
         .optional()
         .nullable();
 

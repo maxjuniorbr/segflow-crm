@@ -6,7 +6,7 @@ import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { userService } from '../../../services/userService';
 import { FormErrors, UserFormData } from '../../../types';
 import { maskCPF } from '../../../utils/formatters';
-import { isValidCPF, isValidEmail } from '../../../utils/validators';
+import { isValidCPF, isValidEmail, isStrongPassword } from '../../../utils/validators';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { validationMessages } from '../../../utils/validationMessages';
@@ -114,7 +114,7 @@ export const UserForm: React.FC = () => {
         if (!id) {
             if (!formData.password?.trim()) {
                 newErrors.password = validationMessages.passwordRequiredNewUser;
-            } else if (formData.password.length < 10 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+            } else if (!isStrongPassword(formData.password, 10)) {
                 newErrors.password = validationMessages.passwordMinLengthStrong(10);
             }
         }

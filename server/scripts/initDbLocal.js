@@ -1,7 +1,7 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { TABLE_STATEMENTS, TRIGGER_STATEMENTS, INDEX_STATEMENTS } from './schemaDefinition.js';
 
 const __filename = fileURLToPath(import.meta.url);

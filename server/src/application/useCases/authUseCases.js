@@ -1,7 +1,7 @@
 // @ts-check
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { randomUUID, createHash } from 'crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { buildAuthResponse, buildAuthUser } from '../dto/authDto.js';
 import { buildMessageResponse } from '../dto/responseDto.js';
 import { UnauthorizedError } from '../errors/AppError.js';
@@ -14,8 +14,7 @@ import {
 } from '../../infrastructure/repositories/userRepository.js';
 import {
     findBrokerByCnpj,
-    findBrokerBySusep,
-    createBroker
+    findBrokerBySusep
 } from '../../infrastructure/repositories/brokerRepository.js';
 import {
     createRefreshToken,
@@ -24,6 +23,7 @@ import {
     isTokenRevoked,
     deleteAllUserRefreshTokens
 } from '../../infrastructure/repositories/refreshTokenRepository.js';
+import { mapUniqueConstraintError } from '../utils/uniqueConstraintError.js';
 
 const hashToken = (token) => createHash('sha256').update(token).digest('hex');
 
@@ -160,28 +160,25 @@ export const registerBrokerWithAdmin = async (payload) => {
         password
     } = payload;
 
-    // Validate unique broker CNPJ
-    const cnpjClean = cnpj.replace(/[^\d]/g, '');
+    const cnpjClean = cnpj.replaceAll(/[^\d]/g, '');
     const cnpjCheck = await findBrokerByCnpj(cnpjClean);
     if (cnpjCheck) {
         return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
     }
 
-    // Validate unique broker SUSEP code
-    if (susepCode && susepCode.trim() !== '') {
+    if (susepCode?.trim()) {
         const susepCheck = await findBrokerBySusep(susepCode.trim());
         if (susepCheck) {
             return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
         }
     }
 
-    // Validate unique user email (same as broker email)
     const emailCheck = await findUserByEmail(email);
     if (emailCheck) {
         return { status: 400, payload: { error: [{ path: ['email'], message: 'Email já cadastrado' }] } };
     }
 
-    const cpfClean = cpf.replace(/[^\d]/g, '');
+    const cpfClean = cpf.replaceAll(/[^\d]/g, '');
     const brokerId = randomUUID();
 
     const salt = await bcrypt.genSalt(12);
@@ -205,14 +202,13 @@ export const registerBrokerWithAdmin = async (payload) => {
         await client.query('COMMIT');
     } catch (err) {
         await client.query('ROLLBACK').catch(() => {});
-        if (err.code === '23505') {
-            const detail = err.detail || '';
-            if (detail.includes('cnpj')) return { status: 400, payload: { error: [{ path: ['cnpj'], message: 'CNPJ já cadastrado' }] } };
-            if (detail.includes('susep_code')) return { status: 400, payload: { error: [{ path: ['susepCode'], message: 'Código SUSEP já cadastrado' }] } };
-            if (detail.includes('email')) return { status: 400, payload: { error: [{ path: ['email'], message: 'Email já cadastrado' }] } };
-            if (detail.includes('cpf')) return { status: 400, payload: { error: [{ path: ['cpf'], message: 'CPF já cadastrado' }] } };
-            return { status: 400, payload: { error: [{ path: ['unknown'], message: 'Registro duplicado' }] } };
-        }
+        const result = mapUniqueConstraintError(err, [
+            ['cnpj', 'cnpj', 'CNPJ já cadastrado'],
+            ['susep_code', 'susepCode', 'Código SUSEP já cadastrado'],
+            ['email', 'email', 'Email já cadastrado'],
+            ['cpf', 'cpf', 'CPF já cadastrado']
+        ]);
+        if (result) return result;
         throw err;
     } finally {
         client.release();

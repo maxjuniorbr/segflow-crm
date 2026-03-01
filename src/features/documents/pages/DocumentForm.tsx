@@ -94,7 +94,7 @@ export const DocumentForm: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       setFormData(prev => ({ ...prev, attachmentName: e.target.files![0].name }));
     }
   };
@@ -155,7 +155,7 @@ export const DocumentForm: React.FC = () => {
       await storageService.deleteDocument(id);
       showToast(actionMessages.deleteSuccess('Documento'), 'success');
       navigate('/documents');
-    } catch (error) {
+    } catch (_error) {
       showToast(actionMessages.deleteError('documento'), 'error');
     } finally {
       setShowDeleteDialog(false);

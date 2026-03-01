@@ -17,10 +17,10 @@ const buildClientFilters = ({ brokerId, search, personType } = {}) => {
     }
 
     if (search) {
-        const normalized = search.toLowerCase().replace(/[%_\\]/g, '\\$&');
+        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, '\\$&');
         values.push(`%${normalized}%`);
         const param = `$${values.length}`;
-        const searchDigits = search.replace(/\D/g, '');
+        const searchDigits = search.replaceAll(/\D/g, '');
         if (searchDigits.length > 0) {
             values.push(`%${searchDigits}%`);
             const digitParam = `$${values.length}`;
@@ -42,42 +42,51 @@ const buildClientFilters = ({ brokerId, search, personType } = {}) => {
     return { values, whereClause };
 };
 
+const appendCursorCondition = (query, values, cursor, hasWhereClause) => {
+    values.push(cursor.createdAt);
+    const createdAtParam = `$${values.length}`;
+    values.push(cursor.id);
+    const idParam = `$${values.length}`;
+    const conjunction = hasWhereClause ? ' AND' : ' WHERE';
+    return query + `${conjunction} (created_at < ${createdAtParam} OR (created_at = ${createdAtParam} AND id < ${idParam}))`;
+};
+
+const appendLimit = (query, values, limit) => {
+    if (limit == null) return query;
+    const n = Number.parseInt(limit, 10);
+    if (Number.isNaN(n) || n <= 0) return query;
+    values.push(n);
+    return query + ` LIMIT $${values.length}`;
+};
+
+const appendOffset = (query, values, offset) => {
+    if (offset == null) return query;
+    const n = Number.parseInt(offset, 10);
+    if (Number.isNaN(n) || n < 0) return query;
+    values.push(n);
+    return query + ` OFFSET $${values.length}`;
+};
+
 export const listClients = async ({ brokerId, search, personType, limit, offset, cursor } = {}) => {
     const { values, whereClause } = buildClientFilters({ brokerId, search, personType });
-
     const queryValues = [...values];
     const hasCursor = Boolean(cursor?.createdAt && cursor?.id);
     const countExpr = hasCursor ? '' : ', COUNT(*) OVER() AS total_count';
     let query = `SELECT id, broker_id, name, person_type, cpf, cnpj, rg, rg_dispatch_date, rg_issuer, birth_date, marital_status, email, phone, address, notes, created_at${countExpr} FROM clients${whereClause}`;
 
     if (hasCursor) {
-        queryValues.push(cursor.createdAt);
-        const createdAtParam = `$${queryValues.length}`;
-        queryValues.push(cursor.id);
-        const idParam = `$${queryValues.length}`;
-        query += `${whereClause ? ' AND' : ' WHERE'} (created_at < ${createdAtParam} OR (created_at = ${createdAtParam} AND id < ${idParam}))`;
+        query = appendCursorCondition(query, queryValues, cursor, Boolean(whereClause));
     }
 
     query += ' ORDER BY created_at DESC, id DESC';
+    query = appendLimit(query, queryValues, limit);
 
-    if (limit !== undefined && limit !== null) {
-        const limitNumber = parseInt(limit, 10);
-        if (!isNaN(limitNumber) && limitNumber > 0) {
-            queryValues.push(limitNumber);
-            query += ` LIMIT $${queryValues.length}`;
-        }
-    }
-
-    if (!hasCursor && offset !== undefined && offset !== null) {
-        const offsetNumber = parseInt(offset, 10);
-        if (!isNaN(offsetNumber) && offsetNumber >= 0) {
-            queryValues.push(offsetNumber);
-            query += ` OFFSET $${queryValues.length}`;
-        }
+    if (!hasCursor) {
+        query = appendOffset(query, queryValues, offset);
     }
 
     const result = await pool.query(query, queryValues);
-    const total = hasCursor ? 0 : (parseInt(result.rows[0]?.total_count, 10) || 0);
+    const total = hasCursor ? 0 : (Number.parseInt(result.rows[0]?.total_count, 10) || 0);
     return { rows: result.rows, total };
 };
 

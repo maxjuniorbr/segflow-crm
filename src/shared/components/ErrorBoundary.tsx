@@ -51,9 +51,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  private handleRetry = () => {
+  private readonly handleRetry = () => {
     if (this.state.isChunkError) {
-      window.location.reload();
+      globalThis.location.reload();
       return;
     }
     this.setState({ hasError: false, isChunkError: false });

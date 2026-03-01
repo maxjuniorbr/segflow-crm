@@ -42,12 +42,6 @@ beforeEach(() => {
 });
 
 describe('User Controller', () => {
-    const mockBcrypt = () => {
-        bcrypt.genSalt.mockResolvedValue('salt');
-        bcrypt.hash.mockResolvedValue('hashed');
-        bcrypt.compare.mockResolvedValue(true);
-    };
-
     it('returns user list scoped to brokerId without password', async () => {
         const sampleUserRow = buildUserRow();
         const querySpy = pool.query.mockResolvedValueOnce({ rows: [sampleUserRow] });

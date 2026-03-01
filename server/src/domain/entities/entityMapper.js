@@ -4,7 +4,7 @@ export const getRowValue = (row, keys, defaultValue = undefined) => {
     }
 
     for (const key of keys) {
-        if (Object.prototype.hasOwnProperty.call(row, key)) {
+        if (Object.hasOwn(row, key)) {
             const value = row[key];
             if (value !== undefined) {
                 return value;

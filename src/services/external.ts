@@ -12,7 +12,7 @@ export const externalService = {
   fetchAddressByCep: async (cep: string): Promise<CepResponse | null> => {
     try {
       // Remove non-numeric characters
-      const cleanCep = cep.replace(/\D/g, '');
+      const cleanCep = cep.replaceAll(/\D/g, '');
       
       if (cleanCep.length !== 8) {
         return null;
