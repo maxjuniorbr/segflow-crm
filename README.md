@@ -1,17 +1,21 @@
 # SegFlow CRM
 
-O **SegFlow CRM** e um sistema completo para facilitar o dia a dia de corretoras de seguros. Ele centraliza o gerenciamento de clientes, propostas e apolices em uma unica plataforma intuitiva e eficiente.
+Sistema completo para corretoras de seguros — gerenciamento de clientes, propostas e apólices em uma plataforma única.
+
+> **~90% deste código foi escrito por IA.** Este projeto é resultado de um teste corporativo de 30 dias com a ferramenta [Cursor](https://cursor.com), utilizando a abordagem de *vibe coding* — onde o desenvolvedor guia a intenção e a IA implementa. Veja a seção [Desenvolvimento Assistido por IA](#desenvolvimento-assistido-por-ia-vibe-coding) para detalhes.
+
+---
 
 ## Funcionalidades
 
-- Cadastro de corretoras com usuario administrador
-- Cadastro de clientes (Pessoa Fisica e Pessoa Juridica)
-- Gerenciamento de propostas e apolices de seguros
-- Gerenciamento de usuarios por corretora
+- Cadastro de corretoras com usuário administrador
+- Cadastro de clientes (Pessoa Física e Pessoa Jurídica)
+- Gerenciamento de propostas e apólices de seguros
+- Gerenciamento de usuários por corretora
 - Painel com indicadores (dashboard)
-- Busca, filtros e paginacao por cursor
-- Consulta automatica de CEP (BrasilAPI)
-- Autenticacao com JWT (access + refresh token com rotacao automatica)
+- Busca, filtros e paginação por cursor
+- Consulta automática de CEP (BrasilAPI)
+- Autenticação com JWT (access + refresh token com rotação automática)
 - Interface responsiva com suporte a dark mode
 
 ---
@@ -19,28 +23,122 @@ O **SegFlow CRM** e um sistema completo para facilitar o dia a dia de corretoras
 ## Tecnologias
 
 ### Frontend
-- **React** + TypeScript + Vite
-- **TailwindCSS** para estilizacao
+- **React 19** + TypeScript + Vite
+- **TailwindCSS v4** para estilização
 - **CVA** (class-variance-authority) + clsx + tailwind-merge para variantes de componentes
-- **React Router** para navegacao
-- **Lucide React** para icones
+- **React Router** para navegação
+- **Lucide React** para ícones
 
 ### Backend
 - **Node.js** + Express + compression
 - **PostgreSQL** como banco de dados
-- **JWT** para autenticacao (access + refresh tokens)
-- **Zod** para validacao de dados
+- **JWT** para autenticação (access + refresh tokens)
+- **Zod** para validação de dados
 - **bcryptjs** para hash de senhas
-- **JSDoc** para tipagem estatica (checkJS)
+- **JSDoc** para tipagem estática (checkJS — sem migração para TypeScript)
 
 ### Testes
 - **Vitest** para backend e frontend
 - **Testing Library** para componentes React
 - **vitest-axe** para testes de acessibilidade
 
+### Qualidade e CI
+- **SonarCloud** para análise estática contínua (segurança, bugs, code smells)
+- **Dependabot** para atualização automática de dependências
+- **k6** para testes de carga (`stress-test.js`)
+
 ---
 
-## Arquitetura (visao geral)
+## Desenvolvimento Assistido por IA (Vibe Coding)
+
+Este projeto foi construído como prova de conceito para avaliar o impacto de assistentes de IA no desenvolvimento de software. Durante 30 dias, toda a implementação foi conduzida via *vibe coding* no [Cursor IDE](https://cursor.com) — o desenvolvedor define a intenção em linguagem natural e a IA produz o código.
+
+### LLMs Utilizadas
+
+Os modelos foram alternados conforme a complexidade de cada tarefa:
+
+| Modelo | Fornecedor | Uso principal |
+|---|---|---|
+| **Claude Opus** | Anthropic | Arquitetura, refatorações complexas, decisões de design |
+| **Claude Sonnet** | Anthropic | Implementação geral, features, correções |
+| **Codex** | OpenAI | Geração de código, autocomplete |
+| **Gemini** | Google | Code review, análise de alternativas |
+
+### Cursor IDE — Rules e Skills
+
+O Cursor permite configurar **regras** e **skills** que guiam o comportamento dos agentes AI durante o desenvolvimento.
+
+**Rules** (`.cursor/rules/`) são instruções permanentes que o agente segue em toda interação — equivalem a um "manual do projeto" para a IA. Por exemplo, a rule principal define que o código deve ser em inglês, a interface em pt-BR, que o backend segue Clean Architecture, e quais padrões de UI devem ser seguidos.
+
+**Skills** (`.cursor/skills/`) são bases de conhecimento especializadas que o agente consulta sob demanda. Cada skill é um arquivo Markdown com diretrizes, padrões e exemplos de uma disciplina específica. Os skills deste projeto foram baseados e adaptados a partir do ecossistema aberto [skills.sh](https://skills.sh) (Vercel Labs), com revisão técnica para o contexto do SegFlow.
+
+<details>
+<summary><strong>Skills instalados (17)</strong></summary>
+
+| Skill | Origem | Descrição |
+|---|---|---|
+| `auth-implementation-patterns` | [wshobson/agents](https://skills.sh) | Padrões de autenticação (JWT, OAuth2, RBAC) |
+| `code-review-excellence` | [wshobson/agents](https://skills.sh) | Boas práticas de code review |
+| `error-handling-patterns` | [wshobson/agents](https://skills.sh) | Tratamento de erros, Result types, degradação graciosa |
+| `frontend-design` | [anthropics/skills](https://skills.sh) | Interfaces frontend com alto padrão visual |
+| `javascript-testing-patterns` | [wshobson/agents](https://skills.sh) | Testes com Vitest, Testing Library, mocking, TDD |
+| `modern-javascript-patterns` | [wshobson/agents](https://skills.sh) | ES6+, async/await, destructuring, programação funcional |
+| `nodejs-backend-patterns` | [wshobson/agents](https://skills.sh) | Backend Node.js com Express, Clean Architecture |
+| `postgresql-table-design` | [wshobson/agents](https://skills.sh) | Design de schema PostgreSQL, tipos, índices, constraints |
+| `responsive-design` | [wshobson/agents](https://skills.sh) | Layouts responsivos, container queries, fluid typography |
+| `sql-optimization-patterns` | [wshobson/agents](https://skills.sh) | Otimização de queries, EXPLAIN, estratégias de indexação |
+| `systematic-debugging` | [obra/superpowers](https://skills.sh) | Debugging sistemático com rastreamento de causa raiz |
+| `tailwind-design-system` | [wshobson/agents](https://skills.sh) | Design system com Tailwind CSS v4 e design tokens |
+| `test-driven-development` | [obra/superpowers](https://skills.sh) | Fluxo TDD — escrever testes antes da implementação |
+| `typescript-advanced-types` | [wshobson/agents](https://skills.sh) | Tipos avançados: generics, conditional types, mapped types |
+| `vercel-react-best-practices` | [vercel-labs/agent-skills](https://skills.sh) | Otimização de performance React (Vercel Engineering) |
+| `verification-before-completion` | [obra/superpowers](https://skills.sh) | Verificar evidências antes de declarar tarefa concluída |
+| `web-design-guidelines` | [vercel-labs/agent-skills](https://skills.sh) | Auditoria de UI para acessibilidade e UX |
+
+</details>
+
+<details>
+<summary><strong>Rules configuradas (3)</strong></summary>
+
+| Rule | Escopo | Descrição |
+|---|---|---|
+| `segflow-crm-instructions` | Always apply | Convenções de UI, mensagens, arquitetura, segurança e padrões do projeto |
+| `mcp-servers` | Always apply | Prioriza MCP servers (GitHub) sobre CLIs para operações remotas |
+| `readme-consistency` | Glob-based | Mantém este README sincronizado quando arquivos estruturais mudam |
+
+</details>
+
+### Jules (Google)
+
+O [Jules](https://jules.google.com) é um agente de código da Google que funciona como revisor complementar. Ele analisa o repositório, sugere correções e pode gerar patches automaticamente.
+
+A integração é feita via API REST (`https://jules.googleapis.com/v1alpha`):
+- **`GET /sessions`** — lista tarefas/reviews criadas pelo Jules
+- **`GET /sessions/{id}`** — detalha uma sessão com o patch sugerido
+- **`GET /sources`** — repositórios conectados
+
+Para habilitar: crie `.env.local` na raiz com `JULES_API_KEY=<sua-chave>` (obtida em [jules.google.com/settings](https://jules.google.com/settings)). O arquivo já está no `.gitignore`.
+
+### SonarCloud
+
+O projeto está integrado ao [SonarCloud](https://sonarcloud.io) para análise estática contínua. O scan é acionado automaticamente a cada push no GitHub (Automatic Analysis — sem necessidade de CI pipeline).
+
+**O que o SonarCloud analisa:** bugs, vulnerabilidades, code smells, security hotspots, cobertura de testes, duplicação de código e dívida técnica.
+
+**Integração via API:** além do painel web, o token do SonarCloud (armazenado em `.env.local` como `SONAR_TOKEN`) permite consultar e gerenciar issues programaticamente:
+- Listar issues abertas, filtrar por severidade/tipo
+- Marcar falso-positivos e won't-fix com justificativa
+- Monitorar status de análises
+
+Essa integração por API foi usada neste projeto para triar ~80 falso-positivos (labels de UI detectados como "hard-coded passwords") diretamente do terminal, sem acessar o painel web.
+
+### Dependabot
+
+O GitHub Dependabot está ativo no repositório e gera pull requests automáticos quando detecta atualizações de segurança ou versões novas em dependências (`npm`). Os PRs seguem o padrão `chore(deps):` e são revisados antes do merge.
+
+---
+
+## Arquitetura
 
 ```mermaid
 flowchart LR
@@ -53,10 +151,10 @@ flowchart LR
 ```
 
 ### Camadas
-- UI/Transport: `routes`, `middleware`, `app`.
-- Application: `controllers`, `useCases`, `dto`, `errors`.
-- Domain: `entities`.
-- Infrastructure: `repositories`, `db`.
+- **UI/Transport:** `routes`, `middleware`, `app`.
+- **Application:** `controllers`, `useCases`, `dto`, `errors`.
+- **Domain:** `entities`.
+- **Infrastructure:** `repositories`, `db`.
 
 ---
 
@@ -65,44 +163,43 @@ flowchart LR
 ```
 segflow-crm/
 ├── .cursor/
-│   ├── rules/             # Regras do agente para este workspace
-│   └── skills/            # Skills para assistentes AI (veja seção abaixo)
+│   ├── rules/             # Regras do agente (convenções, padrões)
+│   └── skills/            # Skills AI (17 bases de conhecimento)
 ├── src/                    # Frontend React
-│   ├── contexts/          # Context API (Auth)
-│   ├── features/          # Features (pages/components)
-│   ├── services/          # Services (API, storage)
-│   ├── shared/            # Shared UI components (CVA, ErrorBoundary)
+│   ├── contexts/          # Context API (Auth, Toast)
+│   ├── features/          # Features (pages/components por domínio)
+│   ├── services/          # Services (API, storage, toastBus)
+│   ├── shared/            # Componentes compartilhados (CVA, ErrorBoundary)
 │   ├── types.ts           # TypeScript types
-│   └── utils/             # Utils (formatters, cn, mensagens)
+│   └── utils/             # Formatters, validators, mensagens centralizadas
 │
 ├── server/                # Backend Node.js
 │   ├── config/           # DB config
 │   ├── middleware/       # Middlewares (auth, validate)
 │   ├── routes/           # Route definitions
 │   ├── schemas/          # Zod schemas
-│   ├── scripts/          # Database scripts
-│   ├── src/              # Application/Domain/Infrastructure
-│   │   ├── app.js
-│   │   ├── config/
-│   │   ├── application/  # controllers, useCases, dto, errors (AppError)
-│   │   ├── domain/
-│   │   └── infrastructure/ # repositories (incluindo refreshToken)
-│   └── index.js           # Bootstrap do servidor
+│   ├── scripts/          # Database scripts (bootstrap, seed, drop)
+│   ├── src/
+│   │   ├── application/  # controllers, useCases, dto, errors, utils
+│   │   ├── domain/       # entities
+│   │   └── infrastructure/ # repositories
+│   └── tests/            # Testes (controllers, unit, functional, security)
 │
+├── stress-test.js         # Testes de carga (k6)
+└── .env.local             # Chaves locais (Jules, SonarCloud) — não versionado
 ```
 
-Mensagens de interface ficam centralizadas em `src/utils/*Messages.ts`. O `uiMessages` agrega
-`uiBaseMessages`, `uiNavigationMessages` e `uiPageMessages` para organizar as copys por dominio.
+Mensagens de interface ficam centralizadas em `src/utils/*Messages.ts`. O `uiMessages` agrega `uiBaseMessages`, `uiNavigationMessages` e `uiPageMessages` por domínio.
 
 ---
 
 ## Como Rodar Localmente
 
-### Pre-requisitos
+### Pré-requisitos
 - Node.js 18+
 - PostgreSQL 14+
 
-### 1. Clonar o repositorio
+### 1. Clonar o repositório
 ```bash
 git clone git@github.com:maxjuniorbr/segflow-crm.git
 cd segflow-crm
@@ -116,24 +213,15 @@ npm install
 cp .env.example .env
 ```
 
-O arquivo `.env.example` ja vem com valores funcionais para desenvolvimento local. Edite apenas se precisar alterar porta, credenciais do banco ou segredo JWT.
+O arquivo `.env.example` vem com valores funcionais para desenvolvimento local. Edite apenas se precisar alterar porta, credenciais do banco ou segredo JWT.
 
-> Variaveis disponiveis no `.env`: `PORT`, `NODE_ENV`, `DATABASE_URL`, `JWT_SECRET`, `RESET_DB_ON_STARTUP`, `CORS_ALLOWED_ORIGINS`.
+Na primeira execução (ou sempre que `RESET_DB_ON_STARTUP=true`), o banco será criado e populado automaticamente com dados de teste.
 
-Na primeira execucao (ou sempre que `RESET_DB_ON_STARTUP=true`), o banco sera criado e populado automaticamente com dados de teste ao iniciar o servidor. Para desativar esse comportamento, altere para `RESET_DB_ON_STARTUP=false` no `.env`.
-
-### 3. Rodar a aplicacao (Frontend + Backend)
-
-Volte para a raiz do projeto e instale as dependencias do frontend:
+### 3. Rodar a aplicação (Frontend + Backend)
 
 ```bash
 cd ..
 npm install
-```
-
-Para facilitar o desenvolvimento, um unico comando inicia tanto o servidor backend quanto o frontend (via `concurrently`):
-
-```bash
 npm run dev
 ```
 
@@ -141,84 +229,82 @@ Acessar: `http://localhost:5173`
 
 ---
 
-## Scripts Disponiveis
+## Scripts Disponíveis
 
 ### Frontend (raiz do projeto)
-| Script | Descricao |
+| Script | Descrição |
 |---|---|
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm run build` | Build de producao |
+| `npm run dev` | Servidor de desenvolvimento (frontend + backend) |
+| `npm run build` | Build de produção |
 | `npm run preview` | Preview do build local |
 | `npm run test` | Testes (Vitest + Testing Library + vitest-axe) |
 
 ### Backend (pasta `server/`)
-| Script | Descricao |
+| Script | Descrição |
 |---|---|
-| `npm run dev` | Servidor de desenvolvimento (reset/seed automatico se `RESET_DB_ON_STARTUP=true`) |
-| `npm run test` | Testes unitarios, controllers, funcionais e de seguranca |
+| `npm run dev` | Servidor backend (reset/seed automático se `RESET_DB_ON_STARTUP=true`) |
+| `npm run test` | Testes unitários, controllers, funcionais e de segurança |
 | `node scripts/dropDbLocal.js` | Limpar banco local |
 | `node scripts/initDbLocal.js` | Criar tabelas |
 | `node scripts/seedDbLocal.js` | Popular com dados de teste |
 
-### Organizacao dos testes (backend)
+### Organização dos testes (backend)
 
-| Diretorio | O que cobre |
+| Diretório | O que cobre |
 |---|---|
-| `tests/controllers/` | Testes unitarios por controller |
-| `tests/unit/` | Entidades, use cases, repositorios |
-| `tests/functional/` | Fluxos de integracao (auth, person type) |
+| `tests/controllers/` | Testes unitários por controller |
+| `tests/unit/` | Entidades, use cases, repositórios |
+| `tests/functional/` | Fluxos de integração (auth, person type) |
 | `tests/security/` | SQL injection, tenant isolation |
 
 ---
 
 ## Banco de Dados (Dev)
 
-O banco local e descartavel. Com `RESET_DB_ON_STARTUP=true` (padrao), o backend recria as tabelas e popula dados de teste toda vez que inicia, via `server/scripts/devBootstrap.js`.
+O banco local é descartável. Com `RESET_DB_ON_STARTUP=true` (padrão), o backend recria as tabelas e popula dados de teste toda vez que inicia, via `server/scripts/devBootstrap.js`.
 
-Nao existem migrations incrementais. O schema e definido em `server/scripts/schemaDefinition.js`.
+Não existem migrations incrementais. O schema é definido em `server/scripts/schemaDefinition.js`.
 
-Para controle manual, desative `RESET_DB_ON_STARTUP` e use os scripts individuais (`dropDbLocal`, `initDbLocal`, `seedDbLocal`).
+Para controle manual, desative `RESET_DB_ON_STARTUP` e use os scripts individuais.
 
 ---
 
-## Endpoints da API (Resumo)
+## Endpoints da API
 
 ### Health Check
 ```
-GET    /api/health             - Status do servidor e conexao com DB
+GET    /api/health             - Status do servidor e conexão com DB
 ```
 
-### Autenticacao
+### Autenticação
 ```
-POST   /api/register-broker    - Cadastrar corretora + usuario admin
+POST   /api/register-broker    - Cadastrar corretora + usuário admin
 POST   /api/login              - Login
 GET    /api/auth/validate      - Validar token
 POST   /api/auth/refresh       - Renovar access token via refresh token
-POST   /api/auth/logout        - Encerrar sessao
+POST   /api/auth/logout        - Encerrar sessão
 ```
-> Autenticacao usa cookies httpOnly (access token + refresh token com rotacao). Para chamadas manuais, tambem aceita `Authorization: Bearer <token>`.
+> Autenticação usa cookies httpOnly (access token + refresh token com rotação). Para chamadas manuais, também aceita `Authorization: Bearer <token>`.
 
-### Clientes (requer autenticacao)
+### Clientes (requer autenticação)
 ```
-GET    /api/clients            - Listar todos
+GET    /api/clients            - Listar (search, personType, limit, offset, cursor)
 GET    /api/clients/:id        - Buscar por ID
 POST   /api/clients            - Criar novo
 PUT    /api/clients/:id        - Atualizar
 DELETE /api/clients/:id        - Deletar
 ```
-> Listagem suporta `search`, `personType`, `limit`, `offset` (legacy) e `cursor` (paginacao por cursor) e retorna `{ items, total, limit, offset, nextCursor }`.
 
-### Documentos (requer autenticacao)
+### Documentos (requer autenticação)
 ```
-GET    /api/documents          - Listar todos
+GET    /api/documents          - Listar (search, status, clientId, limit, offset, cursor)
 GET    /api/documents/:id      - Buscar por ID
 POST   /api/documents          - Criar novo
 PUT    /api/documents/:id      - Atualizar
 DELETE /api/documents/:id      - Deletar
 ```
-> Listagem suporta `search`, `status`, `clientId`, `limit`, `offset` (legacy) e `cursor` (paginacao por cursor) e retorna `{ items, total, limit, offset, nextCursor }`.
 
-### Corretoras (requer autenticacao)
+### Corretoras (requer autenticação)
 ```
 GET    /api/brokers            - Listar
 GET    /api/brokers/:id        - Buscar por ID
@@ -227,7 +313,7 @@ PUT    /api/brokers/:id        - Atualizar
 DELETE /api/brokers/:id        - Deletar
 ```
 
-### Usuarios (requer autenticacao)
+### Usuários (requer autenticação)
 ```
 GET    /api/users              - Listar
 GET    /api/users/:id          - Buscar por ID
@@ -236,7 +322,7 @@ PUT    /api/users/:id/password - Alterar senha
 DELETE /api/users/:id          - Deletar
 ```
 
-### Dashboard (requer autenticacao)
+### Dashboard (requer autenticação)
 ```
 GET    /api/dashboard/stats    - Indicadores do painel
 ```
@@ -245,81 +331,50 @@ GET    /api/dashboard/stats    - Indicadores do painel
 
 ## Tratamento de Erros
 
-Backend: `server/src/application/errors` usa hierarquia de `AppError` (`NotFoundError`, `UnauthorizedError`, `ConflictError`, etc.) com handler centralizado.
-Frontend: `src/services/api.ts` padroniza mensagens via `ApiError` e `ErrorBoundary` captura erros nao tratados.
+**Backend:** hierarquia de `AppError` em `server/src/application/errors` (`NotFoundError`, `UnauthorizedError`, `ConflictError`, `ValidationError`) com handler centralizado que converte em respostas HTTP padronizadas.
+
+**Frontend:** `ApiError` em `src/services/api.ts` padroniza mensagens de erro. `ErrorBoundary` captura erros não tratados. Toast para feedback de ações, Alert inline para erros de formulário.
 
 ---
 
-## Validacoes e Tipagem
+## Validações e Tipagem
 
-Backend: schemas Zod em `server/schemas` sao aplicados via middleware `validate`.
-Frontend: formularios validam campos criticos (CPF/CNPJ/email) e usam tipos em `src/types.ts`.
-Backend JS usa JSDoc + `checkJs` para tipagem estatica.
+**Backend:** schemas Zod em `server/schemas` aplicados via middleware `validate`. Erros de negócio via subclasses de `AppError`.
+
+**Frontend:** formulários validam campos críticos (CPF/CNPJ/email com algoritmos próprios) e usam tipos em `src/types.ts`. Validação de senha usa testes individuais por classe de caractere (sem regex vulnerável a ReDoS).
+
+**Backend JS** usa JSDoc + `checkJs` para tipagem estática sem migrar para TypeScript.
 
 ---
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
-Todas as variaveis ficam no arquivo `server/.env` (copiado de `.env.example`).
+### Backend (`server/.env`, copiado de `.env.example`)
 
-| Variavel | Descricao | Obrigatoria |
+| Variável | Descrição | Obrigatória |
 |---|---|---|
-| `PORT` | Porta do servidor backend | Nao (padrao: `3001`) |
-| `NODE_ENV` | Ambiente (`development`, `production`, `test`) | Nao |
-| `DATABASE_URL` | URL de conexao PostgreSQL | Sim |
+| `PORT` | Porta do servidor backend | Não (padrão: `3001`) |
+| `NODE_ENV` | Ambiente (`development`, `production`, `test`) | Não |
+| `DATABASE_URL` | URL de conexão PostgreSQL | Sim |
 | `JWT_SECRET` | Chave secreta para tokens JWT | Sim |
-| `RESET_DB_ON_STARTUP` | Recria banco ao iniciar (`true`/`false`) | Nao (padrao: `true`) |
-| `CORS_ALLOWED_ORIGINS` | Origens permitidas, separadas por virgula | Nao |
-| `VITE_API_URL` | URL do backend (usado pelo Vite no frontend) | Nao |
+| `RESET_DB_ON_STARTUP` | Recria banco ao iniciar (`true`/`false`) | Não (padrão: `true`) |
+| `CORS_ALLOWED_ORIGINS` | Origens permitidas, separadas por vírgula | Não |
+| `VITE_API_URL` | URL do backend (usado pelo Vite no frontend) | Não |
 
----
+### Chaves locais (`.env.local` na raiz — não versionado)
 
-## Agent Skills (`.cursor/skills/`)
-
-Skills para assistentes AI (Cursor) usados no desenvolvimento do projeto. Cada skill fica em `.cursor/skills/<nome>/SKILL.md`.
-
-> **Origem (opcional):** Skills baseados e adaptados a partir de [skills.sh/trending](https://skills.sh/trending), com revisao tecnica para o contexto do projeto.
-> **Fonte canonica:** considere `.cursor/skills/` como fonte oficial para revisao e manutencao.
-> **Status atual:** a arvore legada `.agents/` foi removida deste repositorio.
-
-| Skill | Descricao |
+| Variável | Descrição |
 |---|---|
-| `auth-implementation-patterns` | Padroes de autenticacao (JWT, OAuth2, RBAC) |
-| `code-review-excellence` | Boas praticas de code review |
-| `error-handling-patterns` | Tratamento de erros, Result types, degradacao graciosa |
-| `frontend-design` | Interfaces frontend com alto padrao visual |
-| `javascript-testing-patterns` | Testes com Jest/Vitest, Testing Library, mocking, TDD |
-| `modern-javascript-patterns` | ES6+, async/await, destructuring, programacao funcional |
-| `nodejs-backend-patterns` | Backend Node.js com Express, middleware, API design |
-| `postgresql-table-design` | Design de schema PostgreSQL, tipos, indices, constraints |
-| `responsive-design` | Layouts responsivos, container queries, fluid typography |
-| `sql-optimization-patterns` | Otimizacao de queries, EXPLAIN, estrategias de indexacao |
-| `systematic-debugging` | Debugging sistematico com rastreamento de causa raiz |
-| `tailwind-design-system` | Design system com Tailwind CSS v4 e design tokens |
-| `test-driven-development` | Fluxo TDD — escrever testes antes da implementacao |
-| `typescript-advanced-types` | Tipos avancados: generics, conditional types, mapped types |
-| `vercel-react-best-practices` | Otimizacao de performance React/Next.js (Vercel Engineering) |
-| `verification-before-completion` | Verificar evidencias antes de declarar tarefa concluida |
-| `web-design-guidelines` | Auditoria de UI para acessibilidade e UX |
-
-## Cursor Rules
-
-| Rule | Escopo | Descricao |
-|---|---|---|
-| `mcp-servers` | Global (always apply) | Prioriza MCP servers (GitHub) sobre CLIs para operacoes remotas |
-| `segflow-crm-instructions` | Repositorio (`.cursor/rules`) | Convencoes de UI, mensagens, arquitetura e seguranca do projeto |
-| `readme-consistency` | Repositorio (`.cursor/rules`) | Mantem este README atualizado sempre que arquivos estruturais (env, rotas, dependencias) sao modificados |
+| `JULES_API_KEY` | Chave de API do Jules (Google) |
+| `SONAR_TOKEN` | Token do SonarCloud para consultas via API |
 
 ---
 
-## Jules (opcional)
+## Segurança
 
-O projeto pode ser usado com o [Jules](https://jules.google.com), agente de codigo da Google, para tarefas automatizadas como reviews de performance e correcoes.
-
-Para habilitar a integracao local:
-
-1. Gere uma API key em [jules.google.com/settings](https://jules.google.com/settings).
-2. Crie `.env.local` na raiz do projeto com `JULES_API_KEY=<sua-chave>`.
-3. O setup script (`jules-setup.sh`) configura o ambiente para execucao de tarefas no Jules.
-
-> `.env.local` ja esta no `.gitignore` e nao sera commitado.
+- Todas as entradas validadas e sanitizadas (Zod + validators customizados)
+- Proteção contra SQL Injection (queries parametrizadas), IDOR, Mass Assignment e Broken Access Control
+- Senhas com hash bcrypt; segredos exclusivamente em variáveis de ambiente
+- Rate limiting e CORS configurados
+- Regex de validação livre de ReDoS (sem lookaheads com quantificadores aninhados)
+- Log de desenvolvimento sanitiza dados user-controlled contra log injection
