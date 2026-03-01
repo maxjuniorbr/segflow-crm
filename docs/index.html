@@ -63,9 +63,73 @@
     .stat-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.3); }
     .tech-card:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.3); background: rgba(255,255,255,0.06); }
     .lang-btn.active { background: rgba(37,99,235,0.2); color: #60a5fa; }
+
+    /* Mascot */
+    #mascot { position: fixed; bottom: 24px; right: 24px; z-index: 40; cursor: pointer; transition: transform 0.3s ease; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+    #mascot:hover { transform: scale(1.15) !important; }
+    #mascot svg { width: 72px; height: 72px; }
+    #mascot-bubble { position: absolute; bottom: 80px; right: 0; background: rgba(30,41,59,0.95); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; font-size: 13px; padding: 8px 14px; border-radius: 12px 12px 4px 12px; white-space: nowrap; opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none; }
+    #mascot-bubble.show { opacity: 1; transform: translateY(0); }
+    @keyframes mascotFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-6px) rotate(2deg); } 75% { transform: translateY(-3px) rotate(-1deg); } }
+    @keyframes mascotWiggle { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+    .mascot-float { animation: mascotFloat 4s ease-in-out infinite; }
+    .mascot-wiggle { animation: mascotWiggle 0.5s ease-in-out; }
+    #mascot .eye-pupil { transition: transform 0.3s ease; }
+    #mascot .mouth { transition: d 0.3s ease; }
+
+    /* Directional section fades */
+    .section-fade-left { opacity: 0; transform: translateX(-50px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .section-fade-right { opacity: 0; transform: translateX(50px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .section-fade-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .section-fade-left.visible, .section-fade-right.visible, .section-fade-scale.visible { opacity: 1; transform: translateX(0) scale(1); }
+
+    /* Staggered children */
+    .stagger-children.visible > * { animation: slideUp 0.5s ease-out forwards; opacity: 0; }
+    .stagger-children.visible > *:nth-child(1) { animation-delay: 0s; }
+    .stagger-children.visible > *:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-children.visible > *:nth-child(3) { animation-delay: 0.2s; }
+    .stagger-children.visible > *:nth-child(4) { animation-delay: 0.3s; }
+    .stagger-children.visible > *:nth-child(5) { animation-delay: 0.4s; }
+    .stagger-children.visible > *:nth-child(6) { animation-delay: 0.5s; }
+
+    /* Grain texture overlay */
+    .grain::after { content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+    /* Counter animation */
+    .counter { display: inline-block; }
+
+    /* Enhanced hover for timeline cards */
+    #timeline .glass { transition: all 0.3s ease, border-color 0.3s ease; }
+    #timeline .glass:hover { transform: translateX(4px); }
+
+    @media (max-width: 640px) {
+      #mascot svg { width: 56px; height: 56px; }
+      #mascot { bottom: 16px; right: 16px; }
+      #mascot-bubble { font-size: 12px; padding: 6px 10px; }
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-200 font-sans antialiased overflow-x-hidden">
+<body class="bg-slate-950 text-slate-200 font-sans antialiased overflow-x-hidden grain">
+
+  <!-- MASCOT: Seg the Shield -->
+  <div id="mascot" class="mascot-float" aria-hidden="true">
+    <div id="mascot-bubble"></div>
+    <svg viewBox="0 0 80 90" fill="none">
+      <path d="M40 8 L62 17 L62 40 Q62 62 40 73 Q18 62 18 40 L18 17 Z" fill="#2563eb" stroke="#3b82f6" stroke-width="1.5"/>
+      <path d="M40 12 L58 20 L58 40 Q58 58 40 68 Q22 58 22 40 L22 20 Z" fill="#1d4ed8" opacity="0.4"/>
+      <ellipse class="eye" cx="32" cy="36" rx="5" ry="5.5" fill="white"/>
+      <ellipse class="eye" cx="48" cy="36" rx="5" ry="5.5" fill="white"/>
+      <circle class="eye-pupil" cx="33" cy="37" r="2.5" fill="#0f172a"/>
+      <circle class="eye-pupil" cx="49" cy="37" r="2.5" fill="#0f172a"/>
+      <circle cx="34" cy="34" r="1.2" fill="rgba(255,255,255,0.7)"/>
+      <circle cx="50" cy="34" r="1.2" fill="rgba(255,255,255,0.7)"/>
+      <path class="mouth" d="M34 48 Q40 54 46 48" stroke="white" fill="none" stroke-width="2" stroke-linecap="round"/>
+      <path class="cheek-l" cx="25" cy="42" d="M23 42 Q25 44 27 42" stroke="#f472b6" fill="none" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+      <path class="cheek-r" d="M53 42 Q55 44 57 42" stroke="#f472b6" fill="none" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+      <path d="M30 22 L36 28 L48 16" stroke="#60a5fa" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+      <path id="mascot-hand" d="M64 50 Q70 45 68 38" stroke="#3b82f6" fill="none" stroke-width="2" stroke-linecap="round" opacity="0"/>
+    </svg>
+  </div>
 
   <!-- NAV -->
   <nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
@@ -156,26 +220,26 @@
   </section>
 
   <!-- STATS -->
-  <section class="relative py-20 sm:py-28">
+  <section class="relative py-20 sm:py-28" data-mascot-section="stats">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 section-fade">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 section-fade stagger-children">
         <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2">2</div>
+          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="2">0</div>
           <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.days">days of development</div>
           <div class="mt-3 text-xs text-brand-400 font-mono" data-i18n="stats.daysSub">idea → production</div>
         </div>
         <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold gradient-text mb-2">90%</div>
+          <div class="text-3xl sm:text-5xl font-extrabold gradient-text mb-2" data-count="90" data-suffix="%">0%</div>
           <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.ai">AI-generated code</div>
           <div class="mt-3 text-xs text-purple-400 font-mono">cursor agent + chat</div>
         </div>
         <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2">15+</div>
+          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="15" data-suffix="+">0</div>
           <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.screens">complete screens</div>
           <div class="mt-3 text-xs text-emerald-400 font-mono">CRUD + dashboard + auth</div>
         </div>
         <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2">17</div>
+          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="17">0</div>
           <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.skills">AI skills configured</div>
           <div class="mt-3 text-xs text-pink-400 font-mono">.cursor/skills/</div>
         </div>
@@ -257,7 +321,7 @@
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Tech <span class="gradient-text">Stack</span></h2>
         <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="tech.sub">Modern technologies chosen for performance, DX, and maintainability.</p>
       </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 section-fade">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 section-fade stagger-children">
         <div class="glass rounded-2xl p-6 transition-all duration-300 tech-card group">
           <div class="flex items-center gap-3 mb-5">
             <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
@@ -402,7 +466,7 @@
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="quality.title">Quality & <span class="gradient-text">Security</span></h2>
         <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="quality.sub">Professional security and code quality standards throughout the application.</p>
       </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 section-fade">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 section-fade stagger-children">
         <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2" data-i18n="quality.jwt">JWT Authentication</h3><p class="text-sm text-slate-400" data-i18n="quality.jwtDesc">Access + Refresh tokens with automatic rotation. httpOnly cookies. Rate limiting on auth routes.</p></div>
         <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2" data-i18n="quality.zod">Zod Validation</h3><p class="text-sm text-slate-400" data-i18n="quality.zodDesc">Validation schemas on all inputs. Centralized middleware. Mass assignment protection.</p></div>
         <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2">SonarCloud</h3><p class="text-sm text-slate-400" data-i18n="quality.sonarDesc">Continuous static analysis. Zero bugs, zero vulnerabilities. Quality Gate integrated into the pipeline.</p></div>
@@ -498,7 +562,7 @@
   </section>
 
   <!-- AUTH FLOW -->
-  <section class="py-20 sm:py-28 relative">
+  <section class="py-20 sm:py-28 relative" data-mascot-section="auth">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16 section-fade">
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="auth.title">Authentication <span class="gradient-text">Flow</span></h2>
@@ -512,7 +576,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="py-16 border-t border-white/5">
+  <footer class="py-16 border-t border-white/5" data-mascot-section="footer">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col items-center text-center">
         <div class="flex items-center gap-3 mb-6">
@@ -717,7 +781,117 @@
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.section-fade').forEach(el => observer.observe(el));
+    document.querySelectorAll('.section-fade, .section-fade-left, .section-fade-right, .section-fade-scale').forEach(el => observer.observe(el));
+
+    // Stat counter animation
+    let countersAnimated = false;
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !countersAnimated) {
+          countersAnimated = true;
+          document.querySelectorAll('[data-count]').forEach(el => {
+            const target = parseInt(el.dataset.count);
+            const suffix = el.dataset.suffix || '';
+            const duration = 1200;
+            const start = performance.now();
+            function tick(now) {
+              const elapsed = now - start;
+              const progress = Math.min(elapsed / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              el.textContent = Math.round(eased * target) + suffix;
+              if (progress < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    const statsSection = document.querySelector('.stagger-children');
+    if (statsSection) counterObserver.observe(statsSection);
+
+    // Mascot behavior
+    const mascot = document.getElementById('mascot');
+    const bubble = document.getElementById('mascot-bubble');
+    const pupils = document.querySelectorAll('.eye-pupil');
+    const mouthPath = document.querySelector('.mouth');
+    const hand = document.getElementById('mascot-hand');
+    const sections = ['hero','features','tech','architecture','cursor'];
+    const bubbleMessages = {
+      en: { hero: 'Hey there! 👋', stats: 'Just 2 days!', features: 'Check this out!', tech: 'Solid stack 💪', architecture: 'Clean layers!', cursor: 'Powered by AI ✨', auth: 'Secure! 🔒', footer: '⭐ Star us!' },
+      pt: { hero: 'E aí! 👋', stats: 'Só 2 dias!', features: 'Olha isso!', tech: 'Stack robusta 💪', architecture: 'Camadas limpas!', cursor: 'Movido a IA ✨', auth: 'Seguro! 🔒', footer: '⭐ Dê uma estrela!' }
+    };
+
+    let currentSection = 'hero';
+    let bubbleTimeout = null;
+
+    function showBubble(section) {
+      const msgs = bubbleMessages[currentLang] || bubbleMessages.en;
+      const msg = msgs[section];
+      if (!msg) return;
+      clearTimeout(bubbleTimeout);
+      bubble.textContent = msg;
+      bubble.classList.add('show');
+      bubbleTimeout = setTimeout(() => bubble.classList.remove('show'), 2500);
+    }
+
+    function updateMascotExpression(section) {
+      if (section === currentSection) return;
+      currentSection = section;
+      showBubble(section);
+
+      const expressions = {
+        hero:         { pupils: '0,0',   mouth: 'M34 48 Q40 54 46 48', hand: true },
+        stats:        { pupils: '0,-1',  mouth: 'M32 46 Q40 56 48 46', hand: false },
+        features:     { pupils: '2,0',   mouth: 'M34 48 Q40 53 46 48', hand: false },
+        tech:         { pupils: '-1,0',  mouth: 'M34 48 Q40 53 46 48', hand: false },
+        architecture: { pupils: '0,1',   mouth: 'M34 49 Q40 52 46 49', hand: false },
+        cursor:       { pupils: '0,-1',  mouth: 'M32 46 Q40 56 48 46', hand: false },
+        auth:         { pupils: '1,1',   mouth: 'M34 48 Q40 53 46 48', hand: false },
+        footer:       { pupils: '0,0',   mouth: 'M34 48 Q40 54 46 48', hand: true },
+      };
+      const expr = expressions[section] || expressions.hero;
+      const [px, py] = expr.pupils.split(',').map(Number);
+      pupils.forEach(p => { p.style.transform = `translate(${px}px, ${py}px)`; });
+      mouthPath.setAttribute('d', expr.mouth);
+      hand.style.opacity = expr.hand ? '1' : '0';
+    }
+
+    const sectionObserverForMascot = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          updateMascotExpression(entry.target.id || entry.target.dataset.mascotSection || 'hero');
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('section[id], [data-mascot-section]').forEach(s => sectionObserverForMascot.observe(s));
+
+    mascot.addEventListener('click', () => {
+      mascot.classList.remove('mascot-float');
+      mascot.classList.add('mascot-wiggle');
+      setTimeout(() => { mascot.classList.remove('mascot-wiggle'); mascot.classList.add('mascot-float'); }, 500);
+    });
+
+    // Mouse-follow for mascot pupils (subtle)
+    document.addEventListener('mousemove', (e) => {
+      const rect = mascot.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / window.innerWidth * 3;
+      const dy = (e.clientY - cy) / window.innerHeight * 3;
+      const clampedX = Math.max(-2.5, Math.min(2.5, dx));
+      const clampedY = Math.max(-2.5, Math.min(2.5, dy));
+      pupils.forEach(p => { p.style.transform = `translate(${clampedX}px, ${clampedY}px)`; });
+    });
+
+    // Parallax hero glows on scroll
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      document.querySelectorAll('.hero-glow').forEach((glow, i) => {
+        const speed = 0.15 + i * 0.05;
+        glow.style.transform = `translateY(${y * speed}px)`;
+      });
+    }, { passive: true });
 
     setLang('en');
   </script>
