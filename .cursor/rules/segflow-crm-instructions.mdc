@@ -6,7 +6,7 @@ alwaysApply: true
 # Instrucoes do agente (SegFlow CRM)
 
 ## Linguagem e tom
-- Codigo em ingles; interface, textos e mensagens ao usuario em pt-BR.
+- Codigo e documentacao (como o README) em ingles; interface, textos e mensagens ao usuario em pt-BR.
 - Mensagens curtas e objetivas, tom profissional e consistente.
 
 ## Design System (estado atual)

@@ -1,144 +1,144 @@
 # SegFlow CRM
 
-Sistema completo para corretoras de seguros — gerenciamento de clientes, propostas e apólices em uma plataforma única.
+A complete system for insurance brokerages — managing clients, proposals, and policies in a single platform.
 
-> **~90% deste código foi escrito por IA.** Este projeto é resultado de um teste corporativo de 30 dias com a ferramenta [Cursor](https://cursor.com), utilizando a abordagem de *vibe coding* — onde o desenvolvedor guia a intenção e a IA implementa. Veja a seção [Desenvolvimento Assistido por IA](#desenvolvimento-assistido-por-ia-vibe-coding) para detalhes.
-
----
-
-## Funcionalidades
-
-- Cadastro de corretoras com usuário administrador
-- Cadastro de clientes (Pessoa Física e Pessoa Jurídica)
-- Gerenciamento de propostas e apólices de seguros
-- Gerenciamento de usuários por corretora
-- Painel com indicadores (dashboard)
-- Busca, filtros e paginação por cursor
-- Consulta automática de CEP (BrasilAPI)
-- Autenticação com JWT (access + refresh token com rotação automática)
-- Interface responsiva com suporte a dark mode
+> **~90% of this code was written by AI.** This project is the result of a 30-day corporate trial using the [Cursor](https://cursor.com) tool, employing a *vibe coding* approach — where the developer guides the intent and the AI implements it. See the [AI-Assisted Development (Vibe Coding)](#ai-assisted-development-vibe-coding) section for details.
 
 ---
 
-## Tecnologias
+## Features
+
+- Brokerage registration with an administrator user
+- Client registration (Individuals and Companies)
+- Management of insurance proposals and policies
+- User management per brokerage
+- Dashboard with key metrics
+- Search, filtering, and cursor-based pagination
+- Automatic zip code (CEP) lookup (via BrasilAPI)
+- JWT Authentication (access + refresh token with automatic rotation)
+- Responsive interface with dark mode support
+
+---
+
+## Technologies
 
 ### Frontend
 - **React 19** + TypeScript + Vite
-- **TailwindCSS v4** para estilização
-- **CVA** (class-variance-authority) + clsx + tailwind-merge para variantes de componentes
-- **React Router** para navegação
-- **Lucide React** para ícones
+- **TailwindCSS v4** for styling
+- **CVA** (class-variance-authority) + clsx + tailwind-merge for component variants
+- **React Router** for navigation
+- **Lucide React** for icons
 
 ### Backend
 - **Node.js** + Express + compression
-- **PostgreSQL** como banco de dados
-- **JWT** para autenticação (access + refresh tokens)
-- **Zod** para validação de dados
-- **bcryptjs** para hash de senhas
-- **JSDoc** para tipagem estática (checkJS — sem migração para TypeScript)
+- **PostgreSQL** as the database
+- **JWT** for authentication (access + refresh tokens)
+- **Zod** for data validation
+- **bcryptjs** for password hashing
+- **JSDoc** for static typing (checkJS — no migration to TypeScript)
 
-### Testes
-- **Vitest** para backend e frontend
-- **Testing Library** para componentes React
-- **vitest-axe** para testes de acessibilidade
+### Testing
+- **Vitest** for backend and frontend
+- **Testing Library** for React components
+- **vitest-axe** for accessibility testing
 
-### Qualidade e CI
-- **SonarCloud** para análise estática contínua (segurança, bugs, code smells)
-- **Dependabot** para atualização automática de dependências
-- **k6** para testes de carga (`stress-test.js`)
+### Quality and CI
+- **SonarCloud** for continuous static analysis (security, bugs, code smells)
+- **Dependabot** for automatic dependency updates
+- **k6** for load testing (`stress-test.js`)
 
 ---
 
-## Desenvolvimento Assistido por IA (Vibe Coding)
+## AI-Assisted Development (Vibe Coding)
 
-Este projeto foi construído como prova de conceito para avaliar o impacto de assistentes de IA no desenvolvimento de software. Durante 30 dias, toda a implementação foi conduzida via *vibe coding* no [Cursor IDE](https://cursor.com) — o desenvolvedor define a intenção em linguagem natural e a IA produz o código.
+This project was built as a proof of concept to evaluate the impact of AI assistants on software development. Over 30 days, the entire implementation was driven by *vibe coding* within the [Cursor IDE](https://cursor.com) — the developer defines the intent in natural language, and the AI produces the code.
 
-### LLMs Utilizadas
+### LLMs Used
 
-Os modelos foram alternados conforme a complexidade de cada tarefa:
+Models were rotated based on the complexity of each task:
 
-| Modelo | Fornecedor | Uso principal |
+| Model | Provider | Main use case |
 |---|---|---|
-| **Claude Opus** | Anthropic | Arquitetura, refatorações complexas, decisões de design |
-| **Claude Sonnet** | Anthropic | Implementação geral, features, correções |
-| **Codex** | OpenAI | Geração de código, autocomplete |
-| **Gemini** | Google | Code review, análise de alternativas |
+| **Claude Opus** | Anthropic | Architecture, complex refactoring, design decisions |
+| **Claude Sonnet** | Anthropic | General implementation, features, bug fixes |
+| **Codex** | OpenAI | Code generation, autocomplete |
+| **Gemini** | Google | Code review, analyzing alternatives |
 
-### Cursor IDE — Rules e Skills
+### Cursor IDE — Rules and Skills
 
-O Cursor permite configurar **regras** e **skills** que guiam o comportamento dos agentes AI durante o desenvolvimento.
+Cursor allows the configuration of **rules** and **skills** that guide the behavior of AI agents during development.
 
-**Rules** (`.cursor/rules/`) são instruções permanentes que o agente segue em toda interação — equivalem a um "manual do projeto" para a IA. Por exemplo, a rule principal define que o código deve ser em inglês, a interface em pt-BR, que o backend segue Clean Architecture, e quais padrões de UI devem ser seguidos.
+**Rules** (`.cursor/rules/`) are permanent instructions the agent follows in every interaction — acting as a "project manual" for the AI. For example, the primary rule defines that code must be in English, the UI in pt-BR, the backend follows Clean Architecture, and which UI patterns must be used.
 
-**Skills** (`.cursor/skills/`) são bases de conhecimento especializadas que o agente consulta sob demanda. Cada skill é um arquivo Markdown com diretrizes, padrões e exemplos de uma disciplina específica. Os skills deste projeto foram baseados e adaptados a partir do ecossistema aberto [skills.sh](https://skills.sh) (Vercel Labs), com revisão técnica para o contexto do SegFlow.
+**Skills** (`.cursor/skills/`) are specialized knowledge bases the agent queries on demand. Each skill is a Markdown file with guidelines, patterns, and examples for a specific discipline. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
 
 <details>
-<summary><strong>Skills instalados (17)</strong></summary>
+<summary><strong>Installed Skills (17)</strong></summary>
 
-| Skill | Origem | Descrição |
+| Skill | Source | Description |
 |---|---|---|
-| `auth-implementation-patterns` | [wshobson/agents](https://skills.sh) | Padrões de autenticação (JWT, OAuth2, RBAC) |
-| `code-review-excellence` | [wshobson/agents](https://skills.sh) | Boas práticas de code review |
-| `error-handling-patterns` | [wshobson/agents](https://skills.sh) | Tratamento de erros, Result types, degradação graciosa |
-| `frontend-design` | [anthropics/skills](https://skills.sh) | Interfaces frontend com alto padrão visual |
-| `javascript-testing-patterns` | [wshobson/agents](https://skills.sh) | Testes com Vitest, Testing Library, mocking, TDD |
-| `modern-javascript-patterns` | [wshobson/agents](https://skills.sh) | ES6+, async/await, destructuring, programação funcional |
-| `nodejs-backend-patterns` | [wshobson/agents](https://skills.sh) | Backend Node.js com Express, Clean Architecture |
-| `postgresql-table-design` | [wshobson/agents](https://skills.sh) | Design de schema PostgreSQL, tipos, índices, constraints |
-| `responsive-design` | [wshobson/agents](https://skills.sh) | Layouts responsivos, container queries, fluid typography |
-| `sql-optimization-patterns` | [wshobson/agents](https://skills.sh) | Otimização de queries, EXPLAIN, estratégias de indexação |
-| `systematic-debugging` | [obra/superpowers](https://skills.sh) | Debugging sistemático com rastreamento de causa raiz |
-| `tailwind-design-system` | [wshobson/agents](https://skills.sh) | Design system com Tailwind CSS v4 e design tokens |
-| `test-driven-development` | [obra/superpowers](https://skills.sh) | Fluxo TDD — escrever testes antes da implementação |
-| `typescript-advanced-types` | [wshobson/agents](https://skills.sh) | Tipos avançados: generics, conditional types, mapped types |
-| `vercel-react-best-practices` | [vercel-labs/agent-skills](https://skills.sh) | Otimização de performance React (Vercel Engineering) |
-| `verification-before-completion` | [obra/superpowers](https://skills.sh) | Verificar evidências antes de declarar tarefa concluída |
-| `web-design-guidelines` | [vercel-labs/agent-skills](https://skills.sh) | Auditoria de UI para acessibilidade e UX |
+| `auth-implementation-patterns` | [wshobson/agents](https://skills.sh) | Authentication patterns (JWT, OAuth2, RBAC) |
+| `code-review-excellence` | [wshobson/agents](https://skills.sh) | Code review best practices |
+| `error-handling-patterns` | [wshobson/agents](https://skills.sh) | Error handling, Result types, graceful degradation |
+| `frontend-design` | [anthropics/skills](https://skills.sh) | High-standard visual frontend interfaces |
+| `javascript-testing-patterns` | [wshobson/agents](https://skills.sh) | Testing with Vitest, Testing Library, mocking, TDD |
+| `modern-javascript-patterns` | [wshobson/agents](https://skills.sh) | ES6+, async/await, destructuring, functional programming |
+| `nodejs-backend-patterns` | [wshobson/agents](https://skills.sh) | Node.js backend with Express, Clean Architecture |
+| `postgresql-table-design` | [wshobson/agents](https://skills.sh) | PostgreSQL schema design, types, indexes, constraints |
+| `responsive-design` | [wshobson/agents](https://skills.sh) | Responsive layouts, container queries, fluid typography |
+| `sql-optimization-patterns` | [wshobson/agents](https://skills.sh) | Query optimization, EXPLAIN, indexing strategies |
+| `systematic-debugging` | [obra/superpowers](https://skills.sh) | Systematic debugging with root cause tracking |
+| `tailwind-design-system` | [wshobson/agents](https://skills.sh) | Design system with Tailwind CSS v4 and design tokens |
+| `test-driven-development` | [obra/superpowers](https://skills.sh) | TDD workflow — writing tests before implementation |
+| `typescript-advanced-types` | [wshobson/agents](https://skills.sh) | Advanced types: generics, conditional types, mapped types |
+| `vercel-react-best-practices` | [vercel-labs/agent-skills](https://skills.sh) | React performance optimization (Vercel Engineering) |
+| `verification-before-completion` | [obra/superpowers](https://skills.sh) | Verifying evidence before declaring a task complete |
+| `web-design-guidelines` | [vercel-labs/agent-skills](https://skills.sh) | UI audit for accessibility and UX |
 
 </details>
 
 <details>
-<summary><strong>Rules configuradas (3)</strong></summary>
+<summary><strong>Configured Rules (3)</strong></summary>
 
-| Rule | Escopo | Descrição |
+| Rule | Scope | Description |
 |---|---|---|
-| `segflow-crm-instructions` | Always apply | Convenções de UI, mensagens, arquitetura, segurança e padrões do projeto |
-| `mcp-servers` | Always apply | Prioriza MCP servers (GitHub) sobre CLIs para operações remotas |
-| `readme-consistency` | Glob-based | Mantém este README sincronizado quando arquivos estruturais mudam |
+| `segflow-crm-instructions` | Always apply | UI conventions, messages, architecture, security, and project patterns |
+| `mcp-servers` | Always apply | Prioritizes MCP servers (GitHub) over CLIs for remote operations |
+| `readme-consistency` | Glob-based | Keeps this README synced when structural files change |
 
 </details>
 
 ### Jules (Google)
 
-O [Jules](https://jules.google.com) é um agente de código da Google que funciona como revisor complementar. Ele analisa o repositório, sugere correções e pode gerar patches automaticamente.
+[Jules](https://jules.google.com) is a code agent by Google that works as a complementary reviewer. It analyzes the repository, suggests fixes, and can automatically generate patches.
 
-A integração é feita via API REST (`https://jules.googleapis.com/v1alpha`):
-- **`GET /sessions`** — lista tarefas/reviews criadas pelo Jules
-- **`GET /sessions/{id}`** — detalha uma sessão com o patch sugerido
-- **`GET /sources`** — repositórios conectados
+Integration is done via REST API (`https://jules.googleapis.com/v1alpha`):
+- **`GET /sessions`** — lists tasks/reviews created by Jules
+- **`GET /sessions/{id}`** — details a session with the suggested patch
+- **`GET /sources`** — connected repositories
 
-Para habilitar: crie `.env.local` na raiz com `JULES_API_KEY=<sua-chave>` (obtida em [jules.google.com/settings](https://jules.google.com/settings)). O arquivo já está no `.gitignore`.
+To enable: create `.env.local` in the root with `JULES_API_KEY=<your-key>` (obtained at [jules.google.com/settings](https://jules.google.com/settings)). This file is already in `.gitignore`.
 
 ### SonarCloud
 
-O projeto está integrado ao [SonarCloud](https://sonarcloud.io) para análise estática contínua. O scan é acionado automaticamente a cada push no GitHub (Automatic Analysis — sem necessidade de CI pipeline).
+The project is integrated with [SonarCloud](https://sonarcloud.io) for continuous static analysis. Scans are triggered automatically on every push to GitHub (Automatic Analysis — no CI pipeline needed).
 
-**O que o SonarCloud analisa:** bugs, vulnerabilidades, code smells, security hotspots, cobertura de testes, duplicação de código e dívida técnica.
+**What SonarCloud analyzes:** bugs, vulnerabilities, code smells, security hotspots, test coverage, code duplication, and technical debt.
 
-**Integração via API:** além do painel web, o token do SonarCloud (armazenado em `.env.local` como `SONAR_TOKEN`) permite consultar e gerenciar issues programaticamente:
-- Listar issues abertas, filtrar por severidade/tipo
-- Marcar falso-positivos e won't-fix com justificativa
-- Monitorar status de análises
+**API Integration:** besides the web dashboard, the SonarCloud token (stored in `.env.local` as `SONAR_TOKEN`) allows querying and managing issues programmatically:
+- List open issues, filter by severity/type
+- Mark false positives and won't-fix with justification
+- Monitor analysis status
 
-Essa integração por API foi usada neste projeto para triar ~80 falso-positivos (labels de UI detectados como "hard-coded passwords") diretamente do terminal, sem acessar o painel web.
+This API integration was used in this project to triage ~80 false positives (UI labels detected as "hard-coded passwords") directly from the terminal, without accessing the web dashboard.
 
 ### Dependabot
 
-O GitHub Dependabot está ativo no repositório e gera pull requests automáticos quando detecta atualizações de segurança ou versões novas em dependências (`npm`). Os PRs seguem o padrão `chore(deps):` e são revisados antes do merge.
+GitHub Dependabot is active in the repository and generates automatic pull requests when it detects security updates or new versions in dependencies (`npm`). PRs follow the `chore(deps):` pattern and are reviewed before merging.
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -150,7 +150,7 @@ flowchart LR
     Repositories --> DB[("PostgreSQL")]
 ```
 
-### Camadas
+### Layers
 - **UI/Transport:** `routes`, `middleware`, `app`.
 - **Application:** `controllers`, `useCases`, `dto`, `errors`.
 - **Domain:** `entities`.
@@ -158,24 +158,24 @@ flowchart LR
 
 ---
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 segflow-crm/
 ├── .cursor/
-│   ├── rules/             # Regras do agente (convenções, padrões)
-│   └── skills/            # Skills AI (17 bases de conhecimento)
+│   ├── rules/             # Agent rules (conventions, patterns)
+│   └── skills/            # AI skills (17 knowledge bases)
 ├── src/                    # Frontend React
 │   ├── contexts/          # Context API (Auth, Toast)
-│   ├── features/          # Features (pages/components por domínio)
+│   ├── features/          # Features (pages/components by domain)
 │   ├── services/          # Services (API, storage, toastBus)
 │   ├── shared/
-│   │   ├── components/    # Componentes compartilhados (CVA, ErrorBoundary)
-│   │   └── hooks/         # Hooks reutilizáveis (useModalBehavior)
+│   │   ├── components/    # Shared components (CVA, ErrorBoundary)
+│   │   └── hooks/         # Reusable hooks (useModalBehavior)
 │   ├── types.ts           # TypeScript types
-│   └── utils/             # Formatters, validators, mensagens centralizadas
+│   └── utils/             # Formatters, validators, centralized messages
 │
-├── server/                # Backend Node.js
+├── server/                # Node.js Backend
 │   ├── config/           # DB config
 │   ├── middleware/       # Middlewares (auth, validate)
 │   ├── routes/           # Route definitions
@@ -184,31 +184,31 @@ segflow-crm/
 │   ├── src/
 │   │   ├── application/  # controllers, useCases, dto, errors, utils
 │   │   ├── domain/       # entities
-│   │   └── infrastructure/ # repositories (+ queryHelpers compartilhado)
-│   └── tests/            # Testes (controllers, unit, functional, security)
-│       └── utils/         # Factories, mocks centralizados (__mocks__), helpers
+│   │   └── infrastructure/ # repositories (+ shared queryHelpers)
+│   └── tests/            # Tests (controllers, unit, functional, security)
+│       └── utils/         # Factories, centralized mocks (__mocks__), helpers
 │
-├── stress-test.js         # Testes de carga (k6)
-└── .env.local             # Chaves locais (Jules, SonarCloud) — não versionado
+├── stress-test.js         # Load testing (k6)
+└── .env.local             # Local keys (Jules, SonarCloud) — untracked
 ```
 
-Mensagens de interface ficam centralizadas em `src/utils/*Messages.ts`. O `uiMessages` agrega `uiBaseMessages`, `uiNavigationMessages` e `uiPageMessages` por domínio.
+UI messages are centralized in `src/utils/*Messages.ts`. `uiMessages` aggregates `uiBaseMessages`, `uiNavigationMessages`, and `uiPageMessages` by domain.
 
 ---
 
-## Como Rodar Localmente
+## How to Run Locally
 
-### Pré-requisitos
+### Prerequisites
 - Node.js 18+
 - PostgreSQL 14+
 
-### 1. Clonar o repositório
+### 1. Clone the repository
 ```bash
 git clone git@github.com:maxjuniorbr/segflow-crm.git
 cd segflow-crm
 ```
 
-### 2. Configurar o Backend
+### 2. Configure the Backend
 
 ```bash
 cd server
@@ -216,11 +216,11 @@ npm install
 cp .env.example .env
 ```
 
-O arquivo `.env.example` vem com valores funcionais para desenvolvimento local. Edite apenas se precisar alterar porta, credenciais do banco ou segredo JWT.
+The `.env.example` file comes with functional values for local development. Only edit it if you need to change the port, database credentials, or JWT secret.
 
-Na primeira execução (ou sempre que `RESET_DB_ON_STARTUP=true`), o banco será criado e populado automaticamente com dados de teste.
+On the first run (or whenever `RESET_DB_ON_STARTUP=true`), the database will be created and populated automatically with test data.
 
-### 3. Rodar a aplicação (Frontend + Backend)
+### 3. Run the application (Frontend + Backend)
 
 ```bash
 cd ..
@@ -228,156 +228,156 @@ npm install
 npm run dev
 ```
 
-Acessar: `http://localhost:5173`
+Access: `http://localhost:5173`
 
 ---
 
-## Scripts Disponíveis
+## Available Scripts
 
-### Frontend (raiz do projeto)
-| Script | Descrição |
+### Frontend (project root)
+| Script | Description |
 |---|---|
-| `npm run dev` | Servidor de desenvolvimento (frontend + backend) |
-| `npm run build` | Build de produção |
-| `npm run preview` | Preview do build local |
-| `npm run test` | Testes (Vitest + Testing Library + vitest-axe) |
+| `npm run dev` | Development server (frontend + backend) |
+| `npm run build` | Production build |
+| `npm run preview` | Local build preview |
+| `npm run test` | Tests (Vitest + Testing Library + vitest-axe) |
 
-### Backend (pasta `server/`)
-| Script | Descrição |
+### Backend (`server/` folder)
+| Script | Description |
 |---|---|
-| `npm run dev` | Servidor backend (reset/seed automático se `RESET_DB_ON_STARTUP=true`) |
-| `npm run test` | Testes unitários, controllers, funcionais e de segurança |
-| `node scripts/dropDbLocal.js` | Limpar banco local |
-| `node scripts/initDbLocal.js` | Criar tabelas |
-| `node scripts/seedDbLocal.js` | Popular com dados de teste |
+| `npm run dev` | Backend server (auto reset/seed if `RESET_DB_ON_STARTUP=true`) |
+| `npm run test` | Unit, controller, functional, and security tests |
+| `node scripts/dropDbLocal.js` | Drop local database |
+| `node scripts/initDbLocal.js` | Create tables |
+| `node scripts/seedDbLocal.js` | Populate with test data |
 
-### Organização dos testes (backend)
+### Test Organization (backend)
 
-| Diretório | O que cobre |
+| Directory | What it covers |
 |---|---|
-| `tests/controllers/` | Testes unitários por controller |
-| `tests/unit/` | Entidades, use cases, repositórios |
-| `tests/functional/` | Fluxos de integração (auth, person type) |
+| `tests/controllers/` | Unit tests per controller |
+| `tests/unit/` | Entities, use cases, repositories |
+| `tests/functional/` | Integration flows (auth, person type) |
 | `tests/security/` | SQL injection, tenant isolation |
 
 ---
 
-## Banco de Dados (Dev)
+## Database (Dev)
 
-O banco local é descartável. Com `RESET_DB_ON_STARTUP=true` (padrão), o backend recria as tabelas e popula dados de teste toda vez que inicia, via `server/scripts/devBootstrap.js`.
+The local database is disposable. With `RESET_DB_ON_STARTUP=true` (default), the backend recreates the tables and seeds test data every time it starts, via `server/scripts/devBootstrap.js`.
 
-Não existem migrations incrementais. O schema é definido em `server/scripts/schemaDefinition.js`.
+There are no incremental migrations. The schema is defined in `server/scripts/schemaDefinition.js`.
 
-Para controle manual, desative `RESET_DB_ON_STARTUP` e use os scripts individuais.
+For manual control, disable `RESET_DB_ON_STARTUP` and use the individual scripts.
 
 ---
 
-## Endpoints da API
+## API Endpoints
 
 ### Health Check
 ```
-GET    /api/health             - Status do servidor e conexão com DB
+GET    /api/health             - Server status and DB connection
 ```
 
-### Autenticação
+### Authentication
 ```
-POST   /api/register-broker    - Cadastrar corretora + usuário admin
+POST   /api/register-broker    - Register brokerage + admin user
 POST   /api/login              - Login
-GET    /api/auth/validate      - Validar token
-POST   /api/auth/refresh       - Renovar access token via refresh token
-POST   /api/auth/logout        - Encerrar sessão
+GET    /api/auth/validate      - Validate token
+POST   /api/auth/refresh       - Renew access token via refresh token
+POST   /api/auth/logout        - End session
 ```
-> Autenticação usa cookies httpOnly (access token + refresh token com rotação). Para chamadas manuais, também aceita `Authorization: Bearer <token>`.
+> Authentication uses httpOnly cookies (access token + refresh token with rotation). For manual calls, it also accepts `Authorization: Bearer <token>`.
 
-### Clientes (requer autenticação)
+### Clients (requires authentication)
 ```
-GET    /api/clients            - Listar (search, personType, limit, offset, cursor)
-GET    /api/clients/:id        - Buscar por ID
-POST   /api/clients            - Criar novo
-PUT    /api/clients/:id        - Atualizar
-DELETE /api/clients/:id        - Deletar
-```
-
-### Documentos (requer autenticação)
-```
-GET    /api/documents          - Listar (search, status, clientId, limit, offset, cursor)
-GET    /api/documents/:id      - Buscar por ID
-POST   /api/documents          - Criar novo
-PUT    /api/documents/:id      - Atualizar
-DELETE /api/documents/:id      - Deletar
+GET    /api/clients            - List (search, personType, limit, offset, cursor)
+GET    /api/clients/:id        - Get by ID
+POST   /api/clients            - Create new
+PUT    /api/clients/:id        - Update
+DELETE /api/clients/:id        - Delete
 ```
 
-### Corretoras (requer autenticação)
+### Documents (requires authentication)
 ```
-GET    /api/brokers            - Listar
-GET    /api/brokers/:id        - Buscar por ID
-POST   /api/brokers            - Criar
-PUT    /api/brokers/:id        - Atualizar
-DELETE /api/brokers/:id        - Deletar
-```
-
-### Usuários (requer autenticação)
-```
-GET    /api/users              - Listar
-GET    /api/users/:id          - Buscar por ID
-PUT    /api/users/:id          - Atualizar
-PUT    /api/users/:id/password - Alterar senha
-DELETE /api/users/:id          - Deletar
+GET    /api/documents          - List (search, status, clientId, limit, offset, cursor)
+GET    /api/documents/:id      - Get by ID
+POST   /api/documents          - Create new
+PUT    /api/documents/:id      - Update
+DELETE /api/documents/:id      - Delete
 ```
 
-### Dashboard (requer autenticação)
+### Brokerages (requires authentication)
 ```
-GET    /api/dashboard/stats    - Indicadores do painel
+GET    /api/brokers            - List
+GET    /api/brokers/:id        - Get by ID
+POST   /api/brokers            - Create
+PUT    /api/brokers/:id        - Update
+DELETE /api/brokers/:id        - Delete
+```
+
+### Users (requires authentication)
+```
+GET    /api/users              - List
+GET    /api/users/:id          - Get by ID
+PUT    /api/users/:id          - Update
+PUT    /api/users/:id/password - Change password
+DELETE /api/users/:id          - Delete
+```
+
+### Dashboard (requires authentication)
+```
+GET    /api/dashboard/stats    - Dashboard metrics
 ```
 
 ---
 
-## Tratamento de Erros
+## Error Handling
 
-**Backend:** hierarquia de `AppError` em `server/src/application/errors` (`NotFoundError`, `UnauthorizedError`, `ConflictError`, `ValidationError`) com handler centralizado que converte em respostas HTTP padronizadas.
+**Backend:** hierarchy of `AppError` in `server/src/application/errors` (`NotFoundError`, `UnauthorizedError`, `ConflictError`, `ValidationError`) with a centralized handler that converts them into standardized HTTP responses.
 
-**Frontend:** `ApiError` em `src/services/api.ts` padroniza mensagens de erro. `ErrorBoundary` captura erros não tratados. Toast para feedback de ações, Alert inline para erros de formulário.
-
----
-
-## Validações e Tipagem
-
-**Backend:** schemas Zod em `server/schemas` aplicados via middleware `validate`. Erros de negócio via subclasses de `AppError`.
-
-**Frontend:** formulários validam campos críticos (CPF/CNPJ/email com algoritmos próprios) e usam tipos em `src/types.ts`. Validação de senha usa testes individuais por classe de caractere (sem regex vulnerável a ReDoS).
-
-**Backend JS** usa JSDoc + `checkJs` para tipagem estática sem migrar para TypeScript.
+**Frontend:** `ApiError` in `src/services/api.ts` standardizes error messages. `ErrorBoundary` catches unhandled errors. Toast for action feedback, inline Alert for form errors.
 
 ---
 
-## Variáveis de Ambiente
+## Validations and Typing
 
-### Backend (`server/.env`, copiado de `.env.example`)
+**Backend:** Zod schemas in `server/schemas` applied via `validate` middleware. Business errors via `AppError` subclasses.
 
-| Variável | Descrição | Obrigatória |
+**Frontend:** forms validate critical fields (CPF/CNPJ/email with custom algorithms) and use types from `src/types.ts`. Password validation uses individual tests per character class (no ReDoS-vulnerable regex).
+
+**JS Backend** uses JSDoc + `checkJs` for static typing without migrating to TypeScript.
+
+---
+
+## Environment Variables
+
+### Backend (`server/.env`, copied from `.env.example`)
+
+| Variable | Description | Required |
 |---|---|---|
-| `PORT` | Porta do servidor backend | Não (padrão: `3001`) |
-| `NODE_ENV` | Ambiente (`development`, `production`, `test`) | Não |
-| `DATABASE_URL` | URL de conexão PostgreSQL | Sim |
-| `JWT_SECRET` | Chave secreta para tokens JWT | Sim |
-| `RESET_DB_ON_STARTUP` | Recria banco ao iniciar (`true`/`false`) | Não (padrão: `true`) |
-| `CORS_ALLOWED_ORIGINS` | Origens permitidas, separadas por vírgula | Não |
-| `VITE_API_URL` | URL do backend (usado pelo Vite no frontend) | Não |
+| `PORT` | Backend server port | No (default: `3001`) |
+| `NODE_ENV` | Environment (`development`, `production`, `test`) | No |
+| `DATABASE_URL` | PostgreSQL connection URL | Yes |
+| `JWT_SECRET` | Secret key for JWT tokens | Yes |
+| `RESET_DB_ON_STARTUP` | Recreate DB on start (`true`/`false`) | No (default: `true`) |
+| `CORS_ALLOWED_ORIGINS` | Allowed origins, comma-separated | No |
+| `VITE_API_URL` | Backend URL (used by Vite in frontend) | No |
 
-### Chaves locais (`.env.local` na raiz — não versionado)
+### Local keys (`.env.local` in the root — untracked)
 
-| Variável | Descrição |
+| Variable | Description |
 |---|---|
-| `JULES_API_KEY` | Chave de API do Jules (Google) |
-| `SONAR_TOKEN` | Token do SonarCloud para consultas via API |
+| `JULES_API_KEY` | Jules API key (Google) |
+| `SONAR_TOKEN` | SonarCloud token for API queries |
 
 ---
 
-## Segurança
+## Security
 
-- Todas as entradas validadas e sanitizadas (Zod + validators customizados)
-- Proteção contra SQL Injection (queries parametrizadas), IDOR, Mass Assignment e Broken Access Control
-- Senhas com hash bcrypt; segredos exclusivamente em variáveis de ambiente
-- Rate limiting e CORS configurados
-- Regex de validação livre de ReDoS (sem lookaheads com quantificadores aninhados)
-- Log de desenvolvimento sanitiza dados user-controlled contra log injection
+- All inputs are validated and sanitized (Zod + custom validators)
+- Protection against SQL Injection (parameterized queries), IDOR, Mass Assignment, and Broken Access Control
+- Passwords hashed with bcrypt; secrets exclusively in environment variables
+- Rate limiting and CORS configured
+- ReDoS-free validation regex (no lookaheads with nested quantifiers)
+- Development logs sanitize user-controlled data against log injection
