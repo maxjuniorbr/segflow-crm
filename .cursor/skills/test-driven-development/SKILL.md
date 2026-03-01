@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Use ao implementar qualquer nova funcionalidade (feature) ou correção de bug (bugfix), antes de escrever o código de implementação.
+description: Fornece diretrizes para desenvolvimento guiado por testes (TDD). Use ao iniciar a implementação de qualquer nova funcionalidade ou correção de bug, garantindo a escrita dos testes antes do código.
 ---
 
 # Desenvolvimento Orientado a Testes (Test-Driven Development - TDD)

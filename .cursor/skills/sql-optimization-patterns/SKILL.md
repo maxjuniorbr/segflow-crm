@@ -1,6 +1,6 @@
 ---
 name: sql-optimization-patterns
-description: Domine a otimização de consultas (queries) SQL, estratégias de indexação e análise com EXPLAIN para melhorar drasticamente a performance do banco de dados e eliminar queries lentas. Use ao debugar queries lentas, projetar schemas de banco de dados ou otimizar a performance da aplicação.
+description: Define estratégias de otimização de consultas e uso de índices em bancos relacionais. Use ao analisar queries com EXPLAIN, investigar lentidão no banco ou otimizar a performance de acesso a dados.
 ---
 
 # Padrões de Otimização SQL (SQL Optimization Patterns)

@@ -1,6 +1,6 @@
 ---
 name: vercel-react-best-practices
-description: Diretrizes de otimização de performance para React e Next.js pela Vercel Engineering. Esta skill deve ser usada ao escrever, revisar ou refatorar códigos React/Next.js para garantir padrões de performance ideais. É ativada em tarefas que envolvem componentes React, páginas do Next.js, data fetching (busca de dados), otimização de bundle ou melhorias gerais de performance.
+description: Fornece diretrizes de performance para React baseadas nas práticas da Vercel. Use ao desenvolver ou revisar componentes React, otimizar renderizações, busca de dados ou reduzir o tamanho de bundles.
 license: MIT
 metadata:
   author: vercel

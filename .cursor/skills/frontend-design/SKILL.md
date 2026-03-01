@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Crie interfaces frontend distintas e prontas para produção (production-grade) com alta qualidade de design. Use esta skill quando o usuário pedir para construir componentes web, páginas, artefatos, pôsteres ou aplicações (exemplos incluem websites, landing pages, dashboards, componentes React, layouts HTML/CSS, ou ao estilizar/embelezar qualquer UI web). Gera código criativo, polido e design de UI que evita estéticas genéricas de IA.
+description: Orienta a criação de interfaces frontend distintas, criativas e prontas para produção. Use ao construir ou estilizar componentes, páginas, layouts ou aplicações web.
 ---
 
 Esta skill orienta a criação de interfaces frontend distintas e prontas para produção que evitam estéticas genéricas (conhecidas como "AI slop"). Implemente código real e funcional com excepcional atenção aos detalhes estéticos e escolhas criativas.

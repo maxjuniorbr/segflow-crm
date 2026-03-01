@@ -1,6 +1,6 @@
 ---
 name: auth-implementation-patterns
-description: Domine padrões de autenticação e autorização, incluindo JWT, OAuth2, gerenciamento de sessão e RBAC para construir sistemas de controle de acesso seguros e escaláveis. Use ao implementar sistemas de auth, proteger APIs ou debugar problemas de segurança.
+description: Define padrões para implementação de autenticação e autorização (JWT, RBAC, sessões). Use ao implementar sistemas de login, proteger rotas ou resolver problemas de segurança e controle de acesso.
 ---
 
 # Padrões de Implementação de Autenticação e Autorização

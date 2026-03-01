@@ -1,6 +1,6 @@
 ---
 name: nodejs-backend-patterns
-description: Implementa e revisa backend do SegFlow CRM com Node.js + Express + PostgreSQL + Zod em JavaScript (JSDoc/checkJs), seguindo Clean Architecture (controllers/useCases/repositories/entities), JWT com refresh token rotativo, AppError e testes Vitest. Use ao criar ou alterar rotas, middlewares, auth, validacoes, queries SQL ou regras de negocio no backend.
+description: Aplica padrões arquiteturais e boas práticas para o backend Node.js do SegFlow CRM. Use ao criar, refatorar ou revisar rotas, middlewares, controllers, casos de uso, repositórios ou testes no backend.
 ---
 
 # Node.js Backend Patterns (SegFlow CRM)

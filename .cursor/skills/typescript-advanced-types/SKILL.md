@@ -1,6 +1,6 @@
 ---
 name: typescript-advanced-types
-description: Domine o sistema de tipos avançado do TypeScript, incluindo genéricos (generics), tipos condicionais, tipos mapeados, literais de template (template literals) e tipos utilitários para construir aplicações com type-safety. Use ao implementar lógica de tipo complexa, criar utilitários de tipo reutilizáveis ou garantir type-safety em tempo de compilação em projetos TypeScript.
+description: Orienta o uso de recursos avançados do sistema de tipos do TypeScript. Use ao implementar tipagens complexas, criar tipos utilitários ou garantir type-safety rigoroso no código.
 ---
 
 # Tipos Avançados de TypeScript (TypeScript Advanced Types)

@@ -1,6 +1,6 @@
 ---
 name: code-review-excellence
-description: Domine práticas eficientes de revisão de código para fornecer feedback construtivo, pegar bugs cedo e promover o compartilhamento de conhecimento, enquanto mantém o moral da equipe. Use ao revisar pull requests (PRs), estabelecer padrões de revisão ou mentorar desenvolvedores.
+description: Define práticas de revisão de código para feedback construtivo e detecção de bugs. Use ao revisar pull requests (PRs) ou estabelecer padrões de qualidade para o código de outros desenvolvedores.
 ---
 
 # Excelência em Revisão de Código (Code Review Excellence)

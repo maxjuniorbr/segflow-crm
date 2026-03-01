@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use quando estiver prestes a afirmar que o trabalho esta concluido, corrigido ou passando em testes, antes de fazer commits ou criar PRs - requer a execucao de comandos de verificacao e a confirmacao do resultado antes de fazer qualquer afirmacao de sucesso; evidencias antes de afirmacoes, sempre.
+description: Exige validação prática antes de dar tarefas como concluídas. Use ao finalizar uma implementação ou correção, garantindo a execução de testes e comandos de verificação antes de reportar sucesso.
 ---
 
 # Verificacao Antes da Conclusao (Verification Before Completion)

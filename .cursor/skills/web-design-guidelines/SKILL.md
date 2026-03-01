@@ -1,6 +1,6 @@
 ---
 name: web-design-guidelines
-description: Revise o código da UI buscando conformidade com as Web Interface Guidelines. Use quando for solicitado para "revisar minha UI", "checar acessibilidade", "auditar design", "revisar UX", ou "verificar meu site em relação às melhores práticas".
+description: Fornece diretrizes de qualidade de interface, UX e acessibilidade web. Use ao revisar código de UI, auditar design ou avaliar o frontend em relação a boas práticas.
 metadata:
   author: vercel
   version: "1.0.0"

@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Use ao se deparar com qualquer bug, falha de teste ou comportamento inesperado, antes de propor correções.
+description: Fornece um método estruturado para investigação e correção de problemas. Use ao se deparar com qualquer bug, falha de teste ou comportamento inesperado, antes de propor correções.
 ---
 
 # Debug Sistemático (Systematic Debugging)

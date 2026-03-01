@@ -1,6 +1,6 @@
 ---
 name: responsive-design
-description: Implemente layouts responsivos modernos utilizando container queries, tipografia fluida, CSS Grid e estratégias de breakpoint mobile-first. Use ao construir interfaces adaptativas, implementar layouts fluidos ou criar comportamento responsivo em nível de componente.
+description: Orienta a implementação de layouts fluidos e responsivos (mobile-first, CSS Grid, container queries). Use ao construir interfaces adaptativas ou ajustar o comportamento responsivo de componentes.
 ---
 
 # Design Responsivo (Responsive Design)

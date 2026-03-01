@@ -1,6 +1,6 @@
 ---
 name: modern-javascript-patterns
-description: Domine features do ES6+ incluindo async/await, desestruturação (destructuring), spread operators, arrow functions, promises, módulos, iterators, generators e padrões de programação funcional para escrever um código JavaScript limpo e eficiente. Use ao refatorar código legado, implementar padrões modernos ou otimizar aplicações JavaScript.
+description: Aplica recursos e padrões modernos do ecossistema JavaScript (ES6+). Use ao refatorar código legado, escrever lógicas funcionais ou otimizar aplicações JavaScript.
 ---
 
 # Padrões do JavaScript Moderno (Modern JavaScript Patterns)

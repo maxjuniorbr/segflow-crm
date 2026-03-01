@@ -1,6 +1,6 @@
 ---
 name: postgresql-table-design
-description: Projete um schema específico para PostgreSQL. Cobre melhores práticas, tipos de dados, indexação, restrições (constraints), padrões de performance e recursos avançados.
+description: Orienta o design e modelagem de schemas para PostgreSQL. Use ao criar ou alterar tabelas, definir tipos de dados, criar índices ou configurar restrições (constraints) no banco de dados.
 ---
 
 # Design de Tabelas no PostgreSQL (PostgreSQL Table Design)

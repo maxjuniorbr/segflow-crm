@@ -1,6 +1,6 @@
 ---
 name: error-handling-patterns
-description: Domine padrões de tratamento de erros em várias linguagens, incluindo exceções, tipos Result, propagação de erros e degradação graciosa (graceful degradation) para construir aplicações resilientes. Use ao implementar tratamento de erros, projetar APIs ou melhorar a confiabilidade da aplicação.
+description: Define padrões de tratamento de erros, propagação e degradação graciosa. Use ao implementar tratamento de exceções, projetar respostas de APIs ou melhorar a resiliência da aplicação.
 ---
 
 # Padrões de Tratamento de Erros (Error Handling Patterns)

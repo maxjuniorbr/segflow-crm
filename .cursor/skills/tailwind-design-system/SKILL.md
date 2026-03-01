@@ -1,6 +1,6 @@
 ---
 name: tailwind-design-system
-description: Construa design systems escaláveis usando o Tailwind CSS v4, design tokens, bibliotecas de componentes e padrões responsivos. Use ao criar bibliotecas de componentes, implementar design systems ou padronizar os padrões de UI.
+description: Orienta a construção de design systems e componentes usando Tailwind CSS v4. Use ao criar bibliotecas de componentes, padronizar UI ou implementar variáveis e tokens de design.
 ---
 
 # Design System com Tailwind (v4)
