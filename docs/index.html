@@ -549,6 +549,22 @@
           </div>
 
           <div class="relative flex gap-6 items-start">
+            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-sky-600/20 border-2 border-sky-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg></div>
+            <div class="glass rounded-2xl p-6 flex-1 hover:border-sky-500/20 transition-all">
+              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Plan Mode</h3><span class="px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 text-xs font-mono">strategy</span></div>
+              <p class="text-sm text-slate-400" data-i18n="cursor.planDesc">Read-only collaborative mode for designing approaches before coding. Essential for cross-cutting reviews involving the entire project context — frontend, backend, database, and tests analyzed together before any change.</p>
+            </div>
+          </div>
+
+          <div class="relative flex gap-6 items-start">
+            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-red-600/20 border-2 border-red-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152-6.135 23.91 23.91 0 01.117-2.28c.123-.976-.564-1.86-1.525-2.035A23.913 23.913 0 0012 3c-1.913 0-3.779.23-5.556.664C5.425 3.85 4.68 4.787 4.818 5.78a23.91 23.91 0 01-.135 5.41A23.9 23.9 0 0112 12.75z"/></svg></div>
+            <div class="glass rounded-2xl p-6 flex-1 hover:border-red-500/20 transition-all">
+              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Debug Mode</h3><span class="px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 text-xs font-mono">troubleshoot</span></div>
+              <p class="text-sm text-slate-400" data-i18n="cursor.debugDesc">Systematic troubleshooting mode for investigating bugs and failures with runtime evidence. Follows a structured approach: reproduce, isolate, hypothesize, and fix — before proposing any change.</p>
+            </div>
+          </div>
+
+          <div class="relative flex gap-6 items-start">
             <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-cyan-600/20 border-2 border-cyan-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg></div>
             <div class="glass rounded-2xl p-6 flex-1 hover:border-cyan-500/20 transition-all">
               <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Chat & Tab</h3><span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono">daily driver</span></div>
@@ -649,6 +665,8 @@
         'cursor.mcp': 'MCP Servers & Environment',
         'cursor.mcpDesc': 'Model Context Protocol integrated Cursor directly with GitHub, SonarCloud, and Browser tools. It was also instrumental in environment setup — configuring libraries, Docker, and development tooling.',
         'cursor.julesDesc': 'Complementary Google AI code agent. Analyzes the repository, suggests fixes, and generates patches. Integrated via REST API to verify pending issues.',
+        'cursor.planDesc': 'Read-only collaborative mode for designing approaches before coding. Essential for cross-cutting reviews involving the entire project context — frontend, backend, database, and tests analyzed together before any change.',
+        'cursor.debugDesc': 'Systematic troubleshooting mode for investigating bugs and failures with runtime evidence. Follows a structured approach: reproduce, isolate, hypothesize, and fix — before proposing any change.',
         'cursor.chatDesc': 'Contextual autocomplete that understands the entire project. Conversational code generation — from UI components to complex SQL queries.',
         'cursor.inception': 'Meta Creation (This Page)',
         'cursor.inceptionDesc': 'This very showcase page was built entirely by Cursor in a single prompt. It used MCP tools to read the directory, capture component structures, process images, and generate the complete HTML/Tailwind implementation.',
@@ -696,6 +714,8 @@
         'cursor.mcp': 'MCP Servers e Ambiente',
         'cursor.mcpDesc': 'Model Context Protocol integrou o Cursor diretamente ao GitHub, SonarCloud e Browser. Também foi fundamental no apoio e configuração do ambiente — lidando com bibliotecas, Docker e ferramentas de desenvolvimento.',
         'cursor.julesDesc': 'Agente de código complementar do Google. Analisa o repositório, sugere correções e gera patches. Integrado via API REST para verificação de apontamentos pendentes.',
+        'cursor.planDesc': 'Modo colaborativo somente leitura para planejar abordagens antes de codificar. Essencial para revisões transversais envolvendo todo o contexto do projeto — frontend, backend, banco e testes analisados juntos antes de qualquer mudança.',
+        'cursor.debugDesc': 'Modo de investigação sistemática para bugs e falhas com evidências de runtime. Segue uma abordagem estruturada: reproduzir, isolar, levantar hipóteses e corrigir — antes de propor qualquer alteração.',
         'cursor.chatDesc': 'Autocomplete contextual que compreende o projeto inteiro. Geração conversacional de código — de componentes UI a queries SQL complexas.',
         'cursor.inception': 'A Própria Página',
         'cursor.inceptionDesc': 'Até mesmo esta página foi criada inteiramente pelo Cursor usando um único prompt. O Agente usou ferramentas MCP para capturar os prints do sistema localmente, ler a estrutura e gerar todo o HTML, Tailwind e animações em uma única execução.',
