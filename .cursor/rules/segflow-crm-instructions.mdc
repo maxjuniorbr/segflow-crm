@@ -81,5 +81,12 @@ alwaysApply: true
 - Senhas com hash seguro; segredos em variaveis de ambiente.
 - Rate limiting e CORS configurados corretamente.
 
+## Jules (agente AI externo)
+- O projeto usa o [Jules](https://jules.google.com) como agente de codigo complementar.
+- Se `.env.local` existir na raiz com `JULES_API_KEY`, consultar sessoes e sugestoes do Jules via API REST (`https://jules.googleapis.com/v1alpha`) para verificar apontamentos pendentes.
+- Endpoints uteis: `GET /sessions` (listar tarefas), `GET /sessions/{id}` (detalhar com patch), `GET /sources` (repositorios conectados).
+- Header de autenticacao: `x-goog-api-key: <JULES_API_KEY>`.
+- Memorias/Knowledge nao sao acessiveis via API; apenas pelo painel web.
+
 ## Observacoes de consistencia (estado atual)
 - Nenhuma observacao aberta; manter padroes atuais sem introduzir excecoes.

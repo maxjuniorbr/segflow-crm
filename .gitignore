@@ -12,6 +12,7 @@ server/node_modules
 dist
 
 # Environment variables
+.env.local
 server/.env
 
 # Coverage

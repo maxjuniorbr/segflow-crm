@@ -1,6 +1,6 @@
 # SegFlow CRM
 
-Sistema de gerenciamento de clientes e propostas/apolices de seguros para corretoras.
+O **SegFlow CRM** e um sistema completo para facilitar o dia a dia de corretoras de seguros. Ele centraliza o gerenciamento de clientes, propostas e apolices em uma unica plataforma intuitiva e eficiente.
 
 ## Funcionalidades
 
@@ -106,7 +106,7 @@ git clone git@github.com:maxjuniorbr/segflow-crm.git
 cd segflow-crm
 ```
 
-### 2. Configurar e rodar o Backend
+### 2. Configurar o Backend
 
 ```bash
 cd server
@@ -118,18 +118,20 @@ O arquivo `.env.example` ja vem com valores funcionais para desenvolvimento loca
 
 > Variaveis disponiveis no `.env`: `PORT`, `NODE_ENV`, `DATABASE_URL`, `JWT_SECRET`, `RESET_DB_ON_STARTUP`, `CORS_ALLOWED_ORIGINS`.
 
-Rodar o servidor:
+Na primeira execucao (ou sempre que `RESET_DB_ON_STARTUP=true`), o banco sera criado e populado automaticamente com dados de teste ao iniciar o servidor. Para desativar esse comportamento, altere para `RESET_DB_ON_STARTUP=false` no `.env`.
+
+### 3. Rodar a aplicacao (Frontend + Backend)
+
+Volte para a raiz do projeto e instale as dependencias do frontend:
+
 ```bash
-npm run dev
+cd ..
+npm install
 ```
 
-Na primeira execucao (ou sempre que `RESET_DB_ON_STARTUP=true`), o banco sera criado e populado automaticamente com dados de teste. Para desativar esse comportamento, altere para `RESET_DB_ON_STARTUP=false` no `.env`.
+Para facilitar o desenvolvimento, um unico comando inicia tanto o servidor backend quanto o frontend (via `concurrently`):
 
-### 3. Configurar e rodar o Frontend
-
-Em outro terminal, na raiz do projeto:
 ```bash
-npm install
 npm run dev
 ```
 
@@ -299,3 +301,17 @@ Skills para assistentes AI (Cursor) usados no desenvolvimento do projeto. Cada s
 | Rule | Escopo | Descricao |
 |---|---|---|
 | `mcp-servers` | Global (always apply) | Prioriza MCP servers (GitHub) sobre CLIs para operacoes remotas |
+
+---
+
+## Jules (opcional)
+
+O projeto pode ser usado com o [Jules](https://jules.google.com), agente de codigo da Google, para tarefas automatizadas como reviews de performance e correcoes.
+
+Para habilitar a integracao local:
+
+1. Gere uma API key em [jules.google.com/settings](https://jules.google.com/settings).
+2. Crie `.env.local` na raiz do projeto com `JULES_API_KEY=<sua-chave>`.
+3. O setup script (`jules-setup.sh`) configura o ambiente para execucao de tarefas no Jules.
+
+> `.env.local` ja esta no `.gitignore` e nao sera commitado.
