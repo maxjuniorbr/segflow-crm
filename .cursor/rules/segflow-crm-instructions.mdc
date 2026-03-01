@@ -71,6 +71,12 @@ alwaysApply: true
 - Listagens e autocompletes devem usar busca remota com paginacao; evitar carregar listas completas no frontend.
 - Itens de lista clicaveis (mobile e tabela) devem ser navegaveis por teclado e expor `aria-label` quando necessario.
 
+## Testes
+- Vitest para backend e frontend; Testing Library + vitest-axe para componentes React.
+- Estrutura backend: `tests/controllers/`, `tests/unit/`, `tests/functional/`, `tests/security/`.
+- Novas features e bugfixes devem incluir testes; rodar suite antes de declarar tarefa concluida.
+- Nao afirmar que testes passam sem executar e confirmar a saida — evidencias antes de afirmacoes.
+
 ## Documentacao e processos
 - Deve existir apenas um `README.md` na raiz; nao criar READMEs em subpastas.
 - Atualizar README apenas quando houver impacto real em estrutura, fluxo ou setup.

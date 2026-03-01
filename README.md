@@ -64,7 +64,9 @@ flowchart LR
 
 ```
 segflow-crm/
-├── .agents/               # Skills para assistentes AI (veja seção abaixo)
+├── .cursor/
+│   ├── rules/             # Regras do agente para este workspace
+│   └── skills/            # Skills para assistentes AI (veja seção abaixo)
 ├── src/                    # Frontend React
 │   ├── contexts/          # Context API (Auth)
 │   ├── features/          # Features (pages/components)
@@ -272,9 +274,13 @@ Todas as variaveis ficam no arquivo `server/.env` (copiado de `.env.example`).
 
 ---
 
-## Agent Skills (`.agents/skills/`)
+## Agent Skills (`.cursor/skills/`)
 
-Skills para assistentes AI (Cursor) usados no desenvolvimento do projeto. Cada skill fica em `.agents/skills/<nome>/SKILL.md`.
+Skills para assistentes AI (Cursor) usados no desenvolvimento do projeto. Cada skill fica em `.cursor/skills/<nome>/SKILL.md`.
+
+> **Origem (opcional):** Skills baseados e adaptados a partir de [skills.sh/trending](https://skills.sh/trending), com revisao tecnica para o contexto do projeto.
+> **Fonte canonica:** considere `.cursor/skills/` como fonte oficial para revisao e manutencao.
+> **Status atual:** a arvore legada `.agents/` foi removida deste repositorio.
 
 | Skill | Descricao |
 |---|---|
@@ -301,6 +307,8 @@ Skills para assistentes AI (Cursor) usados no desenvolvimento do projeto. Cada s
 | Rule | Escopo | Descricao |
 |---|---|---|
 | `mcp-servers` | Global (always apply) | Prioriza MCP servers (GitHub) sobre CLIs para operacoes remotas |
+| `segflow-crm-instructions` | Repositorio (`.cursor/rules`) | Convencoes de UI, mensagens, arquitetura e seguranca do projeto |
+| `readme-consistency` | Repositorio (`.cursor/rules`) | Mantem este README atualizado sempre que arquivos estruturais (env, rotas, dependencias) sao modificados |
 
 ---
 
