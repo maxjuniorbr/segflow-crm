@@ -117,7 +117,9 @@ Integration is done via REST API (`https://jules.googleapis.com/v1alpha`):
 - **`GET /sessions/{id}`** — details a session with the suggested patch
 - **`GET /sources`** — connected repositories
 
-To enable: create `.env.local` in the root with `JULES_API_KEY=<your-key>` (obtained at [jules.google.com/settings](https://jules.google.com/settings)). This file is already in `.gitignore`.
+To enable API queries from Cursor: create `.env.local` in the root with `JULES_API_KEY=<your-key>` (obtained at [jules.google.com/settings](https://jules.google.com/settings)). This file is already in `.gitignore`.
+
+**Setup script:** the file `jules-setup.sh` in the project root is the environment bootstrap used by Jules when running sessions. It installs PostgreSQL, creates the database, installs dependencies, initializes the schema, and runs the full test suite (backend + frontend). This script runs automatically inside Jules's sandboxed VM — it is not intended for local development. To configure it, go to [Repo config](https://jules.google.com/repos/github/maxjuniorbr/segflow-crm/config) on the Jules dashboard.
 
 ### SonarCloud
 

@@ -22,8 +22,6 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 
-jules-setup.sh
-
 # Test binaries and results
 k6
 stress-test-results.json
