@@ -7,9 +7,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node scripts/devBootstrap.js && nodemon index.js",
-    "test": "vitest run -c ../vitest.config.js",
-    "test:watch": "vitest watch -c ../vitest.config.js",
-    "test:ui": "vitest --ui -c ../vitest.config.js"
+    "test": "vitest run --root .. -c vitest.config.js",
+    "test:watch": "vitest watch --root .. -c vitest.config.js",
+    "test:ui": "vitest --ui --root .. -c vitest.config.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
