@@ -55,7 +55,7 @@ export const BrokerForm: React.FC = () => {
             mobile: data.mobile || ''
           });
         }
-      } catch (_err) {
+      } catch {
         if (!cancelled) setError(actionMessages.loadError('corretora'));
       } finally {
         if (!cancelled) setLoading(false);
@@ -162,7 +162,7 @@ export const BrokerForm: React.FC = () => {
       await storageService.deleteBroker(id);
       showToast(actionMessages.deleteSuccess('Corretora'), 'success');
       navigate('/settings/brokers');
-    } catch (_err) {
+    } catch {
       showToast(actionMessages.deleteError('corretora'), 'error');
     } finally {
       setShowDeleteDialog(false);

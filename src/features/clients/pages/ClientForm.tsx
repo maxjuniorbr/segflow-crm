@@ -275,7 +275,7 @@ export const ClientForm: React.FC = () => {
           setLockedFields({ street: false, neighborhood: false, city: false, state: false });
           streetInputRef.current?.focus();
         }
-      } catch (_error) {
+      } catch {
         setFormData(prev => ({
           ...prev,
           address: {

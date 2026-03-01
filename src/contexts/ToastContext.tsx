@@ -28,18 +28,21 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
     }, []);
 
-    const showToast = useCallback((message: string, type: ToastType = 'info') => {
-        const id = globalThis.crypto.randomUUID();
-        const newToast = { id, message, type };
-
-        setToasts(prev => [...prev, newToast].slice(-5));
-
+    const scheduleToastRemoval = useCallback((id: string) => {
         const timer = setTimeout(() => {
             setToasts(prev => prev.filter(toast => toast.id !== id));
             timersRef.current.delete(id);
         }, 5000);
         timersRef.current.set(id, timer);
     }, []);
+
+    const showToast = useCallback((message: string, type: ToastType = 'info') => {
+        const id = globalThis.crypto.randomUUID();
+        const newToast = { id, message, type };
+
+        setToasts(prev => [...prev, newToast].slice(-5));
+        scheduleToastRemoval(id);
+    }, [scheduleToastRemoval]);
 
     useEffect(() => {
         const unsubscribe = toastBus.subscribe(({ message, type }) => {

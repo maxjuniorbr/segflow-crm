@@ -16,16 +16,18 @@ if (!isDevelopment && !isTest) {
 app.use(helmet());
 app.use(compression());
 
-const allowedOrigins = corsAllowedOrigins
-    .split(',')
-    .map(origin => origin.trim())
-    .filter(Boolean);
+const allowedOrigins = new Set(
+    corsAllowedOrigins
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean)
+);
 
 // Returns true for no-origin requests (server-to-server, mobile, curl).
 // CORS is a browser mechanism; non-browser clients bypass it regardless.
 const isAllowedOrigin = (origin = '') => {
     if (!origin) return true;
-    if (allowedOrigins.includes(origin)) return true;
+    if (allowedOrigins.has(origin)) return true;
     return false;
 };
 

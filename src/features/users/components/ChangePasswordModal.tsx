@@ -62,7 +62,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
         try {
             await onConfirm(currentPassword, newPassword);
             handleClose();
-        } catch (_error) {
+        } catch {
             setLoading(false);
         }
     };

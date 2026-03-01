@@ -155,7 +155,7 @@ export const DocumentForm: React.FC = () => {
       await storageService.deleteDocument(id);
       showToast(actionMessages.deleteSuccess('Documento'), 'success');
       navigate('/documents');
-    } catch (_error) {
+    } catch {
       showToast(actionMessages.deleteError('documento'), 'error');
     } finally {
       setShowDeleteDialog(false);

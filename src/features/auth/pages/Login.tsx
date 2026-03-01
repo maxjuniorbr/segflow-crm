@@ -28,7 +28,7 @@ export const Login: React.FC = () => {
       } else {
         setError(authMessages.invalidCredentials);
       }
-    } catch (_err) {
+    } catch {
       setError(authMessages.loginError);
     } finally {
       setLoading(false);

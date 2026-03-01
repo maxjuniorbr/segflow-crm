@@ -17,7 +17,7 @@ const buildClientFilters = ({ brokerId, search, personType } = {}) => {
     }
 
     if (search) {
-        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, '\\$&');
+        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, String.raw`\$&`);
         values.push(`%${normalized}%`);
         const param = `$${values.length}`;
         const searchDigits = search.replaceAll(/\D/g, '');

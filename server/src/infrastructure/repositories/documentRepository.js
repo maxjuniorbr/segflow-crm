@@ -22,7 +22,7 @@ const buildDocumentFilters = ({ brokerId, clientId, status, search }) => {
     }
 
     if (search) {
-        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, '\\$&');
+        const normalized = search.toLowerCase().replaceAll(/[%_\\]/g, String.raw`\$&`);
         values.push(`%${normalized}%`);
         const param = `$${values.length}`;
         conditions.push(`(

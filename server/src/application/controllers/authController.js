@@ -76,7 +76,7 @@ export const logout = async (req, res) => {
         if (refreshTokenRaw) {
             await revokeRefreshToken(refreshTokenRaw);
         }
-    } catch (_err) {
+    } catch {
         // Best-effort revocation
     }
     res.clearCookie('segflow_token', buildCookieBaseOptions());

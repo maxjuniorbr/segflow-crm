@@ -91,7 +91,7 @@ function login() {
             try {
                 const body = JSON.parse(r.body);
                 return body.user !== undefined;
-            } catch (_) { /* non-JSON body */
+            } catch { /* non-JSON body */
                 return false;
             }
         },

@@ -24,7 +24,7 @@ export const authMiddleware = (req, res, next) => {
         const decoded = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] });
         req.user = decoded;
         next();
-    } catch (_err) {
+    } catch {
         return res.status(401).json({ error: 'Token inválido.' });
     }
 };

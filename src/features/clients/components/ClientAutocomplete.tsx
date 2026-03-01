@@ -48,7 +48,7 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                     setSelectedClient(client);
                     setSearchTerm('');
                 }
-            } catch (_error) {
+            } catch {
                 if (!cancelled) setSelectedClient(null);
             }
         };
@@ -73,7 +73,7 @@ export const ClientAutocomplete: React.FC<ClientAutocompleteProps> = ({
                 if (!isActive) return;
                 setFilteredClients(response.items);
                 setIsOpen(true);
-            } catch (_error) {
+            } catch {
                 if (!isActive) return;
                 setFilteredClients([]);
                 setIsOpen(true);

@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
           clearSession();
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) clearSession();
       } finally {
         if (!cancelled) setLoading(false);
