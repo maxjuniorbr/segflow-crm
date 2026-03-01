@@ -48,10 +48,10 @@ alwaysApply: true
 - `sm` define a troca de cards moveis para tabela.
 - Formularios usam `pb-24` para evitar overlay da barra fixa no mobile.
 
-## ConfirmDialog
-- API atual: `isOpen`, `onConfirm`, `onCancel`, `title`, `message`, `confirmText`, `cancelText`, `variant`.
-- Nao usar props `onClose`/`type` (nao suportadas).
-- Implementa focus trap e atributos ARIA (`role="alertdialog"`, `aria-labelledby`, `aria-describedby`).
+## Modais e ConfirmDialog
+- `useModalBehavior` em `src/shared/hooks/useModalBehavior.ts`: hook compartilhado para focus trap, Escape, body overflow lock e restauracao de foco. Usar em todo modal/dialog.
+- `ConfirmDialog`: API `isOpen`, `onConfirm`, `onCancel`, `title`, `message`, `confirmText`, `cancelText`, `variant`. Nao usar props `onClose`/`type` (nao suportadas). Usa `useModalBehavior` internamente.
+- Atributos ARIA: `role="alertdialog"`, `aria-labelledby`, `aria-describedby`.
 
 ## Regras tecnicas (backend e qualidade)
 - Codigo deve ser autoexplicativo; evitar comentarios. Comentarios apenas quando estritamente necessario.
@@ -61,9 +61,10 @@ alwaysApply: true
 - Backend segue Clean Architecture:
   - Controllers apenas orquestram e chamam use cases.
   - Use cases concentram regras de negocio.
-  - Repositories isolam acesso ao banco.
+  - Repositories isolam acesso ao banco; helpers compartilhados em `server/src/infrastructure/repositories/queryHelpers.js`.
   - Entidades em `server/src/domain/entities` com `fromDatabase()` e `toJSON()`.
 - Validacoes de entrada com Zod + middleware `validate`; erros de negocio via subclasses de `AppError` (`server/src/application/errors/AppError.js`).
+- Catch blocks que nao usam o erro devem usar bare `catch {` (sem parametro), nao `catch (_err)`.
 - Autenticacao via JWT com access token (curta duracao) + refresh token (rotacao automatica). Rotas protegidas exigem `authMiddleware`. Rotas de auth sob `/api/auth/*`.
 - Banco local descartavel: sem migrations incrementais; recriacao completa no startup.
 - Nomes de tabelas/colunas em lowercase; FKs com cascade quando aplicavel; indices unicos refletem regra de negocio.
@@ -74,6 +75,8 @@ alwaysApply: true
 ## Testes
 - Vitest para backend e frontend; Testing Library + vitest-axe para componentes React.
 - Estrutura backend: `tests/controllers/`, `tests/unit/`, `tests/functional/`, `tests/security/`.
+- Mocks centralizados via convencao `__mocks__/` do Vitest (ex.: `server/config/__mocks__/db.js`, `__mocks__/bcryptjs.js`).
+- Helpers compartilhados em `tests/utils/`: `controllerTestUtils.js`, `testFactories.js`, `integrationTestUtils.js`, `testDbMock.js`.
 - Novas features e bugfixes devem incluir testes; rodar suite antes de declarar tarefa concluida.
 - Nao afirmar que testes passam sem executar e confirmar a saida — evidencias antes de afirmacoes.
 
@@ -86,6 +89,8 @@ alwaysApply: true
 - Preparar contra SQL Injection, IDOR, Mass Assignment e Broken Access Control.
 - Senhas com hash seguro; segredos em variaveis de ambiente.
 - Rate limiting e CORS configurados corretamente.
+- Regex de validacao devem ser livres de ReDoS: nao usar lookaheads com `.*`; preferir testes individuais por classe de caractere.
+- Logs de desenvolvimento devem sanitizar dados user-controlled contra log injection.
 
 ## Jules (agente AI externo)
 - O projeto usa o [Jules](https://jules.google.com) como agente de codigo complementar.

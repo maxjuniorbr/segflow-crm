@@ -169,7 +169,9 @@ segflow-crm/
 │   ├── contexts/          # Context API (Auth, Toast)
 │   ├── features/          # Features (pages/components por domínio)
 │   ├── services/          # Services (API, storage, toastBus)
-│   ├── shared/            # Componentes compartilhados (CVA, ErrorBoundary)
+│   ├── shared/
+│   │   ├── components/    # Componentes compartilhados (CVA, ErrorBoundary)
+│   │   └── hooks/         # Hooks reutilizáveis (useModalBehavior)
 │   ├── types.ts           # TypeScript types
 │   └── utils/             # Formatters, validators, mensagens centralizadas
 │
@@ -182,8 +184,9 @@ segflow-crm/
 │   ├── src/
 │   │   ├── application/  # controllers, useCases, dto, errors, utils
 │   │   ├── domain/       # entities
-│   │   └── infrastructure/ # repositories
+│   │   └── infrastructure/ # repositories (+ queryHelpers compartilhado)
 │   └── tests/            # Testes (controllers, unit, functional, security)
+│       └── utils/         # Factories, mocks centralizados (__mocks__), helpers
 │
 ├── stress-test.js         # Testes de carga (k6)
 └── .env.local             # Chaves locais (Jules, SonarCloud) — não versionado
