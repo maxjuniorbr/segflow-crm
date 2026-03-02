@@ -685,9 +685,20 @@
     <div class="modal-content">
       <h3 class="text-lg font-semibold text-white mb-3" data-i18n="game.promptTitle">The prompt that built this game</h3>
       <p class="text-xs text-slate-500 mb-4 font-mono" data-i18n="game.promptSub">Single prompt → Cursor Agent → working game</p>
-      <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-brand-500 pl-4 mb-6">
-        "Funcionou, mas seria legal uma nave que permita eu ir voltando na página e atirando em tudo, inclusive com efeitos sonoros... seria legal ter um destaque maior para o usuario ver o icone do jogo."
-      </blockquote>
+      <div class="space-y-4 mb-6">
+        <div>
+          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 1:</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-brand-500 pl-4">"Se o usuário chegar até o fim da página, quero que apareça algo em algum lugar da tela que permita o usuário jogar um game feito também com o cursor. Seria legal se ele apenas congelasse a tela e permitisse atirar em tudo, destruindo a página."</blockquote>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 2:</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-purple-500 pl-4">"Funcionou, mas seria legal uma nave que permita eu ir voltando na página e atirando em tudo, inclusive com efeitos sonoros... seria legal ter um destaque maior para o usuario ver o icone do jogo."</blockquote>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 3:</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-pink-500 pl-4">"A nave volta ao centro depois do tiro e esta muito rápida. Vc simplesmente pode fazer a tela ir correndo e qdo chegar no topo o jogo termina."</blockquote>
+        </div>
+      </div>
       <div class="flex justify-end">
         <button id="game-prompt-close" class="px-4 py-2 glass-strong rounded-lg text-sm text-white hover:bg-white/10 transition-all" data-i18n="game.close">Close</button>
       </div>
@@ -771,7 +782,7 @@
         'game.trigger': 'Destroy this page',
         'game.triggerSub': 'easter egg',
         'game.title': 'DESTRUCTION MODE',
-        'game.controls': 'WASD move | SPACE fire',
+        'game.controls': 'A/D move | SPACE fire',
         'game.prompt': 'How I asked for this',
         'game.promptTitle': 'The prompt that built this game',
         'game.promptSub': 'Single prompt → Cursor Agent → working game',
@@ -828,7 +839,7 @@
         'game.trigger': 'Destrua esta página',
         'game.triggerSub': 'easter egg',
         'game.title': 'MODO DESTRUIÇÃO',
-        'game.controls': 'WASD mover | ESPAÇO atirar',
+        'game.controls': 'A/D mover | ESPAÇO atirar',
         'game.prompt': 'Como eu pedi isso',
         'game.promptTitle': 'O prompt que criou este jogo',
         'game.promptSub': 'Um único prompt → Cursor Agent → jogo funcionando',
@@ -1053,7 +1064,8 @@
     let gameScore = 0;
     let gameLoop = null;
     let shipX = 0, shipY = 0, shipAngle = 0;
-    const shipSpeed = 5;
+    const shipSpeed = 3;
+    const AUTO_SCROLL_SPEED = 1.2;
     const keys = {};
     const projectiles = [];
     let lastShot = 0;
@@ -1133,7 +1145,8 @@
       gameTrigger.classList.remove('show');
       mascot.style.display = 'none';
       shipX = window.innerWidth / 2 - 24;
-      shipY = window.innerHeight - 120;
+      shipY = window.innerHeight - 100;
+      shipAngle = 0;
       shipEl.style.display = 'block';
       updateShipPos();
       if (isMobile) { joystickEl.classList.add('show'); mobileFireBtn.classList.add('show'); }
@@ -1176,12 +1189,12 @@
       lastShot = now;
       const el = document.createElement('div');
       el.className = 'projectile';
-      const rad = (shipAngle - 90) * Math.PI / 180;
-      el.style.left = (shipX + 24) + 'px';
-      el.style.top = (shipY) + 'px';
-      el.style.transform = `rotate(${shipAngle}deg)`;
+      const sx = shipX + 22;
+      const sy = shipY;
+      el.style.left = sx + 'px';
+      el.style.top = sy + 'px';
       document.body.appendChild(el);
-      projectiles.push({ el, x: shipX + 22, y: shipY, vx: Math.cos(rad) * 10, vy: Math.sin(rad) * 10 });
+      projectiles.push({ el, x: sx, y: sy, vx: 0, vy: -12 });
       playSound('shoot');
     }
 
@@ -1234,30 +1247,24 @@
     function tick() {
       if (!gameActive) return;
 
-      let dx = 0, dy = 0;
-      if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
-      if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
-      if (keys['ArrowUp'] || keys['KeyW']) dy -= 1;
-      if (keys['ArrowDown'] || keys['KeyS']) dy += 1;
+      window.scrollBy(0, -AUTO_SCROLL_SPEED);
 
-      if (isMobile) { dx = joystickDir.x; dy = joystickDir.y; }
-
-      if (dx !== 0 || dy !== 0) {
-        const len = Math.sqrt(dx * dx + dy * dy);
-        dx /= len; dy /= len;
-        shipX += dx * shipSpeed;
-        shipY += dy * shipSpeed;
-        const targetAngle = Math.atan2(dx, -dy) * 180 / Math.PI;
-        let diff = targetAngle - shipAngle;
-        while (diff > 180) diff -= 360;
-        while (diff < -180) diff += 360;
-        shipAngle += diff * 0.15;
+      if (window.scrollY <= 0) {
+        endGame();
+        return;
       }
 
-      if (dy < -0.3) {
-        window.scrollBy(0, dy * 4);
-      } else if (dy > 0.3) {
-        window.scrollBy(0, dy * 4);
+      let dx = 0;
+      if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
+      if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
+      if (isMobile) dx = joystickDir.x;
+
+      if (dx !== 0) {
+        shipX += dx * shipSpeed;
+        const targetAngle = dx * 15;
+        shipAngle += (targetAngle - shipAngle) * 0.12;
+      } else {
+        shipAngle *= 0.9;
       }
 
       if (keys['Space']) fireProjectile();
