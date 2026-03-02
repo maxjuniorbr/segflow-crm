@@ -617,7 +617,7 @@
 
   <!-- SNAKE GAME -->
   <div id="snake-trigger">
-    <div id="snake-trigger-card" role="button" tabindex="0" aria-label="Play Snake game">
+    <button id="snake-trigger-card" aria-label="Play Snake game">
       <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 32 32" fill="none">
         <path d="M8 24 Q8 16 16 16 Q24 16 24 8" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/>
         <circle cx="24" cy="8" r="3" fill="#22c55e"/>
@@ -629,7 +629,7 @@
         <div class="text-emerald-400 font-semibold text-sm" data-i18n="snake.trigger">Play Snake</div>
         <div class="text-slate-500 text-xs font-mono hidden sm:block" data-i18n="snake.triggerSub">easter egg</div>
       </div>
-    </div>
+    </button>
   </div>
 
   <div id="snake-overlay">
@@ -1139,44 +1139,47 @@
       }
     }
 
-    function snakeTick() {
+    function moveHead() {
       const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
       if (snakeNextDir !== opposite[snakeDir]) snakeDir = snakeNextDir;
-
       const head = { ...snake[0] };
-      if (snakeDir === 'up') head.y--;
-      else if (snakeDir === 'down') head.y++;
-      else if (snakeDir === 'left') head.x--;
-      else if (snakeDir === 'right') head.x++;
+      const moves = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+      head.x += moves[snakeDir][0];
+      head.y += moves[snakeDir][1];
+      return head;
+    }
 
-      if (head.x < 0 || head.x >= gridW) { endSnake(true); return; }
-      if (head.y < 0 || head.y >= worldH) { endSnake(true); return; }
-      if (snake.some(s => s.x === head.x && s.y === head.y)) { endSnake(true); return; }
+    function checkCollision(head) {
+      if (head.x < 0 || head.x >= gridW || head.y < 0 || head.y >= worldH) return true;
+      return snake.some(s => s.x === head.x && s.y === head.y);
+    }
 
-      snake.unshift(head);
-
+    function followSnakeWithScroll(head) {
       const headScreenY = head.y * CELL - window.scrollY;
-      if (headScreenY > window.innerHeight * 0.75) {
-        window.scrollBy(0, CELL);
-      } else if (headScreenY < window.innerHeight * 0.25 && window.scrollY > 0) {
-        window.scrollBy(0, -CELL);
-      }
+      if (headScreenY > window.innerHeight * 0.75) window.scrollBy(0, CELL);
+      else if (headScreenY < window.innerHeight * 0.25 && window.scrollY > 0) window.scrollBy(0, -CELL);
+    }
 
-      let ate = false;
+    function tryEatFood(head) {
       for (let i = foods.length - 1; i >= 0; i--) {
-        const f = foods[i];
-        if (f.gx === head.x && f.gy === head.y) {
+        if (foods[i].gx === head.x && foods[i].gy === head.y) {
           foods.splice(i, 1);
           snakeScore++;
           snakeScoreEl.textContent = snakeScore;
           snakeSound('eat');
-          ate = true;
-          break;
+          return true;
         }
       }
-      if (!ate) snake.pop();
-      if (foods.length === 0) { endSnake(true); return; }
+      return false;
+    }
 
+    function snakeTick() {
+      const head = moveHead();
+      if (checkCollision(head)) { endSnake(true); return; }
+      snake.unshift(head);
+      followSnakeWithScroll(head);
+      if (!tryEatFood(head)) snake.pop();
+      if (foods.length === 0) { endSnake(true); return; }
       renderSnake();
     }
 
@@ -1261,7 +1264,6 @@
     }, { passive: true });
 
     document.getElementById('snake-trigger-card').addEventListener('click', (e) => { e.stopPropagation(); startSnake(); });
-    document.getElementById('snake-trigger-card').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startSnake(); } });
     document.getElementById('snake-exit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
     document.getElementById('snake-replay-btn').addEventListener('click', (e) => { e.stopPropagation(); snakeGameover.classList.remove('show'); startSnake(); });
     document.getElementById('snake-quit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
