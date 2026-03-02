@@ -1014,7 +1014,7 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let snakeActive = false, snakeLoop = null, snakeAudioCtx = null;
     let snake = [], snakeDir = 'right', snakeNextDir = 'right', snakeScore = 0;
-    let foods = [], gridW = 0, gridH = 0, bgBeatInterval = null;
+    let foods = [], gridW = 0, gridH = 0, worldH = 0, bgBeatInterval = null;
 
     const snakeFooterObs = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting && !snakeActive) snakeTrigger.classList.add('show'); });
@@ -1059,36 +1059,39 @@
       const sel = 'h1,h2,h3,p,img,.glass,.browser-frame,.phone-frame,.stat-card,.tech-card,blockquote,span[data-i18n],a[href]';
       const els = document.querySelectorAll(sel);
       const seen = new Set();
+      const scrollY = window.scrollY;
       els.forEach(el => {
         if (el.closest('#snake-overlay,#snake-trigger,#mascot,nav')) return;
         const r = el.getBoundingClientRect();
         if (r.width < 10 || r.height < 10) return;
-        const absX = r.left + r.width / 2 + window.scrollX;
-        const absY = r.top + r.height / 2 + window.scrollY;
-        const gx = Math.round((r.left + r.width / 2) / CELL);
-        const gy = Math.round((r.top + r.height / 2) / CELL);
+        const absX = r.left + r.width / 2;
+        const absY = r.top + r.height / 2 + scrollY;
+        const gx = Math.round(absX / CELL);
+        const gy = Math.round(absY / CELL);
         const key = gx + ',' + gy;
         if (seen.has(key)) return;
         seen.add(key);
         foods.push({ gx, gy, el, color: ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#a855f7','#ec4899'][Math.floor(Math.random() * 7)] });
       });
+      worldH = Math.ceil(document.body.scrollHeight / CELL);
     }
 
     function startSnake() {
       if (snakeActive) return;
       initSnakeAudio();
-      snakeActive = true;
-      snakeScore = 0;
-      snakeScoreEl.textContent = '0';
-      snakeDir = 'right'; snakeNextDir = 'right';
       snakeCanvas.width = window.innerWidth;
       snakeCanvas.height = window.innerHeight;
       gridW = Math.floor(snakeCanvas.width / CELL);
       gridH = Math.floor(snakeCanvas.height / CELL);
-      const cx = Math.floor(gridW / 2), cy = Math.floor(gridH / 2);
-      snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
       window.scrollTo({ top: 0, behavior: 'instant' });
-      setTimeout(() => { scanPageElements(); }, 100);
+      scanPageElements();
+      snakeActive = true;
+      snakeScore = 0;
+      snakeScoreEl.textContent = '0';
+      snakeDir = 'right'; snakeNextDir = 'right';
+      const cx = Math.floor(gridW / 2);
+      const cy = Math.floor(window.scrollY / CELL) + Math.floor(gridH / 2);
+      snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
       snakeOverlay.classList.add('show');
       snakeGameover.classList.remove('show');
       snakePromptBox.classList.add('hidden');
@@ -1124,15 +1127,23 @@
       else if (snakeDir === 'left') head.x--;
       else if (snakeDir === 'right') head.x++;
 
-      if (head.x < 0 || head.x >= gridW || head.y < 3 || head.y >= gridH) { endSnake(true); return; }
+      if (head.x < 0 || head.x >= gridW) { endSnake(true); return; }
+      if (head.y < 0 || head.y >= worldH) { endSnake(true); return; }
       if (snake.some(s => s.x === head.x && s.y === head.y)) { endSnake(true); return; }
 
       snake.unshift(head);
 
+      const headScreenY = head.y * CELL - window.scrollY;
+      if (headScreenY > window.innerHeight * 0.75) {
+        window.scrollBy(0, CELL);
+      } else if (headScreenY < window.innerHeight * 0.25 && window.scrollY > 0) {
+        window.scrollBy(0, -CELL);
+      }
+
       let ate = false;
       for (let i = foods.length - 1; i >= 0; i--) {
         const f = foods[i];
-        if (Math.abs(f.gx - head.x) <= 1 && Math.abs(f.gy - head.y) <= 1) {
+        if (f.gx === head.x && f.gy === head.y) {
           f.el.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
           f.el.classList.add('destroyed');
           foods.splice(i, 1);
@@ -1151,11 +1162,14 @@
 
     function renderSnake() {
       const ctx = snakeCtx;
+      const scrollOff = window.scrollY;
       ctx.clearRect(0, 0, snakeCanvas.width, snakeCanvas.height);
 
       foods.forEach(f => {
+        const fy = f.gy * CELL + CELL / 2 - scrollOff;
+        if (fy < -20 || fy > snakeCanvas.height + 20) return;
         ctx.beginPath();
-        ctx.arc(f.gx * CELL + CELL / 2, f.gy * CELL + CELL / 2, 5, 0, Math.PI * 2);
+        ctx.arc(f.gx * CELL + CELL / 2, fy, 5, 0, Math.PI * 2);
         ctx.fillStyle = f.color;
         ctx.globalAlpha = 0.7;
         ctx.fill();
@@ -1163,9 +1177,11 @@
       });
 
       snake.forEach((s, i) => {
-        const x = s.x * CELL + 1, y = s.y * CELL + 1;
+        const x = s.x * CELL + 1;
+        const y = s.y * CELL + 1 - scrollOff;
+        if (y < -CELL || y > snakeCanvas.height + CELL) return;
         const size = i === 0 ? CELL - 1 : CELL - 2;
-        const t = i / snake.length;
+        const t = i / Math.max(snake.length, 1);
         const r = Math.round(37 + t * (167 - 37));
         const g = Math.round(99 + t * (139 - 99));
         const b = Math.round(235 + t * (246 - 235));
