@@ -656,8 +656,21 @@
         </div>
         <button id="snake-prompt-btn2" class="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2" data-i18n="snake.prompt">How I built this</button>
         <div id="snake-prompt-box" class="hidden mt-4 text-left">
-          <p class="text-xs text-slate-500 mb-2 font-mono" data-i18n="snake.promptSub">1 prompt + plan mode -> Cursor Agent -> Snake game</p>
-          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="snake.promptText">"Let's create a new game that shows Cursor's full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."</blockquote>
+          <p class="text-xs text-slate-500 mb-3 font-mono" data-i18n="snake.promptSub">3 prompts + plan mode -> Cursor Agent -> Snake game (bugs may happen!)</p>
+          <div class="space-y-3">
+            <div>
+              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p1label">Prompt 1 — The idea</div>
+              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="snake.p1">"Let's create a new game that shows Cursor's full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."</blockquote>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p2label">Prompt 2 — Gameplay fix</div>
+              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-purple-500 pl-4" data-i18n="snake.p2">"The game starts with game over. Food is consumed at adjacent pixels. After eating initial food, no new ones appear. Should the screen scroll when I go down? The dots should be spread across the whole page."</blockquote>
+            </div>
+            <div>
+              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p3label">Prompt 3 — Distribution</div>
+              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-pink-500 pl-4" data-i18n="snake.p3">"Spread the dots better across the screen — they don't need to be on top of the elements."</blockquote>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -741,8 +754,13 @@
         'snake.title': 'SNAKE MODE', 'snake.controls': 'Arrow keys to turn | ESC to quit',
         'snake.prompt': 'How I built this', 'snake.gameoverTitle': 'Game Over',
         'snake.scoreLabel': 'Elements eaten', 'snake.replay': 'Play Again', 'snake.quit': 'Quit',
-        'snake.promptSub': '1 prompt + plan mode -> Cursor Agent -> Snake game',
-        'snake.promptText': '"Let\'s create a new game that shows Cursor\'s full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."',
+        'snake.promptSub': '3 prompts + plan mode -> Cursor Agent -> Snake game (bugs may happen!)',
+        'snake.p1label': 'Prompt 1 — The idea',
+        'snake.p1': '"Let\'s create a new game that shows Cursor\'s full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."',
+        'snake.p2label': 'Prompt 2 — Gameplay fix',
+        'snake.p2': '"The game starts with game over. Food is consumed at adjacent pixels. After eating initial food, no new ones appear. Should the screen scroll when I go down? The dots should be spread across the whole page."',
+        'snake.p3label': 'Prompt 3 — Distribution',
+        'snake.p3': '"Spread the dots better across the screen — they don\'t need to be on top of the elements."',
       },
       pt: {
         'nav.features': 'Features', 'nav.arch': 'Arquitetura',
@@ -796,8 +814,13 @@
         'snake.title': 'MODO SNAKE', 'snake.controls': 'Setas para virar | ESC para sair',
         'snake.prompt': 'Como eu fiz isso', 'snake.gameoverTitle': 'Fim de Jogo',
         'snake.scoreLabel': 'Elementos comidos', 'snake.replay': 'Jogar de Novo', 'snake.quit': 'Sair',
-        'snake.promptSub': '1 prompt + modo plan -> Cursor Agent -> jogo Snake',
-        'snake.promptText': '"Vamos criar um novo jogo que mostre todo o potencial do Cursor. Precisa ser simples, ter áudio e interagir com toda a página sem ser cansativo."',
+        'snake.promptSub': '3 prompts + modo plan -> Cursor Agent -> jogo Snake (bugs podem acontecer!)',
+        'snake.p1label': 'Prompt 1 — A ideia',
+        'snake.p1': '"Vamos criar um novo jogo que mostre todo o potencial do Cursor. Precisa ser simples, ter áudio e interagir com toda a página sem ser cansativo."',
+        'snake.p2label': 'Prompt 2 — Correção de gameplay',
+        'snake.p2': '"O jogo começou com game over. A bolinha é consumida no pixel ao lado. Depois que comi as bolinhas iniciais, novas não apareceram. A tela deveria fazer scroll quando desço? As bolinhas deveriam estar distribuídas por todo o corpo da página."',
+        'snake.p3label': 'Prompt 3 — Distribuição',
+        'snake.p3': '"Distribua melhor as bolinhas pela tela; não é necessário que estejam sobre os elementos."',
       }
     };
 
@@ -1056,24 +1079,24 @@
 
     function scanPageElements() {
       foods = [];
-      const sel = 'h1,h2,h3,p,img,.glass,.browser-frame,.phone-frame,.stat-card,.tech-card,blockquote,span[data-i18n],a[href]';
-      const els = document.querySelectorAll(sel);
-      const seen = new Set();
-      const scrollY = window.scrollY;
-      els.forEach(el => {
-        if (el.closest('#snake-overlay,#snake-trigger,#mascot,nav')) return;
-        const r = el.getBoundingClientRect();
-        if (r.width < 10 || r.height < 10) return;
-        const absX = r.left + r.width / 2;
-        const absY = r.top + r.height / 2 + scrollY;
-        const gx = Math.round(absX / CELL);
-        const gy = Math.round(absY / CELL);
-        const key = gx + ',' + gy;
-        if (seen.has(key)) return;
-        seen.add(key);
-        foods.push({ gx, gy, el, color: ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#a855f7','#ec4899'][Math.floor(Math.random() * 7)] });
-      });
       worldH = Math.ceil(document.body.scrollHeight / CELL);
+      gridW = Math.floor(window.innerWidth / CELL);
+      const colors = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#a855f7','#ec4899'];
+      const count = Math.min(80, Math.floor(worldH * gridW / 200));
+      const used = new Set();
+      for (let i = 0; i < count; i++) {
+        let gx, gy, key;
+        let tries = 0;
+        do {
+          gx = 2 + Math.floor(Math.random() * (gridW - 4));
+          gy = 5 + Math.floor(Math.random() * (worldH - 10));
+          key = gx + ',' + gy;
+          tries++;
+        } while (used.has(key) && tries < 50);
+        if (used.has(key)) continue;
+        used.add(key);
+        foods.push({ gx, gy, el: null, color: colors[Math.floor(Math.random() * colors.length)] });
+      }
     }
 
     function startSnake() {
@@ -1113,7 +1136,6 @@
       } else {
         snakeOverlay.classList.remove('show');
         mascot.style.display = '';
-        foods.forEach(f => { f.el.classList.remove('destroyed'); f.el.style.opacity = ''; f.el.style.transform = ''; });
       }
     }
 
@@ -1144,8 +1166,6 @@
       for (let i = foods.length - 1; i >= 0; i--) {
         const f = foods[i];
         if (f.gx === head.x && f.gy === head.y) {
-          f.el.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
-          f.el.classList.add('destroyed');
           foods.splice(i, 1);
           snakeScore++;
           snakeScoreEl.textContent = snakeScore;
@@ -1211,7 +1231,6 @@
         snakeActive = false;
         clearInterval(snakeLoop); clearInterval(bgBeatInterval);
         mascot.style.display = '';
-        foods.forEach(f => { f.el.classList.remove('destroyed'); f.el.style.opacity = ''; f.el.style.transform = ''; });
         return;
       }
       if (!snakeActive) return;
@@ -1244,7 +1263,7 @@
     document.getElementById('snake-trigger-card').addEventListener('click', (e) => { e.stopPropagation(); startSnake(); });
     document.getElementById('snake-trigger-card').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startSnake(); } });
     document.getElementById('snake-exit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
-    document.getElementById('snake-replay-btn').addEventListener('click', (e) => { e.stopPropagation(); snakeGameover.classList.remove('show'); foods.forEach(f => { f.el.classList.remove('destroyed'); f.el.style.opacity = ''; f.el.style.transform = ''; }); startSnake(); });
+    document.getElementById('snake-replay-btn').addEventListener('click', (e) => { e.stopPropagation(); snakeGameover.classList.remove('show'); startSnake(); });
     document.getElementById('snake-quit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
     document.getElementById('snake-prompt-btn').addEventListener('click', (e) => { e.stopPropagation(); snakePromptBox.classList.toggle('hidden'); });
     document.getElementById('snake-prompt-btn2').addEventListener('click', (e) => { e.stopPropagation(); snakePromptBox.classList.toggle('hidden'); });
