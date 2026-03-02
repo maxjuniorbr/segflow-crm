@@ -1177,7 +1177,7 @@
 
     function updateShipPos() {
       shipX = Math.max(0, Math.min(window.innerWidth - 48, shipX));
-      shipY = Math.max(0, Math.min(window.innerHeight - 48, shipY));
+      shipY = window.innerHeight - 100;
       shipEl.style.left = shipX + 'px';
       shipEl.style.top = shipY + 'px';
       shipEl.style.transform = `rotate(${shipAngle}deg)`;
