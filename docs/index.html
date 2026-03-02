@@ -790,7 +790,7 @@
         'game.trigger': 'Destroy this page',
         'game.triggerSub': 'easter egg',
         'game.title': 'DESTRUCTION MODE',
-        'game.controls': 'A/D move | W fast | S slow | SPACE fire',
+        'game.controls': 'A/D move | W/↑ fast | SPACE fire',
         'game.prompt': 'How I asked for this',
         'game.promptTitle': 'The prompts that built this game',
         'game.promptSub': '5 prompts → Cursor Agent → working game',
@@ -857,7 +857,7 @@
         'game.trigger': 'Destrua esta página',
         'game.triggerSub': 'easter egg',
         'game.title': 'MODO DESTRUIÇÃO',
-        'game.controls': 'A/D mover | W acelera | S freia | ESPAÇO atirar',
+        'game.controls': 'A/D mover | W/↑ acelera | ESPAÇO atirar',
         'game.prompt': 'Como eu pedi isso',
         'game.promptTitle': 'Os prompts que criaram este jogo',
         'game.promptSub': '5 prompts → Cursor Agent → jogo funcionando',
@@ -1094,8 +1094,7 @@
     let shipX = 0, shipY = 0, shipAngle = 0;
     const shipSpeed = 5;
     const AUTO_SCROLL_BASE = 1.2;
-    const AUTO_SCROLL_FAST = 4;
-    const AUTO_SCROLL_SLOW = 0.3;
+    const AUTO_SCROLL_FAST = 6;
     let scrollSpeed = AUTO_SCROLL_BASE;
     const keys = {};
     const projectiles = [];
@@ -1223,11 +1222,11 @@
       const el = document.createElement('div');
       el.className = 'projectile';
       const sx = shipX + 22;
-      const sy = shipY;
+      const sy = shipY - 30;
       el.style.left = sx + 'px';
       el.style.top = sy + 'px';
       document.body.appendChild(el);
-      projectiles.push({ el, x: sx, y: sy, vx: 0, vy: -12 });
+      projectiles.push({ el, x: sx, y: sy, vx: 0, vy: -14 });
       playSound('shoot');
     }
 
@@ -1262,27 +1261,19 @@
 
     const GAME_UI_SELECTOR = '#game-hud, #game-prompt-modal, #crack-overlay, #game-ship, #mobile-joystick, #mobile-fire-btn, #game-trigger, .projectile, .explosion, .particle';
 
-    function findLeafTarget(el) {
-      if (!el || el === document.body || el === document.documentElement) return null;
-      if (el.closest(GAME_UI_SELECTOR)) return null;
-      if (el.classList.contains('destroyed')) return null;
-      const children = el.children;
-      if (children.length === 0) return el;
-      if (el.tagName === 'SECTION' || el.tagName === 'DIV' || el.tagName === 'FOOTER' || el.tagName === 'NAV' || el.tagName === 'HEADER') {
-        for (const child of children) {
-          if (!child.classList.contains('destroyed') && child.getBoundingClientRect().height > 0) return child;
-        }
-      }
-      return el;
-    }
+    const DESTROYABLE = '.glass, .browser-frame, .phone-frame, .stat-card, .tech-card, .feature-tab, h1, h2, h3, p, img, blockquote, a, button, span, li, div.flex, div.inline-flex, div.grid, div.text-center, div.space-y-4, div.space-y-8, svg:not(#game-ship), footer > div, nav > div';
 
     function destroyAtPoint(screenX, screenY) {
-      const raw = document.elementFromPoint(screenX, screenY);
-      const el = findLeafTarget(raw);
-      if (!el) return false;
+      const el = document.elementFromPoint(screenX, screenY);
+      if (!el || el === document.body || el === document.documentElement) return false;
+      if (el.closest(GAME_UI_SELECTOR)) return false;
 
-      el.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
-      el.classList.add('destroyed');
+      const target = el.closest(DESTROYABLE);
+      if (!target || target.classList.contains('destroyed')) return false;
+      if (target.closest(GAME_UI_SELECTOR)) return false;
+
+      target.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
+      target.classList.add('destroyed');
       spawnExplosion(screenX, screenY);
       flashCrack(screenX, screenY);
       playSound('hit');
@@ -1295,12 +1286,8 @@
       if (!gameActive) return;
 
       let accel = keys['ArrowUp'] || keys['KeyW'];
-      let brake = keys['ArrowDown'] || keys['KeyS'];
-      if (isMobile) {
-        if (joystickDir.y < -0.3) accel = true;
-        if (joystickDir.y > 0.3) brake = true;
-      }
-      const targetSpeed = accel ? AUTO_SCROLL_FAST : brake ? AUTO_SCROLL_SLOW : AUTO_SCROLL_BASE;
+      if (isMobile && joystickDir.y < -0.3) accel = true;
+      const targetSpeed = accel ? AUTO_SCROLL_FAST : AUTO_SCROLL_BASE;
       scrollSpeed += (targetSpeed - scrollSpeed) * 0.3;
       window.scrollBy(0, -scrollSpeed);
 
