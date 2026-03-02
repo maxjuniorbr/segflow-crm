@@ -782,7 +782,7 @@
         'game.trigger': 'Destroy this page',
         'game.triggerSub': 'easter egg',
         'game.title': 'DESTRUCTION MODE',
-        'game.controls': 'A/D move | SPACE fire',
+        'game.controls': 'A/D move | W fast | S slow | SPACE fire',
         'game.prompt': 'How I asked for this',
         'game.promptTitle': 'The prompt that built this game',
         'game.promptSub': 'Single prompt → Cursor Agent → working game',
@@ -839,7 +839,7 @@
         'game.trigger': 'Destrua esta página',
         'game.triggerSub': 'easter egg',
         'game.title': 'MODO DESTRUIÇÃO',
-        'game.controls': 'A/D mover | ESPAÇO atirar',
+        'game.controls': 'A/D mover | W acelera | S freia | ESPAÇO atirar',
         'game.prompt': 'Como eu pedi isso',
         'game.promptTitle': 'O prompt que criou este jogo',
         'game.promptSub': 'Um único prompt → Cursor Agent → jogo funcionando',
@@ -1065,7 +1065,10 @@
     let gameLoop = null;
     let shipX = 0, shipY = 0, shipAngle = 0;
     const shipSpeed = 2.5;
-    const AUTO_SCROLL_SPEED = 1.2;
+    const AUTO_SCROLL_BASE = 1.2;
+    const AUTO_SCROLL_FAST = 4;
+    const AUTO_SCROLL_SLOW = 0.3;
+    let scrollSpeed = AUTO_SCROLL_BASE;
     const keys = {};
     const projectiles = [];
     let lastShot = 0;
@@ -1229,13 +1232,22 @@
       setTimeout(() => crackOverlay.classList.remove('flash'), 150);
     }
 
+    const GAME_UI_SELECTOR = '#game-hud, #game-prompt-modal, #crack-overlay, #game-ship, #mobile-joystick, #mobile-fire-btn, #game-trigger, .projectile, .explosion, .particle';
+
     function destroyAtPoint(screenX, screenY) {
       const el = document.elementFromPoint(screenX, screenY);
       if (!el || el === document.body || el === document.documentElement) return false;
-      if (el.closest('#game-hud, #game-prompt-modal, #crack-overlay, #game-ship, #mobile-joystick, #mobile-fire-btn')) return false;
-      const target = el.closest('.glass, .browser-frame, .phone-frame, .stat-card, .tech-card, .feature-tab, [class*="rounded-2xl"], h1, h2, h3, p, img, blockquote, .gradient-text, a, button, svg:not(#game-ship), footer, nav');
-      if (!target || target.classList.contains('destroyed')) return false;
-      if (target.closest('#game-hud, #game-prompt-modal, #game-ship')) return false;
+      if (el.closest(GAME_UI_SELECTOR)) return false;
+
+      let target = el;
+      while (target && target !== document.body) {
+        if (target.classList.contains('destroyed')) { target = target.parentElement; continue; }
+        if (target.closest(GAME_UI_SELECTOR)) return false;
+        break;
+      }
+      if (!target || target === document.body || target === document.documentElement) return false;
+      if (target.classList.contains('destroyed')) return false;
+
       target.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
       target.classList.add('destroyed');
       spawnExplosion(screenX, screenY);
@@ -1249,7 +1261,14 @@
     function tick() {
       if (!gameActive) return;
 
-      window.scrollBy(0, -AUTO_SCROLL_SPEED);
+      let accel = keys['ArrowUp'] || keys['KeyW'];
+      let brake = keys['ArrowDown'] || keys['KeyS'];
+      if (isMobile) {
+        if (joystickDir.y < -0.3) accel = true;
+        if (joystickDir.y > 0.3) brake = true;
+      }
+      scrollSpeed += ((accel ? AUTO_SCROLL_FAST : brake ? AUTO_SCROLL_SLOW : AUTO_SCROLL_BASE) - scrollSpeed) * 0.1;
+      window.scrollBy(0, -scrollSpeed);
 
       if (window.scrollY <= 0) {
         endGame();
