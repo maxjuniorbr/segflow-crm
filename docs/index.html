@@ -685,18 +685,22 @@
     <div class="modal-content">
       <h3 class="text-lg font-semibold text-white mb-3" data-i18n="game.promptTitle">The prompt that built this game</h3>
       <p class="text-xs text-slate-500 mb-4 font-mono" data-i18n="game.promptSub">Single prompt → Cursor Agent → working game</p>
-      <div class="space-y-4 mb-6">
+      <div class="space-y-4 mb-6" id="game-prompts-container">
         <div>
-          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 1:</div>
-          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-brand-500 pl-4">"Se o usuário chegar até o fim da página, quero que apareça algo em algum lugar da tela que permita o usuário jogar um game feito também com o cursor. Seria legal se ele apenas congelasse a tela e permitisse atirar em tudo, destruindo a página."</blockquote>
+          <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p1label">Prompt 1 — The idea</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-brand-500 pl-4" data-i18n="game.p1">"When the user reaches the bottom of the page, I want something to appear that lets them play a game — also built with Cursor. Something simple: freeze the screen and let them click to shoot and destroy the page."</blockquote>
         </div>
         <div>
-          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 2:</div>
-          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-purple-500 pl-4">"Funcionou, mas seria legal uma nave que permita eu ir voltando na página e atirando em tudo, inclusive com efeitos sonoros... seria legal ter um destaque maior para o usuario ver o icone do jogo."</blockquote>
+          <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p2label">Prompt 2 — The upgrade</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-purple-500 pl-4" data-i18n="game.p2">"It worked, but it would be cool to have a spaceship that lets me scroll back up through the page while shooting everything, with sound effects. Also make the game icon more visible."</blockquote>
         </div>
         <div>
-          <div class="text-xs text-slate-500 font-mono mb-1">Prompt 3:</div>
-          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-pink-500 pl-4">"A nave volta ao centro depois do tiro e esta muito rápida. Vc simplesmente pode fazer a tela ir correndo e qdo chegar no topo o jogo termina."</blockquote>
+          <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p3label">Prompt 3 — Bug fix</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-pink-500 pl-4" data-i18n="game.p3">"The ship snaps back to center after shooting and it's too fast. Just make the screen auto-scroll and when it reaches the top, the game ends."</blockquote>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p4label">Prompt 4 — Controls</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="game.p4">"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."</blockquote>
         </div>
       </div>
       <div class="flex justify-end">
@@ -784,8 +788,16 @@
         'game.title': 'DESTRUCTION MODE',
         'game.controls': 'A/D move | W fast | S slow | SPACE fire',
         'game.prompt': 'How I asked for this',
-        'game.promptTitle': 'The prompt that built this game',
-        'game.promptSub': 'Single prompt → Cursor Agent → working game',
+        'game.promptTitle': 'The prompts that built this game',
+        'game.promptSub': '4 prompts → Cursor Agent → working game',
+        'game.p1label': 'Prompt 1 — The idea',
+        'game.p1': '"When the user reaches the bottom of the page, I want something to appear that lets them play a game — also built with Cursor. Something simple: freeze the screen and let them click to shoot and destroy the page."',
+        'game.p2label': 'Prompt 2 — The upgrade',
+        'game.p2': '"It worked, but it would be cool to have a spaceship that lets me scroll back up through the page while shooting everything, with sound effects. Also make the game icon more visible."',
+        'game.p3label': 'Prompt 3 — Bug fix',
+        'game.p3': '"The ship snaps back to center after shooting and it\'s too fast. Just make the screen auto-scroll and when it reaches the top, the game ends."',
+        'game.p4label': 'Prompt 4 — Controls',
+        'game.p4': '"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."',
         'game.close': 'Close',
       },
       pt: {
@@ -841,8 +853,16 @@
         'game.title': 'MODO DESTRUIÇÃO',
         'game.controls': 'A/D mover | W acelera | S freia | ESPAÇO atirar',
         'game.prompt': 'Como eu pedi isso',
-        'game.promptTitle': 'O prompt que criou este jogo',
-        'game.promptSub': 'Um único prompt → Cursor Agent → jogo funcionando',
+        'game.promptTitle': 'Os prompts que criaram este jogo',
+        'game.promptSub': '4 prompts → Cursor Agent → jogo funcionando',
+        'game.p1label': 'Prompt 1 — A ideia',
+        'game.p1': '"Quando o usuário chegar ao fim da página, quero que apareça algo que permita jogar um game — também feito com Cursor. Algo simples: congelar a tela e deixar clicar para atirar e destruir a página."',
+        'game.p2label': 'Prompt 2 — A evolução',
+        'game.p2': '"Funcionou, mas seria legal uma nave que permita ir voltando pela página atirando em tudo, com efeitos sonoros. E um destaque maior para o ícone do jogo."',
+        'game.p3label': 'Prompt 3 — Correção de bug',
+        'game.p3': '"A nave volta ao centro depois do tiro e está muito rápida. Faz a tela ir correndo e quando chegar no topo o jogo termina."',
+        'game.p4label': 'Prompt 4 — Controles',
+        'game.p4': '"Apertar pra cima acelera e pra baixo freia. Garanta que todos os elementos podem ser destruídos."',
         'game.close': 'Fechar',
       }
     };
