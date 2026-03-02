@@ -852,11 +852,11 @@
       document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
+        const key = el.dataset.i18n;
         if (T[lang][key] !== undefined) el.textContent = T[lang][key];
       });
       document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const key = el.getAttribute('data-i18n-html');
+        const key = el.dataset.i18nHtml;
         if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
       });
       updateFeature();
@@ -870,8 +870,10 @@
       img.style.opacity = '0';
       img.style.transform = 'scale(0.98)';
       setTimeout(() => {
-        img.src = isDark ? `images/${currentFeature === 'detail' ? 'detail' : currentFeature === 'forms' ? 'form' : currentFeature}-dark.png`
-                         : `images/${currentFeature === 'detail' ? 'detail' : currentFeature === 'forms' ? 'form' : currentFeature}-light.png`;
+        const imgMap = { detail: 'detail', forms: 'form' };
+        const imgName = imgMap[currentFeature] || currentFeature;
+        const theme = isDark ? 'dark' : 'light';
+        img.src = `images/${imgName}-${theme}.png`;
         title.textContent = data.title;
         text.textContent = data.text;
         setTimeout(() => { img.style.opacity = '1'; img.style.transform = 'scale(1)'; }, 50);
