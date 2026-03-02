@@ -702,6 +702,10 @@
           <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p4label">Prompt 4 — Controls</div>
           <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="game.p4">"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."</blockquote>
         </div>
+        <div>
+          <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p5label">Prompt 5 — Ship speed</div>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-amber-500 pl-4" data-i18n="game.p5">"When I press W or D or the arrow keys, the ship is too slow laterally instead of speeding up. Fix it."</blockquote>
+        </div>
       </div>
       <div class="flex justify-end">
         <button id="game-prompt-close" class="px-4 py-2 glass-strong rounded-lg text-sm text-white hover:bg-white/10 transition-all" data-i18n="game.close">Close</button>
@@ -789,7 +793,7 @@
         'game.controls': 'A/D move | W fast | S slow | SPACE fire',
         'game.prompt': 'How I asked for this',
         'game.promptTitle': 'The prompts that built this game',
-        'game.promptSub': '4 prompts → Cursor Agent → working game',
+        'game.promptSub': '5 prompts → Cursor Agent → working game',
         'game.p1label': 'Prompt 1 — The idea',
         'game.p1': '"When the user reaches the bottom of the page, I want something to appear that lets them play a game — also built with Cursor. Something simple: freeze the screen and let them click to shoot and destroy the page."',
         'game.p2label': 'Prompt 2 — The upgrade',
@@ -798,6 +802,8 @@
         'game.p3': '"The ship snaps back to center after shooting and it\'s too fast. Just make the screen auto-scroll and when it reaches the top, the game ends."',
         'game.p4label': 'Prompt 4 — Controls',
         'game.p4': '"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."',
+        'game.p5label': 'Prompt 5 — Ship speed',
+        'game.p5': '"When I press W or D or the arrow keys, the ship is too slow laterally instead of speeding up. Fix it."',
         'game.close': 'Close',
       },
       pt: {
@@ -854,7 +860,7 @@
         'game.controls': 'A/D mover | W acelera | S freia | ESPAÇO atirar',
         'game.prompt': 'Como eu pedi isso',
         'game.promptTitle': 'Os prompts que criaram este jogo',
-        'game.promptSub': '4 prompts → Cursor Agent → jogo funcionando',
+        'game.promptSub': '5 prompts → Cursor Agent → jogo funcionando',
         'game.p1label': 'Prompt 1 — A ideia',
         'game.p1': '"Quando o usuário chegar ao fim da página, quero que apareça algo que permita jogar um game — também feito com Cursor. Algo simples: congelar a tela e deixar clicar para atirar e destruir a página."',
         'game.p2label': 'Prompt 2 — A evolução',
@@ -863,6 +869,8 @@
         'game.p3': '"A nave volta ao centro depois do tiro e está muito rápida. Faz a tela ir correndo e quando chegar no topo o jogo termina."',
         'game.p4label': 'Prompt 4 — Controles',
         'game.p4': '"Apertar pra cima acelera e pra baixo freia. Garanta que todos os elementos podem ser destruídos."',
+        'game.p5label': 'Prompt 5 — Velocidade da nave',
+        'game.p5': '"Quando eu pressiono W ou D ou as setas, a nave fica lenta em vez de acelerar. Revise."',
         'game.close': 'Fechar',
       }
     };
@@ -1084,7 +1092,7 @@
     let gameScore = 0;
     let gameLoop = null;
     let shipX = 0, shipY = 0, shipAngle = 0;
-    const shipSpeed = 2.5;
+    const shipSpeed = 5;
     const AUTO_SCROLL_BASE = 1.2;
     const AUTO_SCROLL_FAST = 4;
     const AUTO_SCROLL_SLOW = 0.3;
