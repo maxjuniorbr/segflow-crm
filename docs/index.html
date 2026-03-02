@@ -1064,7 +1064,7 @@
     let gameScore = 0;
     let gameLoop = null;
     let shipX = 0, shipY = 0, shipAngle = 0;
-    const shipSpeed = 3;
+    const shipSpeed = 2.5;
     const AUTO_SCROLL_SPEED = 1.2;
     const keys = {};
     const projectiles = [];
@@ -1136,6 +1136,7 @@
     }
 
     function startGame() {
+      if (gameActive) return;
       initAudio();
       gameActive = true;
       gameScore = 0;
@@ -1144,6 +1145,7 @@
       gameHud.classList.add('show');
       gameTrigger.classList.remove('show');
       mascot.style.display = 'none';
+      document.activeElement?.blur();
       shipX = window.innerWidth / 2 - 24;
       shipY = window.innerHeight - 100;
       shipAngle = 0;
