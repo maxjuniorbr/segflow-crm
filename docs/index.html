@@ -1262,11 +1262,24 @@
 
     const GAME_UI_SELECTOR = '#game-hud, #game-prompt-modal, #crack-overlay, #game-ship, #mobile-joystick, #mobile-fire-btn, #game-trigger, .projectile, .explosion, .particle';
 
+    function findLeafTarget(el) {
+      if (!el || el === document.body || el === document.documentElement) return null;
+      if (el.closest(GAME_UI_SELECTOR)) return null;
+      if (el.classList.contains('destroyed')) return null;
+      const children = el.children;
+      if (children.length === 0) return el;
+      if (el.tagName === 'SECTION' || el.tagName === 'DIV' || el.tagName === 'FOOTER' || el.tagName === 'NAV' || el.tagName === 'HEADER') {
+        for (const child of children) {
+          if (!child.classList.contains('destroyed') && child.getBoundingClientRect().height > 0) return child;
+        }
+      }
+      return el;
+    }
+
     function destroyAtPoint(screenX, screenY) {
-      const el = document.elementFromPoint(screenX, screenY);
-      if (!el || el === document.body || el === document.documentElement) return false;
-      if (el.closest(GAME_UI_SELECTOR)) return false;
-      if (el.classList.contains('destroyed')) return false;
+      const raw = document.elementFromPoint(screenX, screenY);
+      const el = findLeafTarget(raw);
+      if (!el) return false;
 
       el.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
       el.classList.add('destroyed');
@@ -1287,7 +1300,8 @@
         if (joystickDir.y < -0.3) accel = true;
         if (joystickDir.y > 0.3) brake = true;
       }
-      scrollSpeed += ((accel ? AUTO_SCROLL_FAST : brake ? AUTO_SCROLL_SLOW : AUTO_SCROLL_BASE) - scrollSpeed) * 0.1;
+      const targetSpeed = accel ? AUTO_SCROLL_FAST : brake ? AUTO_SCROLL_SLOW : AUTO_SCROLL_BASE;
+      scrollSpeed += (targetSpeed - scrollSpeed) * 0.3;
       window.scrollBy(0, -scrollSpeed);
 
       if (window.scrollY <= 0) {
