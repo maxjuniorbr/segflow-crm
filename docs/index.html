@@ -700,7 +700,7 @@
         </div>
         <div>
           <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p4label">Prompt 4 — Controls</div>
-          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="game.p4">"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."</blockquote>
+          <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="game.p4">"Pressing up should accelerate and down should brake. Make sure every individual element can be destroyed — texts, labels, images, icons, everything one by one."</blockquote>
         </div>
         <div>
           <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="game.p5label">Prompt 5 — Ship speed</div>
@@ -801,7 +801,7 @@
         'game.p3label': 'Prompt 3 — Bug fix',
         'game.p3': '"The ship snaps back to center after shooting and it\'s too fast. Just make the screen auto-scroll and when it reaches the top, the game ends."',
         'game.p4label': 'Prompt 4 — Controls',
-        'game.p4': '"Pressing up should accelerate and down should brake. Make sure every element on the page can be destroyed."',
+        'game.p4': '"Pressing up should accelerate and down should brake. Make sure every individual element can be destroyed — texts, labels, images, icons, everything one by one."',
         'game.p5label': 'Prompt 5 — Ship speed',
         'game.p5': '"When I press W or D or the arrow keys, the ship is too slow laterally instead of speeding up. Fix it."',
         'game.close': 'Close',
@@ -868,7 +868,7 @@
         'game.p3label': 'Prompt 3 — Correção de bug',
         'game.p3': '"A nave volta ao centro depois do tiro e está muito rápida. Faz a tela ir correndo e quando chegar no topo o jogo termina."',
         'game.p4label': 'Prompt 4 — Controles',
-        'game.p4': '"Apertar pra cima acelera e pra baixo freia. Garanta que todos os elementos podem ser destruídos."',
+        'game.p4': '"Apertar pra cima acelera e pra baixo freia. Garanta que todos os elementos individuais podem ser destruídos — textos, labels, imagens, ícones, tudo um por um."',
         'game.p5label': 'Prompt 5 — Velocidade da nave',
         'game.p5': '"Quando eu pressiono W ou D ou as setas, a nave fica lenta em vez de acelerar. Revise."',
         'game.close': 'Fechar',
@@ -1266,18 +1266,10 @@
       const el = document.elementFromPoint(screenX, screenY);
       if (!el || el === document.body || el === document.documentElement) return false;
       if (el.closest(GAME_UI_SELECTOR)) return false;
+      if (el.classList.contains('destroyed')) return false;
 
-      let target = el;
-      while (target && target !== document.body) {
-        if (target.classList.contains('destroyed')) { target = target.parentElement; continue; }
-        if (target.closest(GAME_UI_SELECTOR)) return false;
-        break;
-      }
-      if (!target || target === document.body || target === document.documentElement) return false;
-      if (target.classList.contains('destroyed')) return false;
-
-      target.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
-      target.classList.add('destroyed');
+      el.style.setProperty('--rot', ((Math.random() - 0.5) * 30) + 'deg');
+      el.classList.add('destroyed');
       spawnExplosion(screenX, screenY);
       flashCrack(screenX, screenY);
       playSound('hit');
