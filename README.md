@@ -1,8 +1,8 @@
 # SegFlow CRM
 
-A complete system for insurance brokerages — managing clients, proposals, and policies in a single platform.
+A management and multi-quote system for insurance brokerages — managing clients, proposals, and policies in a single platform, with an upcoming multi-quote engine via insurer APIs.
 
-> **~90% of this code was written by AI.** This project is the result of a 30-day corporate trial using the [Cursor](https://cursor.com) tool, employing a *vibe coding* approach — where the developer guides the intent and the AI implements it. See the [AI-Assisted Development (Vibe Coding)](#ai-assisted-development-vibe-coding) section for details.
+> **~90% of this code was written by AI.** I already had the repository and the idea, but time was always the bottleneck. With the [Cursor IDE](https://cursor.com), what seemed like weeks of work took just 2 days to build from zero to a production-ready system. This project was driven entirely by a *vibe coding* approach — where I guided the intent and the AI implemented it. See the [AI-Assisted Development (Vibe Coding)](#ai-assisted-development-vibe-coding) section for details.
 
 ---
 
@@ -51,7 +51,7 @@ A complete system for insurance brokerages — managing clients, proposals, and 
 
 ## AI-Assisted Development (Vibe Coding)
 
-This project was built as a proof of concept to evaluate the impact of AI assistants on software development. Over 30 days, the entire implementation was driven by *vibe coding* within the [Cursor IDE](https://cursor.com) — the developer defines the intent in natural language, and the AI produces the code.
+This project was built as a proof of concept to evaluate the impact of AI assistants on software development. Over just 2 days, the entire implementation was driven by *vibe coding* within the [Cursor IDE](https://cursor.com) — defining the intent in natural language, while the AI produced the code.
 
 ### LLMs Used
 
