@@ -64,13 +64,13 @@ Models were rotated based on the complexity of each task:
 | **Codex** | OpenAI | Code generation, autocomplete |
 | **Gemini** | Google | Code review, analyzing alternatives |
 
-### Cursor IDE — Rules and Skills
+### Agent Instructions — Cursor and Claude Code
 
-Cursor allows the configuration of **rules** and **skills** that guide the behavior of AI agents during development.
+This repository keeps agent instructions compatible with both Cursor and Claude Code.
 
-**Rules** (`.cursor/rules/`) are permanent instructions the agent follows in every interaction — acting as a "project manual" for the AI. For example, the primary rule defines that code must be in English, the UI in pt-BR, the backend follows Clean Architecture, and which UI patterns must be used.
+**Project instructions** are defined in [.claude/CLAUDE.md](.claude/CLAUDE.md) for Claude Code, with modular Claude rules in `.claude/rules/`, while mirrored Cursor rules remain in `.cursor/rules/` for Cursor compatibility. These files act as the project manual for the agent: code in English, UI in pt-BR, Clean Architecture in the backend, and the design system and UX patterns to preserve.
 
-**Skills** (`.cursor/skills/`) are specialized knowledge bases the agent queries on demand. Each skill is a Markdown file with guidelines, patterns, and examples for a specific discipline. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
+**Skills** are available in both `.cursor/skills/` and `.claude/skills/`. They are specialized knowledge bases the agent queries on demand. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
 
 <details>
 <summary><strong>Installed Skills (17)</strong></summary>

@@ -232,7 +232,7 @@ export const DocumentForm: React.FC = () => {
         <Alert variant="error">{error}</Alert>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <Card>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="sm:col-span-2">
