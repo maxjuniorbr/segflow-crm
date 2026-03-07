@@ -1,13 +1,13 @@
 ---
 description: Mantém o README.md atualizado automaticamente sempre que arquivos estruturais ou de configuração mudam.
-globs: ["package.json", "server/package.json", "server/.env.example", "server/routes/**/*.js", ".cursor/rules/*.mdc", ".cursor/skills/**/*.md", ".claude/CLAUDE.md", ".claude/rules/**/*.md", ".claude/skills/**/SKILL.md"]
+paths: ["package.json", "server/package.json", "server/.env.example", "server/routes/**/*.js", "server/src/app.js", ".cursor/rules/*.mdc", ".cursor/skills/**/*.md", ".claude/CLAUDE.md", ".claude/rules/**/*.md", ".claude/skills/**/SKILL.md"]
 ---
 
 # Manutenção da Consistência do README.md
 
-O arquivo `README.md` é a documentação principal e a porta de entrada técnica e de negócios do projeto. Ele DEVE sempre refletir a realidade do código. 
+O arquivo `README.md` é a documentação principal e a porta de entrada técnica e de negócios do projeto. Ele DEVE sempre refletir a realidade do código.
 
-Sempre que você (AI) ou o usuário modificar algum dos arquivos monitorados por esta regra (globs), você deve avaliar silenciosamente se a mudança afeta o `README.md`. Se afetar, atualize o README na mesma iteração.
+Sempre que você (AI) ou o usuário modificar algum dos arquivos monitorados por esta regra (`paths`), você deve avaliar silenciosamente se a mudança afeta o `README.md`. Se afetar, atualize o README na mesma iteração.
 
 ## Gatilhos Diretos de Atualização
 
