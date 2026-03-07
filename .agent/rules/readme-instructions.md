@@ -1,6 +1,6 @@
 ---
 description: Mantém o README.md atualizado automaticamente sempre que arquivos estruturais ou de configuração mudam.
-globs: ["package.json", "server/package.json", "server/.env.example", "server/routes/**/*.js", ".cursor/rules/*.mdc", ".cursor/skills/**/*.md"]
+globs: ["package.json", "server/package.json", "server/.env.example", "server/routes/**/*.js", ".agent/rules/*.md", ".agent/skills/**/*.md"]
 ---
 
 # Manutenção da Consistência do README.md
@@ -21,7 +21,7 @@ Sempre que você (AI) ou o usuário modificar algum dos arquivos monitorados por
 3. Mudança em `server/routes/**/*.js` ou `server/src/app.js`:
    - Atualize a seção **Endpoints da API (Resumo)** no README, refletindo as rotas exatas, deleções de rotas legadas, ou mudanças drásticas de middlewares.
 
-4. Adição/Remoção de Skills e Rules (`.cursor/rules/` ou `.cursor/skills/`):
+4. Adição/Remoção de Skills e Rules (`.agent/rules/` ou `.agent/skills/`):
    - Atualize a tabela na seção **Agent Skills** ou **Cursor Rules** no README com a descrição correspondente da nova inteligência adicionada.
 
 ## Restrições de Edição

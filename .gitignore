@@ -19,8 +19,7 @@ server/.env
 coverage/
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+
 
 # Test binaries and results
 k6

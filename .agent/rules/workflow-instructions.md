@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # SegFlow CRM - Claude Code Instructions
 
 ## Language & Tone
@@ -102,38 +106,41 @@
 - Follow Clean Architecture and coding patterns defined by the technology community.
 - Maintain current technologies; preserve current folder structure.
 
+## Observacoes de consistencia (estado atual)
+- Nenhuma observacao aberta; manter padroes atuais sem introduzir excecoes.
+
 ## Debugging Methodology
-Detailed guide: `.cursor/skills/systematic-debugging/SKILL.md`
+Detailed guide: `.agent/skills/systematic-debugging/SKILL.md`
 
 - Never propose fixes without understanding root cause.
 - Four phases: Root Cause Investigation → Pattern Analysis → Hypothesis Testing → Implementation.
 - If 3+ fixes fail, question the architecture.
 
 ## Verification Before Completion
-Detailed guide: `.cursor/skills/verification-before-completion/SKILL.md`
+Detailed guide: `.agent/skills/verification-before-completion/SKILL.md`
 
 - No assertions of success without recent verification command execution.
 - Always run tests and confirm output before declaring a task done.
 
 ## Reference Skills
-Detailed skill guides are in `.cursor/skills/`. Consult them when relevant:
+Detailed skill guides are in `.agent/skills/`. Consult them when relevant:
 
 | Skill | Path |
 |---|---|
-| Systematic Debugging | `.cursor/skills/systematic-debugging/SKILL.md` |
-| Verification Before Completion | `.cursor/skills/verification-before-completion/SKILL.md` |
-| Test-Driven Development | `.cursor/skills/test-driven-development/SKILL.md` |
-| Node.js Backend Patterns | `.cursor/skills/nodejs-backend-patterns/SKILL.md` |
-| Frontend Design | `.cursor/skills/frontend-design/SKILL.md` |
-| Tailwind Design System | `.cursor/skills/tailwind-design-system/SKILL.md` |
-| Responsive Design | `.cursor/skills/responsive-design/SKILL.md` |
-| TypeScript Advanced Types | `.cursor/skills/typescript-advanced-types/SKILL.md` |
-| PostgreSQL Table Design | `.cursor/skills/postgresql-table-design/SKILL.md` |
-| SQL Optimization | `.cursor/skills/sql-optimization-patterns/SKILL.md` |
-| Auth Implementation | `.cursor/skills/auth-implementation-patterns/SKILL.md` |
-| Error Handling | `.cursor/skills/error-handling-patterns/SKILL.md` |
-| JavaScript Testing | `.cursor/skills/javascript-testing-patterns/SKILL.md` |
-| Modern JavaScript | `.cursor/skills/modern-javascript-patterns/SKILL.md` |
-| Code Review | `.cursor/skills/code-review-excellence/SKILL.md` |
-| Vercel/React Best Practices | `.cursor/skills/vercel-react-best-practices/SKILL.md` |
-| Web Design Guidelines | `.cursor/skills/web-design-guidelines/SKILL.md` |
+| Systematic Debugging | `.agent/skills/systematic-debugging/SKILL.md` |
+| Verification Before Completion | `.agent/skills/verification-before-completion/SKILL.md` |
+| Test-Driven Development | `.agent/skills/test-driven-development/SKILL.md` |
+| Node.js Backend Patterns | `.agent/skills/nodejs-backend-patterns/SKILL.md` |
+| Frontend Design | `.agent/skills/frontend-design/SKILL.md` |
+| Tailwind Design System | `.agent/skills/tailwind-design-system/SKILL.md` |
+| Responsive Design | `.agent/skills/responsive-design/SKILL.md` |
+| TypeScript Advanced Types | `.agent/skills/typescript-advanced-types/SKILL.md` |
+| PostgreSQL Table Design | `.agent/skills/postgresql-table-design/SKILL.md` |
+| SQL Optimization | `.agent/skills/sql-optimization-patterns/SKILL.md` |
+| Auth Implementation | `.agent/skills/auth-implementation-patterns/SKILL.md` |
+| Error Handling | `.agent/skills/error-handling-patterns/SKILL.md` |
+| JavaScript Testing | `.agent/skills/javascript-testing-patterns/SKILL.md` |
+| Modern JavaScript | `.agent/skills/modern-javascript-patterns/SKILL.md` |
+| Code Review | `.agent/skills/code-review-excellence/SKILL.md` |
+| Vercel/React Best Practices | `.agent/skills/vercel-react-best-practices/SKILL.md` |
+| Web Design Guidelines | `.agent/skills/web-design-guidelines/SKILL.md` |
