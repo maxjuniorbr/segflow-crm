@@ -3,20 +3,36 @@ import { uiNavigationMessages } from './uiNavigationMessages';
 import { uiPageMessages } from './uiPageMessages';
 import { authMessages } from './authMessages';
 
-const messageModules = [uiBaseMessages, uiNavigationMessages, uiPageMessages, authMessages];
-const duplicateKeys = messageModules.reduce((duplicates, module) => {
-    Object.keys(module).forEach((key) => {
-        if (duplicates.seen.has(key)) {
-            duplicates.keys.add(key);
-        } else {
-            duplicates.seen.add(key);
-        }
-    });
-    return duplicates;
-}, { keys: new Set<string>(), seen: new Set<string>() });
+const messageModules: Array<Record<string, unknown>> = [
+    uiBaseMessages,
+    uiNavigationMessages,
+    uiPageMessages,
+    { auth: authMessages }
+];
 
-if (duplicateKeys.keys.size > 0 && import.meta.env?.MODE !== 'production') {
-    console.warn('[uiMessages] Chaves duplicadas encontradas:', Array.from(duplicateKeys.keys).join(', '));
+const getDuplicateKeys = (modules: Array<Record<string, unknown>>) => {
+    const seen = new Set<string>();
+    const duplicates = new Set<string>();
+
+    for (const module of modules) {
+        for (const key of Object.keys(module)) {
+            if (seen.has(key)) {
+                duplicates.add(key);
+            } else {
+                seen.add(key);
+            }
+        }
+    }
+
+    return Array.from(duplicates);
+};
+
+if (import.meta.env?.MODE !== 'production') {
+    const duplicateKeys = getDuplicateKeys(messageModules);
+
+    if (duplicateKeys.length > 0) {
+        console.warn('[uiMessages] Chaves duplicadas encontradas:', duplicateKeys.join(', '));
+    }
 }
 
 export const uiMessages = {
