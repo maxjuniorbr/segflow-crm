@@ -1211,7 +1211,7 @@
     const cursorOutline = document.getElementById('cursor-outline');
     let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
 
-    window.addEventListener('mousemove', (e) => {
+    globalThis.addEventListener('mousemove', (e) => {
       mouseX = e.clientX; mouseY = e.clientY;
       cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`;
     });
@@ -1222,7 +1222,7 @@
       cursorOutline.style.left = `${outlineX}px`; cursorOutline.style.top = `${outlineY}px`;
       requestAnimationFrame(animateCursor);
     }
-    if (window.matchMedia("(min-width: 768px)").matches) animateCursor();
+    if (globalThis.matchMedia("(min-width: 768px)").matches) animateCursor();
 
     document.querySelectorAll('[data-magnetic]').forEach(elem => {
       elem.addEventListener('mousemove', (e) => {
@@ -1243,13 +1243,13 @@
     // Reveals
     const reveals = document.querySelectorAll('.reveal');
     function checkReveal() {
-      const h = window.innerHeight;
+      const h = globalThis.innerHeight;
       reveals.forEach(r => {
         const top = r.getBoundingClientRect().top;
         if (top < h - 50) r.classList.add('active');
       });
     }
-    window.addEventListener('scroll', checkReveal);
+    globalThis.addEventListener('scroll', checkReveal);
     setTimeout(checkReveal, 100);
 
     // Stats Counter
@@ -1500,8 +1500,8 @@
       const rect = mascot.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / window.innerWidth * 3;
-      const dy = (e.clientY - cy) / window.innerHeight * 3;
+      const dx = (e.clientX - cx) / globalThis.innerWidth * 3;
+      const dy = (e.clientY - cy) / globalThis.innerHeight * 3;
 
       const clampedX = Math.max(-2.5, Math.min(2.5, dx));
       const clampedY = Math.max(-2.5, Math.min(2.5, dy));

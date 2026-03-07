@@ -28,10 +28,10 @@ Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     value: vi.fn(() => mockCanvasContext)
 });
 
-const originalGetComputedStyle = window.getComputedStyle.bind(window);
+const originalGetComputedStyle = globalThis.getComputedStyle.bind(globalThis);
 
-Object.defineProperty(window, 'getComputedStyle', {
+Object.defineProperty(globalThis, 'getComputedStyle', {
     configurable: true,
     value: ((element: Element, pseudoElement?: string) =>
-        originalGetComputedStyle(element, pseudoElement ? undefined : pseudoElement)) as typeof window.getComputedStyle
+        originalGetComputedStyle(element, pseudoElement ? undefined : pseudoElement)) as typeof globalThis.getComputedStyle
 });
