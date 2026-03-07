@@ -87,6 +87,7 @@
 ## Documentation
 - Only one `README.md` at root; do not create READMEs in subfolders.
 - Update README only when there is real impact on structure, flow, or setup.
+- Whenever `package.json`, `server/package.json`, `server/.env.example`, `server/routes/**/*.js`, or `server/src/app.js` are modified, evaluate if README needs updating and apply it in the same iteration.
 
 ## Security
 - All inputs must be validated and sanitized.
@@ -99,15 +100,40 @@
 ## Code Quality Principles
 - Code should be self-explanatory; avoid comments. Comments only when strictly necessary.
 - Follow Clean Architecture and coding patterns defined by the technology community.
-- Maintain current technologies.
-- Preserve current folder structure.
-- Self-explanatory code over comments.
+- Maintain current technologies; preserve current folder structure.
 
 ## Debugging Methodology
+Detailed guide: `.claude/skills/systematic-debugging/SKILL.md`
+
 - Never propose fixes without understanding root cause.
-- Four phases: Root Cause Investigation -> Pattern Analysis -> Hypothesis Testing -> Implementation.
+- Four phases: Root Cause Investigation → Pattern Analysis → Hypothesis Testing → Implementation.
 - If 3+ fixes fail, question the architecture.
 
 ## Verification Before Completion
+Detailed guide: `.claude/skills/verification-before-completion/SKILL.md`
+
 - No assertions of success without recent verification command execution.
 - Always run tests and confirm output before declaring a task done.
+
+## Reference Skills
+Detailed skill guides are in `.claude/skills/`. Consult them when relevant:
+
+| Skill | Path |
+|---|---|
+| Systematic Debugging | `.claude/skills/systematic-debugging/SKILL.md` |
+| Verification Before Completion | `.claude/skills/verification-before-completion/SKILL.md` |
+| Test-Driven Development | `.claude/skills/test-driven-development/SKILL.md` |
+| Node.js Backend Patterns | `.claude/skills/nodejs-backend-patterns/SKILL.md` |
+| Frontend Design | `.claude/skills/frontend-design/SKILL.md` |
+| Tailwind Design System | `.claude/skills/tailwind-design-system/SKILL.md` |
+| Responsive Design | `.claude/skills/responsive-design/SKILL.md` |
+| TypeScript Advanced Types | `.claude/skills/typescript-advanced-types/SKILL.md` |
+| PostgreSQL Table Design | `.claude/skills/postgresql-table-design/SKILL.md` |
+| SQL Optimization | `.claude/skills/sql-optimization-patterns/SKILL.md` |
+| Auth Implementation | `.claude/skills/auth-implementation-patterns/SKILL.md` |
+| Error Handling | `.claude/skills/error-handling-patterns/SKILL.md` |
+| JavaScript Testing | `.claude/skills/javascript-testing-patterns/SKILL.md` |
+| Modern JavaScript | `.claude/skills/modern-javascript-patterns/SKILL.md` |
+| Code Review | `.claude/skills/code-review-excellence/SKILL.md` |
+| Vercel/React Best Practices | `.claude/skills/vercel-react-best-practices/SKILL.md` |
+| Web Design Guidelines | `.claude/skills/web-design-guidelines/SKILL.md` |
