@@ -68,9 +68,9 @@ Models were rotated based on the complexity of each task:
 
 This repository keeps agent instructions compatible with both Cursor and Claude Code.
 
-**Project instructions** are defined in [.claude/CLAUDE.md](.claude/CLAUDE.md) for Claude Code, with modular Claude rules in `.claude/rules/`, while mirrored Cursor rules remain in `.cursor/rules/` for Cursor compatibility. These files act as the project manual for the agent: code in English, UI in pt-BR, Clean Architecture in the backend, and the design system and UX patterns to preserve.
+**Project instructions** are defined in [CLAUDE.md](CLAUDE.md) for Claude Code, while Cursor-specific rules live in `.cursor/rules/`. Together they act as the project manual for the agent: code in English, UI in pt-BR, Clean Architecture in the backend, and the design system and UX patterns to preserve.
 
-**Skills** are available in both `.cursor/skills/` and `.claude/skills/`. They are specialized knowledge bases the agent queries on demand. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
+**Skills** are maintained in `.cursor/skills/` and referenced from `CLAUDE.md` when relevant. They are specialized knowledge bases the agent queries on demand. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
 
 <details>
 <summary><strong>Installed Skills (17)</strong></summary>
