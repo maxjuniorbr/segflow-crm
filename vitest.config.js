@@ -2,8 +2,8 @@ import { defineConfig } from 'vitest/config';
 import path from 'node:path';
 import dotenv from 'dotenv';
 
-// Load .env file
-dotenv.config({ path: path.resolve(__dirname, 'server/.env') });
+// Load .env file without printing dotenv's runtime banner during tests.
+dotenv.config({ path: path.resolve(__dirname, 'server/.env'), quiet: true });
 
 export default defineConfig({
     test: {

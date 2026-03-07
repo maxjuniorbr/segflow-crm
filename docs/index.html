@@ -1,1286 +1,1519 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SegFlow CRM — Built with Cursor</title>
-  <meta name="description" content="Complete insurance brokerage management system built with Cursor IDE. 90% AI-generated code in 2 days.">
-  <meta property="og:title" content="SegFlow CRM — Built with Cursor">
-  <meta property="og:description" content="Full CRM for insurance brokerages. 90% AI-generated code with Cursor IDE in just 2 days.">
+  <title>SegFlow CRM // Systems</title>
+  <meta property="og:title" content="SegFlow CRM — Built with AI">
+  <meta property="og:description"
+    content="Full management and multi-quote system for insurance brokerages. 90% AI-generated code with Cursor IDE in just 2 days.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: {
-            brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a',950:'#172554' }
-          },
-          animation: {
-            'float': 'float 6s ease-in-out infinite',
-            'float-delay': 'float 6s ease-in-out 2s infinite',
-            'slide-up': 'slideUp 0.6s ease-out',
-          },
-          keyframes: {
-            float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
-            slideUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-          }
-        }
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-color: #030305;
+      --surface: #0a0a0f;
+      --surface-hover: #12121a;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #e5ff00;
+      /* Neon yellow */
+      --accent-glow: rgba(229, 255, 0, 0.3);
+      --text-main: #f0f0f0;
+      --text-muted: #8a8a93;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: none;
+    }
+
+    html,
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-display);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #000;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Cursor */
+    .cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+
+    .cursor-outline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(229, 255, 0, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, border-color 0.3s;
+    }
+
+    /* Aesthetics */
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-size: 50px 50px;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      z-index: -1;
+      mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(50px);
       }
     }
-  </script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    ::selection { background: rgba(37, 99, 235, 0.3); }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    .gradient-text { background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.06); }
-    .glass-strong { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
-    .browser-frame { border-radius: 12px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05); }
-    .browser-bar { background: #1e293b; padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
-    .browser-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .browser-bar-url { flex: 1; background: #0f172a; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #64748b; font-family: 'JetBrains Mono', monospace; margin-left: 8px; }
-    .phone-frame { background: #1e293b; border-radius: 40px; padding: 8px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); border: 2px solid #334155; position: relative; }
-    .phone-frame img { border-radius: 32px; display: block; width: 100%; }
-    .phone-notch { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #1e293b; border-radius: 0 0 12px 12px; z-index: 2; }
-    .hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; }
-    .feature-tab.active { background: rgba(37,99,235,0.15); color: #60a5fa; border-color: #3b82f6; }
-    .feature-tab { transition: all 0.3s ease; }
-    .feature-screenshot { transition: opacity 0.4s ease, transform 0.4s ease; }
-    .timeline-line { position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #3b82f6, #a78bfa, #f472b6); }
-    .section-fade { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .section-fade.visible { opacity: 1; transform: translateY(0); }
-    .nav-blur { backdrop-filter: blur(16px); background: rgba(15,23,42,0.8); border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .stat-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.3); }
-    .tech-card:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.3); background: rgba(255,255,255,0.06); }
-    .lang-btn.active { background: rgba(37,99,235,0.2); color: #60a5fa; }
+
+    .ambient-glow {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      filter: blur(100px);
+      z-index: -2;
+      opacity: 0.4;
+      animation: pulseGlow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+      }
+
+      100% {
+        transform: translate(-50%, -40%) scale(1.1);
+        opacity: 0.5;
+      }
+    }
+
+    /* Typography */
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    .font-mono {
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .text-accent {
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .outline-text {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--text-main);
+      display: inline-block;
+    }
+
+    /* Layout & Nav */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: rgba(3, 3, 5, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      border-bottom: 1px solid transparent;
+      transition: 0.3s;
+    }
+
+    .nav-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .lang-switch {
+      display: flex;
+      gap: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 0.3rem 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: 0.3s;
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* General Sections */
+    section {
+      padding: 8rem 10vw;
+      position: relative;
+      scroll-margin-top: 5rem; /* Prevents fixed nav from covering section titles */
+    }
+
+    .section-header {
+      margin-bottom: 4rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      max-width: 800px;
+    }
+
+    .section-header p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-top: 1rem;
+    }
+
+    /* Hero */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      padding-top: 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: rgba(10, 10, 15, 0.5);
+      backdrop-filter: blur(10px);
+      margin-bottom: 2rem;
+      width: fit-content;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--text-main);
+      color: var(--text-main);
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--text-main);
+      color: var(--bg-color);
+      border-color: var(--text-main);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    /* Stats & Tech Grid */
+    .grid {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      transition: 0.3s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      border-color: rgba(229, 255, 0, 0.5);
+      transform: translateY(-5px);
+    }
+
+    .card-stat {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Features Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* Browser Frame */
+    .browser-frame {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .browser-bar {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .browser-url {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    .feature-img-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+
+    .feature-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* Architecture Flow */
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .arch-flow {
+        flex-direction: row;
+      }
+    }
+
+    .arch-block {
+      flex: 1;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+    }
 
     /* Mascot */
-    #mascot { position: fixed; bottom: 24px; right: 24px; z-index: 40; cursor: pointer; transition: transform 0.3s ease; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
-    #mascot:hover { transform: scale(1.15) !important; }
-    #mascot svg { width: 72px; height: 72px; }
-    #mascot-bubble { position: absolute; bottom: 80px; right: 0; background: rgba(30,41,59,0.95); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; font-size: 13px; padding: 8px 14px; border-radius: 12px 12px 4px 12px; white-space: nowrap; opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none; }
-    #mascot-bubble.show { opacity: 1; transform: translateY(0); }
-    @keyframes mascotFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-6px) rotate(2deg); } 75% { transform: translateY(-3px) rotate(-1deg); } }
-    @keyframes mascotWiggle { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
-    .mascot-float { animation: mascotFloat 4s ease-in-out infinite; }
-    .mascot-wiggle { animation: mascotWiggle 0.5s ease-in-out; }
-    #mascot .eye-pupil { transition: transform 0.3s ease; }
-    #mascot .mouth { transition: d 0.3s ease; }
+    #mascot {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 999;
+      filter: drop-shadow(0 0 15px var(--accent-glow));
+      transition: transform 0.3s;
+    }
 
-    /* Directional section fades */
-    .section-fade-left { opacity: 0; transform: translateX(-50px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .section-fade-right { opacity: 0; transform: translateX(50px); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .section-fade-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.7s ease, transform 0.7s ease; }
-    .section-fade-left.visible, .section-fade-right.visible, .section-fade-scale.visible { opacity: 1; transform: translateX(0) scale(1); }
+    #mascot svg {
+      width: 60px;
+      height: 60px;
+    }
 
-    /* Staggered children */
-    .stagger-children.visible > * { animation: slideUp 0.5s ease-out forwards; opacity: 0; }
-    .stagger-children.visible > *:nth-child(1) { animation-delay: 0s; }
-    .stagger-children.visible > *:nth-child(2) { animation-delay: 0.1s; }
-    .stagger-children.visible > *:nth-child(3) { animation-delay: 0.2s; }
-    .stagger-children.visible > *:nth-child(4) { animation-delay: 0.3s; }
-    .stagger-children.visible > *:nth-child(5) { animation-delay: 0.4s; }
-    .stagger-children.visible > *:nth-child(6) { animation-delay: 0.5s; }
+    #mascot:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
 
-    /* Grain texture overlay */
-    .grain::after { content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    #mascot-bubble {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.8rem 1rem;
+      border-radius: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
 
-    /* Counter animation */
-    .counter { display: inline-block; }
+    #mascot-bubble.show {
+      opacity: 1;
+      transform: translateY(-5px);
+    }
 
-    /* Enhanced hover for timeline cards */
-    #timeline .glass { transition: all 0.3s ease, border-color 0.3s ease; }
-    #timeline .glass:hover { transform: translateX(4px); }
 
-    /* Snake Game */
-    #snake-trigger { position: fixed; bottom: 24px; left: 24px; z-index: 40; opacity: 0; transform: translateY(30px) scale(0.9); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; }
-    #snake-trigger.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-    #snake-trigger-card { background: rgba(34,197,94,0.1); backdrop-filter: blur(12px); border: 1px solid rgba(34,197,94,0.25); border-radius: 16px; padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; animation: snakeGlow 2.5s ease-in-out infinite; }
-    #snake-trigger-card:hover { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.5); transform: scale(1.05); }
-    @keyframes snakeGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.3), 0 4px 20px rgba(34,197,94,0.1); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0), 0 4px 30px rgba(34,197,94,0.2); } }
-    #snake-overlay { position: fixed; inset: 0; z-index: 9999; display: none; background: rgba(15,23,42,0.88); background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; }
-    #snake-overlay.show { display: block; }
-    #snake-canvas { width: 100%; height: 100%; display: block; }
-    #snake-hud { position: absolute; top: 0; left: 0; right: 0; background: rgba(15,23,42,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(34,197,94,0.2); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    #snake-gameover { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); }
-    #snake-gameover.show { display: flex; }
-    #snake-gameover-box { background: rgba(30,41,59,0.95); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 32px; text-align: center; max-width: 400px; width: 90%; }
+    /* Two-column grid */
+    .grid-2col {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1fr 1fr;
+    }
 
-    @media (max-width: 640px) {
-      #snake-trigger { bottom: 16px; left: 16px; }
-      #snake-trigger-card { padding: 10px 14px; gap: 8px; }
-      #mascot svg { width: 56px; height: 56px; }
-      #mascot { bottom: 16px; right: 16px; }
-      #mascot-bubble { font-size: 12px; padding: 6px 10px; }
+    /* Phone frames */
+    .phone-frame {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 6px;
+      transition: 0.3s;
+    }
+
+    .phone-frame:hover {
+      border-color: rgba(229, 255, 0, 0.3);
+      transform: translateY(-5px);
+    }
+
+    .phone-frame img {
+      border-radius: 18px;
+      display: block;
+      width: 100%;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 16px;
+      background: var(--surface);
+      border-radius: 0 0 10px 10px;
+      z-index: 2;
+    }
+
+    .phone-group {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .phone-group .phone-frame {
+      width: 200px;
+      position: relative;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .toggle-track {
+      width: 48px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .toggle-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      transition: 0.3s;
+    }
+
+    /* Quality grid */
+    .grid-3col {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Footer */
+    footer {
+      padding: 4rem 10vw;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem 2rem;
+      }
+
+      section {
+        padding: 5rem 2rem;
+      }
+
+      * {
+        cursor: auto !important;
+      }
+
+      .cursor-dot,
+      .cursor-outline {
+        display: none;
+      }
+
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3col {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-group {
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+
+      .phone-group .phone-frame {
+        width: 160px;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3col {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-200 font-sans antialiased overflow-x-hidden grain">
+
+<body>
+  <div class="noise"></div>
+  <div class="grid-overlay"></div>
+  <div class="ambient-glow"></div>
+
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
 
   <!-- MASCOT: Seg the Shield -->
-  <div id="mascot" class="mascot-float" aria-hidden="true">
+  <div id="mascot" aria-hidden="true" data-magnetic>
     <div id="mascot-bubble"></div>
     <svg viewBox="0 0 80 90" fill="none">
-      <path d="M40 8 L62 17 L62 40 Q62 62 40 73 Q18 62 18 40 L18 17 Z" fill="#2563eb" stroke="#3b82f6" stroke-width="1.5"/>
-      <path d="M40 12 L58 20 L58 40 Q58 58 40 68 Q22 58 22 40 L22 20 Z" fill="#1d4ed8" opacity="0.4"/>
-      <ellipse class="eye" cx="32" cy="36" rx="5" ry="5.5" fill="white"/>
-      <ellipse class="eye" cx="48" cy="36" rx="5" ry="5.5" fill="white"/>
-      <circle class="eye-pupil" cx="33" cy="37" r="2.5" fill="#0f172a"/>
-      <circle class="eye-pupil" cx="49" cy="37" r="2.5" fill="#0f172a"/>
-      <circle cx="34" cy="34" r="1.2" fill="rgba(255,255,255,0.7)"/>
-      <circle cx="50" cy="34" r="1.2" fill="rgba(255,255,255,0.7)"/>
-      <path class="mouth" d="M34 48 Q40 54 46 48" stroke="white" fill="none" stroke-width="2" stroke-linecap="round"/>
-      <path class="cheek-l" cx="25" cy="42" d="M23 42 Q25 44 27 42" stroke="#f472b6" fill="none" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
-      <path class="cheek-r" d="M53 42 Q55 44 57 42" stroke="#f472b6" fill="none" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
-      <path d="M30 22 L36 28 L48 16" stroke="#60a5fa" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-      <path id="mascot-hand" d="M64 50 Q70 45 68 38" stroke="#3b82f6" fill="none" stroke-width="2" stroke-linecap="round" opacity="0"/>
+      <path d="M40 8 L62 17 L62 40 Q62 62 40 73 Q18 62 18 40 L18 17 Z" fill="var(--surface)" stroke="var(--accent)"
+        stroke-width="2" />
+      <path d="M40 12 L58 20 L58 40 Q58 58 40 68 Q22 58 22 40 L22 20 Z" fill="rgba(229, 255, 0, 0.1)" />
+      <ellipse class="eye" cx="32" cy="36" rx="5" ry="5.5" fill="var(--text-main)" />
+      <ellipse class="eye" cx="48" cy="36" rx="5" ry="5.5" fill="var(--text-main)" />
+      <circle class="eye-pupil" cx="33" cy="37" r="2.5" fill="#000" />
+      <circle class="eye-pupil" cx="49" cy="37" r="2.5" fill="#000" />
+      <path class="mouth" d="M34 48 Q40 54 46 48" stroke="var(--text-main)" fill="none" stroke-width="2"
+        stroke-linecap="round" />
     </svg>
   </div>
 
   <!-- NAV -->
-  <nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <a href="#hero" class="flex items-center gap-2.5 group">
-          <svg class="w-8 h-8 text-brand-500 group-hover:text-brand-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span class="font-bold text-white text-lg">SegFlow</span>
-        </a>
-        <div class="hidden md:flex items-center gap-1">
-          <a href="#features" class="px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5" data-i18n="nav.features">Features</a>
-          <a href="#tech" class="px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5">Tech Stack</a>
-          <a href="#architecture" class="px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5" data-i18n="nav.arch">Architecture</a>
-          <a href="#cursor" class="px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5">Cursor</a>
-          <div class="ml-2 flex items-center rounded-lg border border-slate-700 overflow-hidden text-xs">
-            <button class="lang-btn active px-2.5 py-1.5 text-slate-400 hover:text-white transition-all" data-lang="en">EN</button>
-            <button class="lang-btn px-2.5 py-1.5 text-slate-400 hover:text-white transition-all" data-lang="pt">PT</button>
-          </div>
-          <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" rel="noopener" class="ml-3 inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-brand-500/20">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-          </a>
-        </div>
-        <div class="flex md:hidden items-center gap-2">
-          <div class="flex items-center rounded-lg border border-slate-700 overflow-hidden text-xs">
-            <button class="lang-btn active px-2 py-1 text-slate-400" data-lang="en">EN</button>
-            <button class="lang-btn px-2 py-1 text-slate-400" data-lang="pt">PT</button>
-          </div>
-          <button id="mobile-menu-btn" class="p-2 text-slate-400 hover:text-white" aria-label="Menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          </button>
-        </div>
-      </div>
+  <nav>
+    <div class="logo">
+      <i data-lucide="hexagon"></i> SEGFLOW<span class="text-accent">.SYS</span>
     </div>
-    <div id="mobile-menu" class="hidden md:hidden nav-blur border-t border-white/5">
-      <div class="px-4 py-3 space-y-1">
-        <a href="#features" class="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg" data-i18n="nav.features">Features</a>
-        <a href="#tech" class="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg">Tech Stack</a>
-        <a href="#architecture" class="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg" data-i18n="nav.arch">Architecture</a>
-        <a href="#cursor" class="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg">Cursor</a>
-        <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" rel="noopener" class="block px-3 py-2 text-sm text-brand-400 font-medium rounded-lg">GitHub</a>
+    <div class="nav-links">
+      <a href="#story" class="nav-link" data-magnetic data-i18n="nav.story">Story</a>
+      <a href="#features" class="nav-link" data-magnetic data-i18n="nav.product">Product</a>
+      <a href="#tech" class="nav-link" data-magnetic data-i18n="nav.engineering">Engineering</a>
+      <a href="#cursor" class="nav-link" data-magnetic data-i18n="nav.process">Process</a>
+      <div class="lang-switch">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="pt">PT</button>
       </div>
     </div>
   </nav>
 
   <!-- HERO -->
-  <section id="hero" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
-    <div class="hero-glow bg-brand-600 top-1/4 -left-48"></div>
-    <div class="hero-glow bg-purple-600 top-1/3 -right-48"></div>
-    <div class="hero-glow bg-pink-600 bottom-0 left-1/3" style="width:400px;height:400px"></div>
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-      <div class="text-center mb-12 sm:mb-16 animate-slide-up">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong text-sm text-brand-300 mb-6">
-          <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
-          <span data-i18n="hero.badge">90% AI-Generated Code</span>
-        </div>
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6">
-          <span class="text-white">Seg</span><span class="gradient-text">Flow</span><span class="text-white"> CRM</span>
-        </h1>
-        <p class="text-lg sm:text-xl lg:text-2xl text-slate-400 max-w-3xl mx-auto mb-4 font-light" data-i18n="hero.subtitle">Management and multi-quote system for insurance brokerages</p>
-        <p class="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto mb-8" data-i18n-html="hero.desc">My journey building a production-ready management system from zero in 2 days using <span class="text-brand-400 font-medium">Cursor IDE</span>.</p>
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-8 py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition-all hover:shadow-xl hover:shadow-brand-500/25 hover:-translate-y-0.5">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            <span data-i18n="hero.github">View on GitHub</span>
-          </a>
-          <a href="#features" class="inline-flex items-center gap-2 px-8 py-3.5 glass-strong text-white font-semibold rounded-xl hover:bg-white/10 transition-all hover:-translate-y-0.5">
-            <span data-i18n="hero.explore">Explore</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-          </a>
-        </div>
-      </div>
-      <div class="relative max-w-5xl mx-auto animate-float">
-        <div class="browser-frame">
-          <div class="browser-bar">
-            <div class="browser-dot bg-red-500/80"></div>
-            <div class="browser-dot bg-yellow-500/80"></div>
-            <div class="browser-dot bg-green-500/80"></div>
-            <div class="browser-bar-url">localhost:3000 — SegFlow CRM</div>
-          </div>
-          <img src="images/dashboard-light.png" alt="SegFlow CRM Dashboard" loading="eager" class="w-full block">
-        </div>
-      </div>
+  <section class="hero" id="hero" data-mascot-section="hero">
+    <div class="hero-badge reveal">
+      <div class="status-dot"></div>
+      <span data-i18n="hero.badge">90% AI-Generated Code</span>
     </div>
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-      <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+
+    <h1 class="reveal" style="transition-delay: 0.1s;">
+      <span class="text-white">SEG</span><span class="outline-text">FLOW</span> CRM
+    </h1>
+
+    <p class="reveal font-mono text-accent" style="transition-delay: 0.2s;" data-i18n="hero.subtitle">
+      Management and multi-quote system for insurance brokerages
+    </p>
+    <p class="reveal" style="transition-delay: 0.3s;" data-i18n-html="hero.desc">
+      My journey building a production-ready management system from zero in 2 days using Cursor IDE.
+    </p>
+
+    <div class="reveal" style="transition-delay: 0.4s; margin-top: 2rem; display: flex; gap: 1rem;">
+      <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" class="btn btn-primary" data-magnetic>
+        <i data-lucide="github"></i> <span data-i18n="hero.github">View on GitHub</span>
+      </a>
+      <a href="#stats" class="btn" data-magnetic>
+        <span data-i18n="hero.explore">Explore</span> <i data-lucide="arrow-down"></i>
+      </a>
     </div>
   </section>
 
   <!-- STATS -->
-  <section class="relative py-20 sm:py-28" data-mascot-section="stats">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 section-fade stagger-children">
-        <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="2">0</div>
-          <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.days">days of development</div>
-          <div class="mt-3 text-xs text-brand-400 font-mono" data-i18n="stats.daysSub">zero → production</div>
-        </div>
-        <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold gradient-text mb-2" data-count="90" data-suffix="%">0%</div>
-          <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.ai">AI-generated code</div>
-          <div class="mt-3 text-xs text-purple-400 font-mono">cursor agent + chat</div>
-        </div>
-        <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="15" data-suffix="+">0</div>
-          <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.screens">complete screens</div>
-          <div class="mt-3 text-xs text-emerald-400 font-mono">CRUD + dashboard + auth</div>
-        </div>
-        <div class="stat-card glass-strong rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 cursor-default">
-          <div class="text-3xl sm:text-5xl font-extrabold text-white mb-2" data-count="17">0</div>
-          <div class="text-sm sm:text-base text-slate-400" data-i18n="stats.skills">AI skills configured</div>
-          <div class="mt-3 text-xs text-pink-400 font-mono">.agent/skills/</div>
-        </div>
+  <section id="stats" data-mascot-section="stats">
+    <div class="grid">
+      <div class="card reveal" style="border-top-color: var(--text-main);">
+        <div class="card-stat" data-count="2">0</div>
+        <div class="card-title font-mono" data-i18n="stats.days">days of development</div>
+        <div class="text-xs text-muted font-mono" data-i18n="stats.daysSub">zero → production</div>
+      </div>
+      <div class="card reveal" style="border-top-color: var(--accent);">
+        <div class="card-stat text-accent" data-count="90" data-suffix="%">0%</div>
+        <div class="card-title font-mono" data-i18n="stats.ai">AI-generated code</div>
+        <div class="text-xs text-muted font-mono">cursor agent + chat</div>
+      </div>
+      <div class="card reveal" style="border-top-color: var(--text-main);">
+        <div class="card-stat" data-count="15" data-suffix="+">0</div>
+        <div class="card-title font-mono" data-i18n="stats.screens">complete screens</div>
+        <div class="text-xs text-muted font-mono">CRUD + dashboard + auth</div>
+      </div>
+      <div class="card reveal" style="border-top-color: var(--text-main);">
+        <div class="card-stat" data-count="17">0</div>
+        <div class="card-title font-mono" data-i18n="stats.skills">AI skills configured</div>
+        <div class="text-xs text-muted font-mono">.agent/skills/</div>
       </div>
     </div>
   </section>
 
   <!-- THE STORY -->
-  <section class="py-20 sm:py-28 relative">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 section-fade">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6" data-i18n-html="story.title">From <span class="gradient-text">zero</span> to a complete system</h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed" data-i18n="story.text">I already had the repository and the idea, but time was always the bottleneck. With Cursor IDE, what seemed like weeks of work took just 2 days — delivering a management system with client management, proposals, policies, authentication, and production-grade quality. Next step: multi-quote engine via insurer APIs.</p>
-      </div>
-      <div class="glass rounded-2xl p-8 sm:p-10">
-        <div class="flex flex-col sm:flex-row gap-6 items-start">
-          <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-600/20 flex items-center justify-center">
-            <svg class="w-6 h-6 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          </div>
-          <div>
-            <blockquote class="text-xl sm:text-2xl font-light text-white leading-relaxed italic mb-4" data-i18n="story.quote">"Every feature, every component, every test — I generated and refined them with AI. Cursor became my development partner throughout the entire process."</blockquote>
-            <p class="text-sm text-slate-500" data-i18n="story.author">— How I built this using Agent Mode, Rules, Skills, and MCP Servers</p>
-          </div>
-        </div>
-      </div>
+  <section id="story">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="story.title">From <span class="outline-text">zero</span> to a complete system</h2>
+      <p data-i18n="story.text">I already had the repository and the idea, but time was always the bottleneck. With
+        Cursor IDE, what seemed like weeks of work took just 2 days — delivering a management system with client
+        management, proposals, policies, authentication, and production-grade quality.</p>
+    </div>
+    <div class="card reveal">
+      <blockquote class="text-accent" style="font-size: 1.5rem; font-style: italic; margin-bottom: 2rem;"
+        data-i18n="story.quote">"Every feature, every component, every test — I generated and refined them with AI.
+        Cursor became my development partner throughout the entire process."</blockquote>
+      <p class="font-mono text-muted text-sm" data-i18n="story.author">— How I built this using Agent Mode, Rules,
+        Skills, and MCP Servers</p>
     </div>
   </section>
 
   <!-- FEATURES -->
-  <section id="features" class="py-20 sm:py-28 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="feat.title">Complete <span class="gradient-text">Features</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="feat.sub">I carefully designed every screen with attention to UX, accessibility, and responsiveness.</p>
-      </div>
-      <div class="section-fade">
-        <div class="flex overflow-x-auto gap-2 pb-4 mb-8 scrollbar-hide justify-start sm:justify-center" id="feature-tabs" role="tablist">
-          <button class="feature-tab active flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="dashboard" role="tab" aria-selected="true">Dashboard</button>
-          <button class="feature-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="clients" role="tab" aria-selected="false" data-i18n="feat.tab.clients">Clients</button>
-          <button class="feature-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="detail" role="tab" aria-selected="false" data-i18n="feat.tab.detail">Details</button>
-          <button class="feature-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="documents" role="tab" aria-selected="false" data-i18n="feat.tab.docs">Documents</button>
-          <button class="feature-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="forms" role="tab" aria-selected="false" data-i18n="feat.tab.forms">Forms</button>
-          <button class="feature-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-transparent text-slate-400 hover:text-white transition-all" data-feature="settings" role="tab" aria-selected="false" data-i18n="feat.tab.settings">Settings</button>
-        </div>
-        <div class="relative">
-          <div class="flex items-center justify-end gap-3 mb-4">
-            <span class="text-xs text-slate-500 font-mono">theme:</span>
-            <button id="theme-toggle" class="relative inline-flex items-center h-7 w-14 rounded-full bg-slate-800 border border-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Toggle light/dark theme">
-              <span id="theme-toggle-dot" class="inline-block w-5 h-5 rounded-full bg-slate-300 shadow-sm transform transition-transform translate-x-1"></span>
-              <svg class="absolute left-1.5 w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-              <svg class="absolute right-1.5 w-3.5 h-3.5 text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
-            </button>
-          </div>
-          <div class="browser-frame max-w-5xl mx-auto">
-            <div class="browser-bar">
-              <div class="browser-dot bg-red-500/80"></div>
-              <div class="browser-dot bg-yellow-500/80"></div>
-              <div class="browser-dot bg-green-500/80"></div>
-              <div class="browser-bar-url" id="feature-url">localhost:3000 — Dashboard</div>
-            </div>
-            <div class="relative bg-slate-900">
-              <img id="feature-img" src="images/dashboard-dark.png" alt="Feature screenshot" loading="lazy" class="feature-screenshot w-full block">
-            </div>
-          </div>
-          <div class="mt-8 max-w-2xl mx-auto text-center">
-            <h3 class="text-xl font-semibold text-white mb-2" id="feature-title">Dashboard</h3>
-            <p class="text-slate-400" id="feature-text"></p>
-          </div>
-        </div>
-      </div>
+  <section id="features" data-mascot-section="features">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="feat.title">Complete <span class="outline-text">Features</span></h2>
+      <p data-i18n="feat.sub">I carefully designed every screen with attention to UX, accessibility, and responsiveness.
+      </p>
     </div>
-  </section>
 
-  <!-- TECH STACK -->
-  <section id="tech" class="py-20 sm:py-28 relative">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-950/20 to-transparent pointer-events-none"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Tech <span class="gradient-text">Stack</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="tech.sub">I chose modern technologies for performance, DX, and maintainability.</p>
+    <div class="reveal">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-feature="dashboard">Dashboard</button>
+        <button class="tab-btn" data-feature="clients" data-i18n="feat.tab.clients">Clients</button>
+        <button class="tab-btn" data-feature="detail" data-i18n="feat.tab.detail">Details</button>
+        <button class="tab-btn" data-feature="documents" data-i18n="feat.tab.docs">Documents</button>
+        <button class="tab-btn" data-feature="forms" data-i18n="feat.tab.forms">Forms</button>
+        <button class="tab-btn" data-feature="settings" data-i18n="feat.tab.settings">Settings</button>
       </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 section-fade stagger-children">
-        <div class="glass rounded-2xl p-6 transition-all duration-300 tech-card group">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
-              <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white">Frontend</h3>
-          </div>
-          <div class="space-y-2.5 text-sm">
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span class="text-slate-300">React 19</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span><span class="text-slate-300">TypeScript</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span><span class="text-slate-300">Vite 6</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span><span class="text-slate-300">Tailwind CSS v4</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span class="text-slate-300">React Router 7</span></div>
-          </div>
+
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot" style="background: #ff5f56;"></div>
+          <div class="browser-dot" style="background: #ffbd2e;"></div>
+          <div class="browser-dot" style="background: #27c93f;"></div>
+          <div class="browser-url">localhost:3000 / ui</div>
         </div>
-        <div class="glass rounded-2xl p-6 transition-all duration-300 tech-card group">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white">Backend</h3>
-          </div>
-          <div class="space-y-2.5 text-sm">
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span class="text-slate-300">Node.js + Express</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span><span class="text-slate-300">PostgreSQL</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span><span class="text-slate-300">Zod</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span><span class="text-slate-300">JWT + Refresh Tokens</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span><span class="text-slate-300">Clean Architecture</span></div>
-          </div>
-        </div>
-        <div class="glass rounded-2xl p-6 transition-all duration-300 tech-card group">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-              <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white" data-i18n="tech.testing">Testing</h3>
-          </div>
-          <div class="space-y-2.5 text-sm">
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span class="text-slate-300">Vitest</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span class="text-slate-300">Testing Library</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span><span class="text-slate-300">vitest-axe (a11y)</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span><span class="text-slate-300">Supertest</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-pink-400"></span><span class="text-slate-300">k6 (load testing)</span></div>
-          </div>
-        </div>
-        <div class="glass rounded-2xl p-6 transition-all duration-300 tech-card group">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center group-hover:bg-rose-500/20 transition-colors">
-              <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white" data-i18n="tech.quality">Quality</h3>
-          </div>
-          <div class="space-y-2.5 text-sm">
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span><span class="text-slate-300">SonarCloud</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span><span class="text-slate-300">Dependabot</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span><span class="text-slate-300">Rate Limiting</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span><span class="text-slate-300">CORS + Helmet</span></div>
-            <div class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span><span class="text-slate-300">Input Sanitization</span></div>
-          </div>
+        <div class="feature-img-container">
+          <img id="feature-img" src="images/dashboard-dark.png" class="feature-img" alt="Feature screenshot">
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ARCHITECTURE -->
-  <section id="architecture" class="py-20 sm:py-28 relative">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Clean <span class="gradient-text">Architecture</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="arch.sub">I structured the backend in layers with a clear separation of responsibilities.</p>
-      </div>
-      <div class="section-fade">
-        <div class="glass rounded-2xl p-6 sm:p-10">
-          <div class="space-y-4">
-            <div class="flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4">
-              <div class="flex-1 bg-brand-600/15 border border-brand-500/20 rounded-xl p-4 text-center hover:border-brand-500/40 transition-colors"><div class="text-xs text-brand-400 font-mono uppercase tracking-wider mb-1">Interface</div><div class="text-white font-semibold">Routes</div><div class="text-xs text-slate-500 mt-1">Express endpoints</div></div>
-              <div class="hidden sm:flex items-center text-brand-500 text-2xl font-mono">→</div><div class="sm:hidden flex justify-center text-brand-500 text-2xl font-mono">↓</div>
-              <div class="flex-1 bg-purple-600/15 border border-purple-500/20 rounded-xl p-4 text-center hover:border-purple-500/40 transition-colors"><div class="text-xs text-purple-400 font-mono uppercase tracking-wider mb-1">Interface</div><div class="text-white font-semibold">Controllers</div><div class="text-xs text-slate-500 mt-1">Orchestration only</div></div>
-              <div class="hidden sm:flex items-center text-purple-500 text-2xl font-mono">→</div><div class="sm:hidden flex justify-center text-purple-500 text-2xl font-mono">↓</div>
-              <div class="flex-1 bg-pink-600/15 border border-pink-500/20 rounded-xl p-4 text-center hover:border-pink-500/40 transition-colors"><div class="text-xs text-pink-400 font-mono uppercase tracking-wider mb-1">Application</div><div class="text-white font-semibold">Use Cases</div><div class="text-xs text-slate-500 mt-1">Business rules</div></div>
-              <div class="hidden sm:flex items-center text-pink-500 text-2xl font-mono">→</div><div class="sm:hidden flex justify-center text-pink-500 text-2xl font-mono">↓</div>
-              <div class="flex-1 bg-amber-600/15 border border-amber-500/20 rounded-xl p-4 text-center hover:border-amber-500/40 transition-colors"><div class="text-xs text-amber-400 font-mono uppercase tracking-wider mb-1">Infrastructure</div><div class="text-white font-semibold">Repositories</div><div class="text-xs text-slate-500 mt-1">Data access</div></div>
-              <div class="hidden sm:flex items-center text-amber-500 text-2xl font-mono">→</div><div class="sm:hidden flex justify-center text-amber-500 text-2xl font-mono">↓</div>
-              <div class="flex-1 bg-emerald-600/15 border border-emerald-500/20 rounded-xl p-4 text-center hover:border-emerald-500/40 transition-colors"><div class="text-xs text-emerald-400 font-mono uppercase tracking-wider mb-1">Database</div><div class="text-white font-semibold">PostgreSQL</div><div class="text-xs text-slate-500 mt-1">Multi-tenant</div></div>
-            </div>
-            <div class="flex justify-center pt-2">
-              <div class="glass rounded-xl px-6 py-3 text-center"><div class="text-xs text-slate-500 font-mono uppercase tracking-wider mb-1">Domain</div><div class="text-sm text-white font-medium">Entities — <span class="text-slate-400">fromDatabase() / toJSON()</span></div></div>
-            </div>
-          </div>
-          <div class="mt-8 pt-6 border-t border-white/5">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-sm">
-              <div><span class="text-brand-400 font-semibold">Zod</span><br><span class="text-slate-500">Input validation</span></div>
-              <div><span class="text-purple-400 font-semibold">AppError</span><br><span class="text-slate-500">Error hierarchy</span></div>
-              <div><span class="text-pink-400 font-semibold">JWT</span><br><span class="text-slate-500">Auth middleware</span></div>
-              <div><span class="text-amber-400 font-semibold">broker_id</span><br><span class="text-slate-500">Tenant isolation</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- DARK / LIGHT -->
-  <section class="py-20 sm:py-28 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Dark & Light <span class="gradient-text">Mode</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="theme.sub">I built a complete design system with CSS tokens for both themes — no workarounds.</p>
-      </div>
-      <div class="grid md:grid-cols-2 gap-6 sm:gap-8 section-fade">
-        <div>
-          <div class="flex items-center gap-2 mb-3"><svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg><span class="text-sm font-medium text-slate-400">Dark Mode</span></div>
-          <div class="browser-frame"><div class="browser-bar"><div class="browser-dot bg-red-500/80"></div><div class="browser-dot bg-yellow-500/80"></div><div class="browser-dot bg-green-500/80"></div><div class="browser-bar-url">Dashboard — Dark</div></div><img src="images/dashboard-dark.png" alt="Dashboard dark mode" loading="lazy" class="w-full block"></div>
-        </div>
-        <div>
-          <div class="flex items-center gap-2 mb-3"><svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span class="text-sm font-medium text-slate-400">Light Mode</span></div>
-          <div class="browser-frame"><div class="browser-bar"><div class="browser-dot bg-red-500/80"></div><div class="browser-dot bg-yellow-500/80"></div><div class="browser-dot bg-green-500/80"></div><div class="browser-bar-url">Dashboard — Light</div></div><img src="images/dashboard-light.png" alt="Dashboard light mode" loading="lazy" class="w-full block"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- RESPONSIVE -->
-  <section class="py-20 sm:py-28 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Mobile <span class="gradient-text">First</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="mobile.sub">I seamlessly adapted every screen for mobile with optimized cards, navigation, and forms.</p>
-      </div>
-      <div class="flex justify-center gap-4 sm:gap-8 lg:gap-12 section-fade">
-        <div class="phone-frame w-44 sm:w-52 lg:w-60 animate-float"><div class="phone-notch"></div><img src="images/mobile-login.png" alt="Login mobile" loading="lazy"><div class="text-center mt-3 mb-1 text-xs text-slate-500">Login</div></div>
-        <div class="phone-frame w-44 sm:w-52 lg:w-60 animate-float-delay"><div class="phone-notch"></div><img src="images/mobile-dashboard.png" alt="Dashboard mobile" loading="lazy"><div class="text-center mt-3 mb-1 text-xs text-slate-500">Dashboard</div></div>
-        <div class="phone-frame w-44 sm:w-52 lg:w-60 hidden sm:block animate-float"><div class="phone-notch"></div><img src="images/mobile-clients.png" alt="Clients mobile" loading="lazy"><div class="text-center mt-3 mb-1 text-xs text-slate-500" data-i18n="feat.tab.clients">Clients</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUALITY & SECURITY -->
-  <section class="py-20 sm:py-28 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="quality.title">Quality & <span class="gradient-text">Security</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="quality.sub">I applied professional security and code quality standards throughout the application.</p>
-      </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 section-fade stagger-children">
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2" data-i18n="quality.jwt">JWT Authentication</h3><p class="text-sm text-slate-400" data-i18n="quality.jwtDesc">Access + Refresh tokens with automatic rotation. httpOnly cookies. Rate limiting on auth routes.</p></div>
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2" data-i18n="quality.zod">Zod Validation</h3><p class="text-sm text-slate-400" data-i18n="quality.zodDesc">Validation schemas on all inputs. Centralized middleware. Mass assignment protection.</p></div>
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2">SonarCloud</h3><p class="text-sm text-slate-400" data-i18n="quality.sonarDesc">Continuous static analysis. Zero bugs, zero vulnerabilities. Quality Gate integrated into the pipeline.</p></div>
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2">SQL Injection-free</h3><p class="text-sm text-slate-400" data-i18n="quality.sqlDesc">Parameterized queries. IDOR protection via broker_id. Log sanitization against injection.</p></div>
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg></div><h3 class="text-lg font-semibold text-white mb-2">Design System</h3><p class="text-sm text-slate-400" data-i18n="quality.dsDesc">CSS tokens, CVA for variants, cn() for composition. Accessible components with vitest-axe.</p></div>
-        <div class="glass rounded-2xl p-6 hover:border-brand-500/20 transition-all"><div class="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center mb-4"><svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg></div><h3 class="text-lg font-semibold text-white mb-2" data-i18n="quality.tests">Comprehensive Tests</h3><p class="text-sm text-slate-400" data-i18n="quality.testsDesc">Unit, integration, functional, and security tests. Controllers, use cases, and React components covered.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CURSOR EXPERIENCE -->
-  <section id="cursor" class="py-20 sm:py-28 relative">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-purple-950/10 to-transparent pointer-events-none"></div>
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="cursor.title">My <span class="gradient-text">Cursor</span> Journey</h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="cursor.sub">How I leveraged Cursor's features to build this project from the ground up.</p>
-      </div>
-      <div class="relative section-fade">
-        <div class="timeline-line hidden sm:block"></div>
-        <div class="space-y-8" id="timeline">
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-brand-600/20 border-2 border-brand-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A18.354 18.354 0 0112 18.75c-2.16 0-4.278-.304-6.282-.882-1.717-.293-2.3-2.379-1.067-3.61L12 15"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-brand-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white" data-i18n="cursor.agent">Agent Mode & Multi-Agents</h3><span class="px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 text-xs font-mono">core</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.agentDesc">Complete features built autonomously with multi-agent orchestration. Sub-agents handle focused subtasks in parallel — from database modeling to React components with tests, all coordinated seamlessly.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-indigo-600/20 border-2 border-indigo-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-indigo-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Agent Review</h3><span class="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-mono">review</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.reviewDesc">Dedicated review mode that analyzes code changes, identifies potential issues, and suggests improvements — an AI code reviewer embedded in the development workflow.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-purple-600/20 border-2 border-purple-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-purple-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Rules System</h3><span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-xs font-mono">.agent/rules/</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.rulesDesc">Persistent rules that teach the AI about project conventions: design system tokens, centralized messages, form patterns, backend architecture, security standards, and more.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-pink-600/20 border-2 border-pink-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-pink-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white" data-i18n="cursor.skills">Skills as Guides</h3><span class="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 text-xs font-mono">.agent/skills/</span></div>
-              <p class="text-sm text-slate-400 mb-3" data-i18n="cursor.skillsDesc">17 specialized skills functioning as development guides, loaded on demand. Each skill provides deep domain expertise the agent follows as reference.</p>
-              <div class="flex flex-wrap gap-1.5">
-                <span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">auth-patterns</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">testing</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">debugging</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">frontend-design</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">tailwind-ds</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">postgresql</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">sql-optimization</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">node-backend</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">error-handling</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">responsive</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">TDD</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">code-review</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">verification</span><span class="px-2 py-1 rounded-md bg-white/5 text-xs text-slate-300">+4 more</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-orange-600/20 border-2 border-orange-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-orange-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white" data-i18n="cursor.models">AI Model Strategy</h3><span class="px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-mono">models</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.modelsDesc">I experimented a lot with the Auto mode and its routing choices were impressive. For specific tasks, I picked Opus for complex development and long contexts, and Gemini for text review. Always on the latest versions available.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-emerald-600/20 border-2 border-emerald-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-emerald-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white" data-i18n="cursor.mcp">MCP Servers & Environment</h3><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono">integration</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.mcpDesc">Model Context Protocol integrates Cursor directly with GitHub, SonarCloud, and Browser tools. Also instrumental in environment setup — configuring MCPs, libraries, Docker, and development tooling.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-amber-600/20 border-2 border-amber-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-amber-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Jules (Google AI)</h3><span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-mono">external</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.julesDesc">Complementary Google AI code agent. Analyzes the repository, suggests fixes, and generates patches. Integrated via REST API for pending issue verification.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-sky-600/20 border-2 border-sky-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-sky-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Plan Mode</h3><span class="px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 text-xs font-mono">strategy</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.planDesc">I used Plan Mode whenever I needed to refactor or review large parts of the codebase guided by skills. It gave me a clear picture of the full context — frontend, backend, database, and tests — before touching any code.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-red-600/20 border-2 border-red-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152-6.135 23.91 23.91 0 01.117-2.28c.123-.976-.564-1.86-1.525-2.035A23.913 23.913 0 0012 3c-1.913 0-3.779.23-5.556.664C5.425 3.85 4.68 4.787 4.818 5.78a23.91 23.91 0 01-.135 5.41A23.9 23.9 0 0112 12.75z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-red-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Debug Mode</h3><span class="px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 text-xs font-mono">troubleshoot</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.debugDesc">I used Debug Mode mainly for investigating test failures. I didn't go deeper with it because Agent Mode and Plan Mode already handled most issues within their own context.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-cyan-600/20 border-2 border-cyan-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-cyan-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white">Chat & Tab</h3><span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono">daily driver</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.chatDesc">Contextual autocomplete that understands the entire project. Conversational code generation — from UI components to complex SQL queries.</p>
-            </div>
-          </div>
-
-          <div class="relative flex gap-6 items-start">
-            <div class="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-rose-600/20 border-2 border-rose-500/30 items-center justify-center z-10"><svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg></div>
-            <div class="glass rounded-2xl p-6 flex-1 hover:border-rose-500/20 transition-all">
-              <div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-semibold text-white" data-i18n="cursor.inception">Meta Creation (This Page)</h3><span class="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 text-xs font-mono">zero-shot</span></div>
-              <p class="text-sm text-slate-400" data-i18n="cursor.inceptionDesc">This very showcase page was built entirely by Cursor in a single prompt. It used MCP tools to read the directory, capture component structures, process images, and generate the complete HTML/Tailwind implementation.</p>
-            </div>
-          </div>
-
-        </div>
+      <div style="margin-top: 2rem; border: 1px solid var(--border); padding: 2rem; background: var(--surface);">
+        <h3 class="font-mono text-accent mb-2" id="feature-title" style="margin-bottom: 1rem;">Dashboard</h3>
+        <p class="text-muted" id="feature-text">Complete business overview with real-time KPIs, upcoming expirations,
+          and quick actions for daily operations.</p>
       </div>
     </div>
   </section>
 
   <!-- AUTH FLOW -->
-  <section class="py-20 sm:py-28 relative" data-mascot-section="auth">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16 section-fade">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4" data-i18n-html="auth.title">Authentication <span class="gradient-text">Flow</span></h2>
-        <p class="text-lg text-slate-400 max-w-2xl mx-auto" data-i18n="auth.sub">Brokerage registration, secure login, and full access control.</p>
+  <section id="auth" data-mascot-section="auth">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="auth.title">AUTHENTICATION <span class="outline-text">FLOW</span></h2>
+      <p data-i18n="auth.sub">Brokerage registration, secure login, and full access control.</p>
+    </div>
+    <div class="grid-2col reveal">
+      <div>
+        <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          Login — Dark
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dot" style="background: #ff5f56;"></div>
+            <div class="browser-dot" style="background: #ffbd2e;"></div>
+            <div class="browser-dot" style="background: #27c93f;"></div>
+            <div class="browser-url">localhost:3000/#/login</div>
+          </div>
+          <img src="images/login-dark.png" alt="Login page dark" loading="lazy" style="width:100%; display:block;">
+        </div>
       </div>
-      <div class="grid md:grid-cols-2 gap-6 sm:gap-8 section-fade">
-        <div><div class="flex items-center gap-2 mb-3"><span class="text-sm font-medium text-slate-400">Login — Dark</span></div><div class="browser-frame"><div class="browser-bar"><div class="browser-dot bg-red-500/80"></div><div class="browser-dot bg-yellow-500/80"></div><div class="browser-dot bg-green-500/80"></div><div class="browser-bar-url">localhost:3000/#/login</div></div><img src="images/login-dark.png" alt="Login page" loading="lazy" class="w-full block"></div></div>
-        <div><div class="flex items-center gap-2 mb-3"><span class="text-sm font-medium text-slate-400">Login — Light</span></div><div class="browser-frame"><div class="browser-bar"><div class="browser-dot bg-red-500/80"></div><div class="browser-dot bg-yellow-500/80"></div><div class="browser-dot bg-green-500/80"></div><div class="browser-bar-url">localhost:3000/#/login</div></div><img src="images/login-light.png" alt="Login page light" loading="lazy" class="w-full block"></div></div>
+      <div>
+        <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          Login — Light
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dot" style="background: #ff5f56;"></div>
+            <div class="browser-dot" style="background: #ffbd2e;"></div>
+            <div class="browser-dot" style="background: #27c93f;"></div>
+            <div class="browser-url">localhost:3000/#/login</div>
+          </div>
+          <img src="images/login-light.png" alt="Login page light" loading="lazy" style="width:100%; display:block;">
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- SNAKE GAME -->
-  <div id="snake-trigger">
-    <button id="snake-trigger-card" aria-label="Play Snake game">
-      <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-        <path d="M8 24 Q8 16 16 16 Q24 16 24 8" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/>
-        <circle cx="24" cy="8" r="3" fill="#22c55e"/>
-        <circle cx="23" cy="7" r="1" fill="#0f172a"/>
-        <circle cx="8" cy="24" r="2" fill="#22c55e" opacity="0.5"/>
-        <circle cx="10" cy="22" r="1.5" fill="#22c55e" opacity="0.3"/>
-      </svg>
+  <!-- DARK & LIGHT MODE -->
+  <section id="themes" data-mascot-section="themes">
+    <div class="section-header reveal">
+      <h2>DARK & <span class="outline-text">LIGHT</span> MODE</h2>
+      <p data-i18n="theme.sub">I built a complete design system with CSS tokens for both themes — no workarounds.</p>
+    </div>
+    <div class="grid-2col reveal">
       <div>
-        <div class="text-emerald-400 font-semibold text-sm" data-i18n="snake.trigger">Play Snake</div>
-        <div class="text-slate-500 text-xs font-mono hidden sm:block" data-i18n="snake.triggerSub">easter egg</div>
-      </div>
-    </button>
-  </div>
-
-  <div id="snake-overlay">
-    <canvas id="snake-canvas"></canvas>
-    <div id="snake-hud">
-      <div class="flex items-center gap-3 sm:gap-4">
-        <span class="text-emerald-400 font-mono text-xs sm:text-sm font-bold" data-i18n="snake.title">SNAKE MODE</span>
-        <span class="text-slate-400 text-xs sm:text-sm">Score: <strong class="text-white" id="snake-score">0</strong></span>
-        <span class="text-slate-600 text-xs hidden sm:inline font-mono" data-i18n="snake.controls">Arrow keys to turn | ESC to quit</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <button id="snake-prompt-btn" class="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2" data-i18n="snake.prompt">How I built this</button>
-        <button id="snake-exit-btn" class="px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-medium hover:bg-emerald-500/30 transition-all">ESC</button>
-      </div>
-    </div>
-    <div id="snake-gameover">
-      <div id="snake-gameover-box">
-        <div class="text-4xl font-extrabold text-white mb-2" data-i18n="snake.gameoverTitle">Game Over</div>
-        <div class="text-slate-400 mb-1" data-i18n="snake.scoreLabel">Elements eaten</div>
-        <div class="text-5xl font-extrabold gradient-text mb-6" id="snake-final-score">0</div>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-          <button id="snake-replay-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all" data-i18n="snake.replay">Play Again</button>
-          <button id="snake-quit-btn" class="px-6 py-2.5 glass-strong text-white font-medium rounded-xl hover:bg-white/10 transition-all" data-i18n="snake.quit">Quit</button>
+        <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          Dashboard — Dark
         </div>
-        <button id="snake-prompt-btn2" class="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2" data-i18n="snake.prompt">How I built this</button>
-        <div id="snake-prompt-box" class="hidden mt-4 text-left">
-          <p class="text-xs text-slate-500 mb-3 font-mono" data-i18n="snake.promptSub">3 prompts + plan mode -> Cursor Agent -> Snake game (bugs may happen!)</p>
-          <div class="space-y-3">
-            <div>
-              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p1label">Prompt 1 — The idea</div>
-              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-emerald-500 pl-4" data-i18n="snake.p1">"Let's create a new game that shows Cursor's full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."</blockquote>
-            </div>
-            <div>
-              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p2label">Prompt 2 — Gameplay fix</div>
-              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-purple-500 pl-4" data-i18n="snake.p2">"The game starts with game over. Food is consumed at adjacent pixels. After eating initial food, no new ones appear. Should the screen scroll when I go down? The dots should be spread across the whole page."</blockquote>
-            </div>
-            <div>
-              <div class="text-xs text-slate-500 font-mono mb-1" data-i18n="snake.p3label">Prompt 3 — Distribution</div>
-              <blockquote class="text-sm text-slate-300 leading-relaxed italic border-l-2 border-pink-500 pl-4" data-i18n="snake.p3">"Spread the dots better across the screen — they don't need to be on top of the elements."</blockquote>
-            </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dot" style="background: #ff5f56;"></div>
+            <div class="browser-dot" style="background: #ffbd2e;"></div>
+            <div class="browser-dot" style="background: #27c93f;"></div>
+            <div class="browser-url">localhost:3000 / dashboard</div>
           </div>
+          <img src="images/dashboard-dark.png" alt="Dashboard dark mode" loading="lazy"
+            style="width:100%; display:block;">
+        </div>
+      </div>
+      <div>
+        <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          Dashboard — Light
+        </div>
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <div class="browser-dot" style="background: #ff5f56;"></div>
+            <div class="browser-dot" style="background: #ffbd2e;"></div>
+            <div class="browser-dot" style="background: #27c93f;"></div>
+            <div class="browser-url">localhost:3000 / dashboard</div>
+          </div>
+          <img src="images/dashboard-light.png" alt="Dashboard light mode" loading="lazy"
+            style="width:100%; display:block;">
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- MOBILE FIRST -->
+  <section id="mobile" data-mascot-section="mobile">
+    <div class="section-header reveal">
+      <h2>MOBILE <span class="outline-text">FIRST</span></h2>
+      <p data-i18n="mobile.sub">I seamlessly adapted every screen for mobile with optimized cards, navigation, and
+        forms.</p>
+    </div>
+    <div class="phone-group reveal">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <img src="images/mobile-dashboard.png" alt="Mobile dashboard" loading="lazy">
+        <div
+          style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">
+          Dashboard</div>
+      </div>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <img src="images/mobile-clients.png" alt="Mobile clients" loading="lazy">
+        <div
+          style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);"
+          data-i18n="feat.tab.clients">Clients</div>
+      </div>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <img src="images/mobile-login.png" alt="Mobile login" loading="lazy">
+        <div
+          style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">
+          Login</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="tech" data-mascot-section="tech">
+    <div class="section-header reveal">
+      <h2>TECH <span class="outline-text">STACK</span></h2>
+      <p data-i18n="tech.sub">I chose modern technologies for performance, DX, and maintainability.</p>
+    </div>
+    <div class="grid">
+      <div class="card reveal">
+        <h3 class="card-title text-accent">Frontend</h3>
+        <ul class="font-mono text-sm text-muted space-y-2" style="list-style:none; line-height:2;">
+          <li>-> React 19</li>
+          <li>-> TypeScript</li>
+          <li>-> Vite 6</li>
+          <li>-> Tailwind CSS v4</li>
+          <li>-> React Router 7</li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title text-accent">Backend</h3>
+        <ul class="font-mono text-sm text-muted space-y-2" style="list-style:none; line-height:2;">
+          <li>-> Node.js + Express</li>
+          <li>-> PostgreSQL</li>
+          <li>-> Zod Validation</li>
+          <li>-> JWT + Refresh</li>
+          <li>-> Clean Architecture</li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title text-accent" data-i18n="tech.testing">Testing</h3>
+        <ul class="font-mono text-sm text-muted space-y-2" style="list-style:none; line-height:2;">
+          <li>-> Vitest</li>
+          <li>-> Testing Library</li>
+          <li>-> vitest-axe (a11y)</li>
+          <li>-> Supertest</li>
+          <li>-> k6 (load)</li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title text-accent" data-i18n="tech.quality">Quality & Sec</h3>
+        <ul class="font-mono text-sm text-muted space-y-2" style="list-style:none; line-height:2;">
+          <li>-> SonarCloud</li>
+          <li>-> Rate Limiting</li>
+          <li>-> CORS + Helmet</li>
+          <li>-> Input Sanitization</li>
+          <li>-> Dependabot</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture" data-mascot-section="architecture">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="arch.title">CLEAN <span class="outline-text">ARCHITECTURE</span></h2>
+      <p data-i18n="arch.sub">I structured the backend in layers with a clear separation of responsibilities.</p>
+    </div>
+    <div class="reveal">
+      <div class="arch-flow mb-8">
+        <div class="arch-block">
+          <div class="font-mono text-xs text-muted mb-2">INTERFACE</div>
+          <div class="text-accent font-bold">Routes & Controllers</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block">
+          <div class="font-mono text-xs text-muted mb-2">APPLICATION</div>
+          <div class="text-white font-bold">Use Cases</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block">
+          <div class="font-mono text-xs text-muted mb-2">DOMAIN / INFRA</div>
+          <div class="text-accent font-bold">Entities & Repositories</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-block">
+          <div class="font-mono text-xs text-muted mb-2">DATABASE</div>
+          <div class="text-white font-bold">PostgreSQL</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUALITY & SECURITY -->
+  <section id="quality" data-mascot-section="quality">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="quality.title">QUALITY & <span class="outline-text">SECURITY</span></h2>
+      <p data-i18n="quality.sub">I applied professional security and code quality standards throughout the application.
+      </p>
+    </div>
+    <div class="grid-3col reveal">
+      <div class="card">
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.jwt">JWT Authentication</h3>
+        <p class="card-desc" data-i18n="quality.jwtDesc">Access + Refresh tokens with automatic rotation. httpOnly
+          cookies. Rate limiting on auth routes.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.zod">Zod Validation</h3>
+        <p class="card-desc" data-i18n="quality.zodDesc">Validation schemas on all inputs. Centralized middleware. Mass
+          assignment protection.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title font-mono text-accent">SonarCloud</h3>
+        <p class="card-desc" data-i18n="quality.sonarDesc">Continuous static analysis. Zero bugs, zero vulnerabilities.
+          Quality Gate integrated into the pipeline.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title font-mono text-accent">SQL Injection-free</h3>
+        <p class="card-desc" data-i18n="quality.sqlDesc">Parameterized queries. IDOR protection via broker_id. Log
+          sanitization against injection.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title font-mono text-accent">Design System</h3>
+        <p class="card-desc" data-i18n="quality.dsDesc">CSS tokens, CVA for variants, cn() for composition. Accessible
+          components with vitest-axe.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.tests">Comprehensive Tests</h3>
+        <p class="card-desc" data-i18n="quality.testsDesc">Unit, integration, functional, and security tests.
+          Controllers, use cases, and React components covered.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURSOR JOURNEY -->
+  <section id="cursor" data-mascot-section="cursor">
+    <div class="section-header reveal">
+      <h2 data-i18n-html="cursor.title">MY <span class="outline-text">CURSOR</span> JOURNEY</h2>
+      <p data-i18n="cursor.sub">How I leveraged Cursor's features to build this project from the ground up.</p>
+    </div>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.agent">Agent Mode & Multi-Agents</h3>
+        <p class="card-desc" data-i18n="cursor.agentDesc">Complete features built autonomously with multi-agent
+          orchestration. Sub-agents handle focused subtasks in parallel — from database modeling to React components
+          with tests, all coordinated seamlessly.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Agent Review</h3>
+        <p class="card-desc" data-i18n="cursor.reviewDesc">Dedicated review mode that analyzes code changes, identifies
+          potential issues, and suggests improvements — an AI code reviewer embedded in the development workflow.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Rules System</h3>
+        <p class="card-desc" data-i18n="cursor.rulesDesc">Persistent rules that teach the AI about project conventions:
+          design system tokens, centralized messages, form patterns, backend architecture, security standards, and more.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.skills">Skills as Guides</h3>
+        <p class="card-desc" data-i18n="cursor.skillsDesc">17 specialized skills functioning as development guides,
+          loaded on demand. Each skill provides deep domain expertise the agent follows as reference.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.models">AI Model Strategy</h3>
+        <p class="card-desc" data-i18n="cursor.modelsDesc">I experimented a lot with the Auto mode and its routing
+          choices were impressive. For specific tasks, I picked Opus for complex development and long contexts, and
+          Gemini for text review. Always on the latest versions available.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.mcp">MCP Servers & Environment</h3>
+        <p class="card-desc" data-i18n="cursor.mcpDesc">Model Context Protocol integrates Cursor directly with GitHub,
+          SonarCloud, and Browser tools. Also instrumental in environment setup — configuring MCPs, libraries, Docker,
+          and development tooling.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Jules (Google AI)</h3>
+        <p class="card-desc" data-i18n="cursor.julesDesc">Complementary Google AI code agent. Analyzes the repository,
+          suggests fixes, and generates patches. Integrated via REST API for pending issue verification.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Plan Mode</h3>
+        <p class="card-desc" data-i18n="cursor.planDesc">I used Plan Mode whenever I needed to refactor or review large
+          parts of the codebase guided by skills. It gave me a clear picture of the full context — frontend, backend,
+          database, and tests — before touching any code.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Debug Mode</h3>
+        <p class="card-desc" data-i18n="cursor.debugDesc">I used Debug Mode mainly for investigating test failures. I
+          didn't go deeper with it because Agent Mode and Plan Mode already handled most issues within their own
+          context.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent">Chat & Tab</h3>
+        <p class="card-desc" data-i18n="cursor.chatDesc">Contextual autocomplete that understands the entire project.
+          Conversational code generation — from UI components to complex SQL queries.</p>
+      </div>
+      <div class="card reveal">
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.inception">Meta Creation (This Page)</h3>
+        <p class="card-desc" data-i18n="cursor.inceptionDesc">This very showcase page was built entirely by Cursor in a
+          single prompt. It used MCP tools to read the directory, capture component structures, process images, and
+          generate the complete HTML/Tailwind implementation.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
-  <footer class="py-16 border-t border-white/5" data-mascot-section="footer">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col items-center text-center">
-        <div class="flex items-center gap-3 mb-6">
-          <svg class="w-10 h-10 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span class="text-2xl font-bold text-white">SegFlow CRM</span>
-        </div>
-        <p class="text-slate-500 max-w-md mb-8" data-i18n-html="footer.text">Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE — 90% AI-generated code.</p>
-        <div class="flex items-center gap-4 mb-8">
-          <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-2.5 glass-strong rounded-xl text-sm text-white hover:bg-white/10 transition-all">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-          </a>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-slate-600">
-          <span>Built with</span>
-          <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
-          <span>and <strong class="text-slate-400">Cursor IDE</strong></span>
-        </div>
-      </div>
+  <footer>
+    <div class="logo" style="font-size: 1rem;">
+      <i data-lucide="hexagon"></i> SEGFLOW<span class="text-accent">.SYS</span>
     </div>
+    <p data-i18n-html="footer.text">Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE
+      — 90% AI-generated code.</p>
+    <p style="font-size: 0.7rem;">© 2025 maxjuniorbr</p>
   </footer>
 
+  <!-- SCRIPTS -->
   <script>
+    // Init Icons
+    lucide.createIcons();
+
+    // Cursor & Magnetics
+    const cursorDot = document.getElementById('cursor-dot');
+    const cursorOutline = document.getElementById('cursor-outline');
+    let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`;
+    });
+
+    function animateCursor() {
+      outlineX += (mouseX - outlineX) * 0.15;
+      outlineY += (mouseY - outlineY) * 0.15;
+      cursorOutline.style.left = `${outlineX}px`; cursorOutline.style.top = `${outlineY}px`;
+      requestAnimationFrame(animateCursor);
+    }
+    if (window.matchMedia("(min-width: 768px)").matches) animateCursor();
+
+    document.querySelectorAll('[data-magnetic]').forEach(elem => {
+      elem.addEventListener('mousemove', (e) => {
+        const rect = elem.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        elem.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        cursorOutline.style.transform = `translate(-50%, -50%) scale(1.5)`;
+        cursorOutline.style.borderColor = 'var(--accent)';
+      });
+      elem.addEventListener('mouseleave', () => {
+        elem.style.transform = 'translate(0px, 0px)';
+        cursorOutline.style.transform = `translate(-50%, -50%) scale(1)`;
+        cursorOutline.style.borderColor = 'rgba(229, 255, 0, 0.5)';
+      });
+    });
+
+    // Reveals
+    const reveals = document.querySelectorAll('.reveal');
+    function checkReveal() {
+      const h = window.innerHeight;
+      reveals.forEach(r => {
+        const top = r.getBoundingClientRect().top;
+        if (top < h - 50) r.classList.add('active');
+      });
+    }
+    window.addEventListener('scroll', checkReveal);
+    setTimeout(checkReveal, 100);
+
+    // Stats Counter
+    let countersAnimated = false;
+    const countObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !countersAnimated) {
+          countersAnimated = true;
+          document.querySelectorAll('[data-count]').forEach(el => {
+            const target = parseInt(el.dataset.count);
+            const suffix = el.dataset.suffix || '';
+            let count = 0;
+            const inv = setInterval(() => {
+              count += Math.ceil(target / 20);
+              if (count >= target) { count = target; clearInterval(inv); }
+              el.textContent = count + suffix;
+            }, 50);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsSection = document.getElementById('stats');
+    if (statsSection) countObs.observe(statsSection);
+
+    // Dictionary
     const T = {
       en: {
-        'nav.features': 'Features', 'nav.arch': 'Architecture',
+        'nav.story': 'The Story', 'nav.product': 'The Product', 'nav.engineering': 'Engineering', 'nav.process': 'The Process',
         'hero.badge': '90% AI-Generated Code', 'hero.subtitle': 'Management and multi-quote system for insurance brokerages',
-        'hero.desc': 'My journey building a production-ready management system from zero in 2 days using <span class="text-brand-400 font-medium">Cursor IDE</span>.',
-        'hero.github': 'View on GitHub', 'hero.explore': 'Explore',
+        'hero.desc': 'My journey building a production-ready management system from zero in 2 days using Cursor IDE.',
+        'hero.github': 'View Project', 'hero.explore': 'Explore',
         'stats.days': 'days of development', 'stats.daysSub': 'zero → production',
         'stats.ai': 'AI-generated code', 'stats.screens': 'complete screens', 'stats.skills': 'AI skills configured',
-        'story.title': 'From <span class="gradient-text">zero</span> to a complete system',
+        'story.title': 'From <span class="outline-text">zero</span> to a complete system',
         'story.text': 'I already had the repository and the idea, but time was always the bottleneck. With Cursor IDE, what seemed like weeks of work took just 2 days — delivering a management system with client management, proposals, policies, authentication, and production-grade quality. Next step: multi-quote engine via insurer APIs.',
         'story.quote': '"Every feature, every component, every test — I generated and refined them with AI. Cursor became my development partner throughout the entire process."',
         'story.author': '— How I built this using Agent Mode, Rules, Skills, and MCP Servers',
-        'feat.title': 'Complete <span class="gradient-text">Features</span>',
+        'feat.title': 'Complete <span class="outline-text">Features</span>',
         'feat.sub': 'I carefully designed every screen with attention to UX, accessibility, and responsiveness.',
         'feat.tab.clients': 'Clients', 'feat.tab.detail': 'Details', 'feat.tab.docs': 'Documents', 'feat.tab.forms': 'Forms', 'feat.tab.settings': 'Settings',
         'tech.sub': 'I chose modern technologies for performance, DX, and maintainability.',
-        'tech.testing': 'Testing', 'tech.quality': 'Quality',
+        'tech.testing': 'Testing', 'tech.quality': 'Quality & Sec',
+        'arch.title': 'CLEAN <span class="outline-text">ARCHITECTURE</span>',
         'arch.sub': 'I structured the backend in layers with a clear separation of responsibilities.',
         'theme.sub': 'I built a complete design system with CSS tokens for both themes — no workarounds.',
         'mobile.sub': 'I seamlessly adapted every screen for mobile with optimized cards, navigation, and forms.',
-        'quality.title': 'Quality & <span class="gradient-text">Security</span>',
+        'quality.title': 'QUALITY & <span class="outline-text">SECURITY</span>',
         'quality.sub': 'I applied professional security and code quality standards throughout the application.',
         'quality.jwt': 'JWT Authentication', 'quality.jwtDesc': 'Access + Refresh tokens with automatic rotation. httpOnly cookies. Rate limiting on auth routes.',
         'quality.zod': 'Zod Validation', 'quality.zodDesc': 'Validation schemas on all inputs. Centralized middleware. Mass assignment protection.',
         'quality.sonarDesc': 'Continuous static analysis. Zero bugs, zero vulnerabilities. Quality Gate integrated into the pipeline.',
         'quality.sqlDesc': 'Parameterized queries. IDOR protection via broker_id. Log sanitization against injection.',
         'quality.dsDesc': 'CSS tokens, CVA for variants, cn() for composition. Accessible components with vitest-axe.',
-        'quality.tests': 'Comprehensive Tests', 'quality.testsDesc': 'Unit, integration, functional, and security tests. Controllers, use cases, and React components fully covered.',
-        'cursor.title': 'My <span class="gradient-text">Cursor</span> Journey',
+        'quality.tests': 'Comprehensive Tests', 'quality.testsDesc': 'Unit, integration, functional, and security tests. Controllers, use cases, and React components covered.',
+        'cursor.title': 'MY <span class="outline-text">CURSOR</span> JOURNEY',
         'cursor.sub': 'How I leveraged Cursor\'s features to build this project from the ground up.',
-        'cursor.agent': 'Agent Mode & Multi-Agents',
-        'cursor.agentDesc': 'I used Agent Mode to build complete features autonomously. Sub-agents handled focused subtasks in parallel — from database modeling to React components with tests — all coordinated seamlessly.',
-        'cursor.reviewDesc': 'I relied on the dedicated review mode to analyze my code changes, identify potential issues, and suggest improvements — like having an AI code reviewer right in my workflow.',
-        'cursor.rulesDesc': 'I set up persistent rules to teach the AI about my project conventions: design system tokens, centralized messages, form patterns, backend architecture, and security.',
-        'cursor.skills': 'Skills as Guides',
-        'cursor.skillsDesc': 'I created 17 specialized skills that acted as my development guides, loading on demand. Each skill provided deep domain expertise that the agent followed.',
-        'cursor.models': 'AI Model Strategy',
-        'cursor.modelsDesc': 'I experimented a lot with the Auto mode and its routing choices were impressive. For specific tasks, I picked Opus for complex development and long contexts, and Gemini for text review. Always on the latest versions available.',
-        'cursor.mcp': 'MCP Servers & Environment',
-        'cursor.mcpDesc': 'I connected Cursor directly to GitHub, SonarCloud, and my Browser via MCP. It was also instrumental in setting up my environment, libraries, and Docker.',
-        'cursor.julesDesc': 'I hooked up Jules (Google AI) via REST API to complement the workflow, analyzing the repository and generating patches for pending issues.',
+        'cursor.agent': 'Agent Mode & Multi-Agents', 'cursor.agentDesc': 'Complete features built autonomously with multi-agent orchestration. Sub-agents handle focused subtasks in parallel — from database modeling to React components with tests, all coordinated seamlessly.',
+        'cursor.reviewDesc': 'Dedicated review mode that analyzes code changes, identifies potential issues, and suggests improvements — an AI code reviewer embedded in the development workflow.',
+        'cursor.rulesDesc': 'Persistent rules that teach the AI about project conventions: design system tokens, centralized messages, form patterns, backend architecture, security standards, and more.',
+        'cursor.skills': 'Skills as Guides', 'cursor.skillsDesc': '17 specialized skills functioning as development guides, loaded on demand. Each skill provides deep domain expertise the agent follows as reference.',
+        'cursor.models': 'AI Model Strategy', 'cursor.modelsDesc': 'I experimented a lot with the Auto mode and its routing choices were impressive. For specific tasks, I picked Opus for complex development and long contexts, and Gemini for text review. Always on the latest versions available.',
+        'cursor.mcp': 'MCP Servers & Environment', 'cursor.mcpDesc': 'Model Context Protocol integrates Cursor directly with GitHub, SonarCloud, and Browser tools. Also instrumental in environment setup — configuring MCPs, libraries, Docker, and development tooling.',
+        'cursor.julesDesc': 'Complementary Google AI code agent. Analyzes the repository, suggests fixes, and generates patches. Integrated via REST API for pending issue verification.',
         'cursor.planDesc': 'I used Plan Mode whenever I needed to refactor or review large parts of the codebase guided by skills. It gave me a clear picture of the full context — frontend, backend, database, and tests — before touching any code.',
         'cursor.debugDesc': 'I used Debug Mode mainly for investigating test failures. I didn\'t go deeper with it because Agent Mode and Plan Mode already handled most issues within their own context.',
-        'cursor.chatDesc': 'Chat and Tab were my daily drivers for contextual autocomplete and conversational code generation — from UI components to complex SQL queries.',
-        'cursor.inception': 'This Very Page',
-        'cursor.inceptionDesc': 'I even built this showcase page entirely through Cursor in a single prompt — using MCP tools to capture screenshots locally, read the project structure, and generate the code in one go.',
-        'auth.title': 'Authentication <span class="gradient-text">Flow</span>',
+        'cursor.chatDesc': 'Contextual autocomplete that understands the entire project. Conversational code generation — from UI components to complex SQL queries.',
+        'cursor.inception': 'Meta Creation (This Page)', 'cursor.inceptionDesc': 'This very showcase page was built entirely by Cursor in a single prompt. It used MCP tools to read the directory, capture component structures, process images, and generate the complete HTML/Tailwind implementation.',
+        'auth.title': 'AUTHENTICATION <span class="outline-text">FLOW</span>',
         'auth.sub': 'Brokerage registration, secure login, and full access control.',
-        'footer.text': 'Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE — 90% AI-generated code.',
-        'snake.trigger': 'Play Snake', 'snake.triggerSub': 'easter egg',
-        'snake.title': 'SNAKE MODE', 'snake.controls': 'Arrow keys to turn | ESC to quit',
-        'snake.prompt': 'How I built this', 'snake.gameoverTitle': 'Game Over',
-        'snake.scoreLabel': 'Elements eaten', 'snake.replay': 'Play Again', 'snake.quit': 'Quit',
-        'snake.promptSub': '3 prompts + plan mode -> Cursor Agent -> Snake game (bugs may happen!)',
-        'snake.p1label': 'Prompt 1 — The idea',
-        'snake.p1': '"Let\'s create a new game that shows Cursor\'s full potential. It needs to be simple, have audio, and interact with the whole page without being tiring."',
-        'snake.p2label': 'Prompt 2 — Gameplay fix',
-        'snake.p2': '"The game starts with game over. Food is consumed at adjacent pixels. After eating initial food, no new ones appear. Should the screen scroll when I go down? The dots should be spread across the whole page."',
-        'snake.p3label': 'Prompt 3 — Distribution',
-        'snake.p3': '"Spread the dots better across the screen — they don\'t need to be on top of the elements."',
+        'footer.text': 'Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE — 90% AI-generated code.'
       },
       pt: {
-        'nav.features': 'Features', 'nav.arch': 'Arquitetura',
-        'hero.badge': '90% do código gerado por IA', 'hero.subtitle': 'Sistema de gestão e multicálculo para corretoras de seguros',
-        'hero.desc': 'Minha jornada construindo um sistema de gestão pronto para produção do zero em 2 dias usando o <span class="text-brand-400 font-medium">Cursor IDE</span>.',
-        'hero.github': 'Ver no GitHub', 'hero.explore': 'Explorar',
+        'nav.story': 'A História', 'nav.product': 'O Produto', 'nav.engineering': 'Engenharia', 'nav.process': 'O Processo',
+        'hero.badge': '90% Gerado por IA', 'hero.subtitle': 'Sistema de gestão e multicálculo para corretoras de seguros',
+        'hero.desc': 'Minha jornada desenvolvendo um sistema pronto para produção do zero em 2 dias usando o Cursor IDE.',
+        'hero.github': 'Ver Projeto', 'hero.explore': 'Explorar',
         'stats.days': 'dias de desenvolvimento', 'stats.daysSub': 'zero → produção',
         'stats.ai': 'código gerado por IA', 'stats.screens': 'telas completas', 'stats.skills': 'skills de IA configuradas',
-        'story.title': 'Do <span class="gradient-text">zero</span> a um sistema completo',
-        'story.text': 'Eu já tinha o repositório e a ideia, mas o tempo era sempre o gargalo. Com o Cursor IDE, o que parecia levar semanas de trabalho foi feito em apenas 2 dias — entregando um sistema de gestão com clientes, propostas, apólices, autenticação e qualidade de produção. Próximo passo: motor de multicálculo via APIs de seguradoras.',
-        'story.quote': '"Cada feature, cada componente, cada teste — eu gerei e refinei com IA. O Cursor se tornou meu parceiro de desenvolvimento durante todo o processo."',
+        'story.title': 'Do <span class="outline-text">zero</span> a um sistema completo',
+        'story.text': 'Eu já tinha o repositório e a ideia, mas o tempo era sempre o gargalo. Com o Cursor IDE, o que parecia levar semanas levou apenas 2 dias — entregando um sistema de gestão com cadastro de clientes, propostas, apólices, autenticação e qualidade de produção. Próximo passo: motor de multicálculo via APIs de seguradoras.',
+        'story.quote': '"Cada funcionalidade, cada componente, cada teste — eu gerei e refinei com IA. O Cursor se tornou meu parceiro de desenvolvimento durante todo o processo."',
         'story.author': '— Como eu construí isso usando Agent Mode, Rules, Skills e MCP Servers',
-        'feat.title': 'Features <span class="gradient-text">completas</span>',
-        'feat.sub': 'Projetei cada tela com bastante atenção a UX, acessibilidade e responsividade.',
+        'feat.title': 'Funcionalidades <span class="outline-text">Completas</span>',
+        'feat.sub': 'Projetei cada tela com atenção a UX, acessibilidade e responsividade.',
         'feat.tab.clients': 'Clientes', 'feat.tab.detail': 'Detalhes', 'feat.tab.docs': 'Documentos', 'feat.tab.forms': 'Formulários', 'feat.tab.settings': 'Configurações',
-        'tech.sub': 'Escolhi tecnologias modernas focando em performance, DX e manutenibilidade.',
+        'tech.sub': 'Escolhi tecnologias modernas para performance, DX e manutenibilidade.',
         'tech.testing': 'Testes', 'tech.quality': 'Qualidade',
-        'arch.sub': 'Estruturei o backend em camadas com uma clara separação de responsabilidades.',
-        'theme.sub': 'Construí um design system completo com tokens CSS para ambos os temas — sem improvisos.',
-        'mobile.sub': 'Adaptei todas as telas para mobile com cards, navegação e formulários otimizados.',
-        'quality.title': 'Qualidade & <span class="gradient-text">Segurança</span>',
+        'arch.title': 'ARQUITETURA <span class="outline-text">LIMPA</span>',
+        'arch.sub': 'Estruturei o backend em camadas com separação clara de responsabilidades.',
+        'theme.sub': 'Construí um design system completo com tokens CSS para ambos os temas — sem gambiarras.',
+        'mobile.sub': 'Adaptei cada tela de forma fluida para mobile com cards otimizados, navegação e formulários.',
+        'quality.title': 'QUALIDADE & <span class="outline-text">SEGURANÇA</span>',
         'quality.sub': 'Apliquei padrões profissionais de segurança e qualidade de código em toda a aplicação.',
-        'quality.jwt': 'Autenticação JWT', 'quality.jwtDesc': 'Access + Refresh tokens com rotação automática. Cookies httpOnly. Rate limiting em rotas de autenticação.',
-        'quality.zod': 'Validação Zod', 'quality.zodDesc': 'Schemas de validação em todas as entradas. Middleware centralizado. Proteção contra mass assignment.',
+        'quality.jwt': 'Autenticação JWT', 'quality.jwtDesc': 'Tokens Access + Refresh com rotação automática. Cookies httpOnly. Rate limiting nas rotas de autenticação.',
+        'quality.zod': 'Validação Zod', 'quality.zodDesc': 'Schemas de validação em todos os inputs. Middleware centralizado. Proteção contra mass assignment.',
         'quality.sonarDesc': 'Análise estática contínua. Zero bugs, zero vulnerabilidades. Quality Gate integrado ao pipeline.',
-        'quality.sqlDesc': 'Queries parametrizadas. Proteção contra IDOR via broker_id. Sanitização de logs contra injection.',
+        'quality.sqlDesc': 'Queries parametrizadas. Proteção IDOR via broker_id. Sanitização de logs contra injeção.',
         'quality.dsDesc': 'Tokens CSS, CVA para variantes, cn() para composição. Componentes acessíveis com vitest-axe.',
-        'quality.tests': 'Testes Completos', 'quality.testsDesc': 'Testes unitários, de integração, funcionais e de segurança. Controllers, use cases e componentes React totalmente cobertos.',
-        'cursor.title': 'Minha Jornada com o <span class="gradient-text">Cursor</span>',
-        'cursor.sub': 'Como eu explorei os recursos do Cursor para construir este projeto do zero.',
-        'cursor.agent': 'Agent Mode e Multi-Agentes',
-        'cursor.agentDesc': 'Usei o Agent Mode para construir features completas de forma autônoma. Sub-agentes cuidaram de tarefas em paralelo — da modelagem do banco ao React com testes — tudo coordenado de forma fluida.',
-        'cursor.reviewDesc': 'Confiei no modo de revisão para analisar minhas mudanças no código, identificar problemas e sugerir melhorias — como ter um revisor embutido no meu fluxo de trabalho.',
+        'quality.tests': 'Testes Abrangentes', 'quality.testsDesc': 'Testes unitários, integração, funcionais e de segurança. Controllers, use cases e componentes React cobertos.',
+        'cursor.title': 'JORNADA <span class="outline-text">CURSOR</span>',
+        'cursor.sub': 'Como aproveitei os recursos do Cursor para construir este projeto do zero.',
+        'cursor.agent': 'Agent Mode & Multi-Agents', 'cursor.agentDesc': 'Funcionalidades completas construídas autonomamente com orquestração multi-agente. Sub-agentes lidam com subtarefas focadas em paralelo — da modelagem de banco a componentes React com testes, tudo coordenado.',
+        'cursor.reviewDesc': 'Modo de revisão dedicado que analisa mudanças de código, identifica problemas potenciais e sugere melhorias — um revisor de código IA integrado ao fluxo de desenvolvimento.',
         'cursor.rulesDesc': 'Configurei regras persistentes para ensinar a IA sobre minhas convenções: tokens do design system, mensagens centralizadas, padrões de formulários e arquitetura backend.',
-        'cursor.skills': 'Skills como Guias',
-        'cursor.skillsDesc': 'Criei 17 skills especializadas que atuaram como meus guias de desenvolvimento. Cada skill ofereceu conhecimento profundo que o agente usou como referência.',
-        'cursor.models': 'Estratégia de Modelos de IA',
-        'cursor.modelsDesc': 'Experimentei bastante o modo Auto e as escolhas de roteamento foram muito boas. Para tarefas específicas, escolhi Opus para desenvolvimento complexo e contextos longos, e Gemini para revisão de textos. Sempre nas versões mais recentes disponíveis.',
-        'cursor.mcp': 'MCP Servers e Ambiente',
-        'cursor.mcpDesc': 'Integrei o Cursor diretamente ao GitHub, SonarCloud e Browser via MCP. Ele também me ajudou a configurar o ambiente, bibliotecas e o Docker.',
+        'cursor.skills': 'Skills como Guias', 'cursor.skillsDesc': 'Criei 17 skills especializadas que atuaram como meus guias de desenvolvimento. Cada skill ofereceu conhecimento profundo que o agente usou como referência.',
+        'cursor.models': 'Estratégia de Modelos de IA', 'cursor.modelsDesc': 'Experimentei bastante o modo Auto e as escolhas de roteamento foram muito boas. Para tarefas específicas, escolhi Opus para desenvolvimento complexo e contextos longos, e Gemini para revisão de textos. Sempre nas versões mais recentes disponíveis.',
+        'cursor.mcp': 'MCP Servers e Ambiente', 'cursor.mcpDesc': 'Integrei o Cursor diretamente ao GitHub, SonarCloud e Browser via MCP. Ele também me ajudou a configurar o ambiente, bibliotecas e o Docker.',
         'cursor.julesDesc': 'Conectei o Jules (Google AI) via API REST para complementar o fluxo, analisando o repositório e sugerindo correções para apontamentos pendentes.',
         'cursor.planDesc': 'Usei o Plan Mode sempre que precisava refatorar ou revisar grandes partes do código com apoio das skills. Ele me dava uma visão clara de todo o contexto — frontend, backend, banco e testes — antes de alterar qualquer coisa.',
         'cursor.debugDesc': 'Usei o Debug Mode principalmente para investigar falhas em testes. Não aprofundei muito com ele porque o Agent Mode e o Plan Mode já resolviam a maioria dos problemas dentro do próprio contexto.',
         'cursor.chatDesc': 'O Chat e o Tab foram meus companheiros diários para autocomplete contextual e geração conversacional de código — de componentes UI a queries SQL complexas.',
-        'cursor.inception': 'Esta Própria Página',
-        'cursor.inceptionDesc': 'Eu construí até mesmo esta página de apresentação inteiramente pelo Cursor em um único prompt — usando MCP para capturar prints locais, ler a estrutura e gerar o código de uma só vez.',
-        'auth.title': 'Fluxo de <span class="gradient-text">Autenticação</span>',
+        'cursor.inception': 'Esta Própria Página', 'cursor.inceptionDesc': 'Eu construí até mesmo esta página de apresentação inteiramente pelo Cursor em um único prompt — usando MCP para capturar prints locais, ler a estrutura e gerar o código de uma só vez.',
+        'auth.title': 'Fluxo de <span class="outline-text">Autenticação</span>',
         'auth.sub': 'Registro de corretora, login seguro e controle de acesso completo.',
-        'footer.text': 'Sistema de gestão e multicálculo para corretoras de seguros.<br>Construído com Cursor IDE — 90% do código gerado por IA.',
-        'snake.trigger': 'Jogar Snake', 'snake.triggerSub': 'easter egg',
-        'snake.title': 'MODO SNAKE', 'snake.controls': 'Setas para virar | ESC para sair',
-        'snake.prompt': 'Como eu fiz isso', 'snake.gameoverTitle': 'Fim de Jogo',
-        'snake.scoreLabel': 'Elementos comidos', 'snake.replay': 'Jogar de Novo', 'snake.quit': 'Sair',
-        'snake.promptSub': '3 prompts + modo plan -> Cursor Agent -> jogo Snake (bugs podem acontecer!)',
-        'snake.p1label': 'Prompt 1 — A ideia',
-        'snake.p1': '"Vamos criar um novo jogo que mostre todo o potencial do Cursor. Precisa ser simples, ter áudio e interagir com toda a página sem ser cansativo."',
-        'snake.p2label': 'Prompt 2 — Correção de gameplay',
-        'snake.p2': '"O jogo começou com game over. A bolinha é consumida no pixel ao lado. Depois que comi as bolinhas iniciais, novas não apareceram. A tela deveria fazer scroll quando desço? As bolinhas deveriam estar distribuídas por todo o corpo da página."',
-        'snake.p3label': 'Prompt 3 — Distribuição',
-        'snake.p3': '"Distribua melhor as bolinhas pela tela; não é necessário que estejam sobre os elementos."',
+        'footer.text': 'Sistema de gestão e multicálculo para corretoras de seguros.<br>Construído com Cursor IDE — 90% do código gerado por IA.'
       }
     };
 
-    const featureI18n = {
+    const featureText = {
       en: {
-        dashboard: { title: 'Dashboard', text: 'Complete business overview with real-time KPIs, upcoming expirations, and quick actions for daily operations.' },
-        clients: { title: 'Client Management', text: 'Full client list for individuals and companies with advanced search, type filters, avatars, and server-side pagination.' },
-        detail: { title: 'Client Details', text: 'Comprehensive profile with personal data, linked documents, and quick actions. Seamless support for both individuals and companies.' },
-        documents: { title: 'Proposals & Policies', text: 'Document management with colored status badges, type and status filters, and highlighted expirations.' },
-        forms: { title: 'Smart Forms', text: 'Real-time validation via Zod, dynamic input masks, automatic zip code lookup, and conditional fields.' },
-        settings: { title: 'Settings', text: 'User and brokerage management with robust role-based access control (admin/user).' }
+        dashboard: { t: 'Dashboard', d: 'Complete business overview with real-time KPIs, upcoming expirations, and quick actions for daily operations.' },
+        clients: { t: 'Client Management', d: 'Full client list for individuals and companies with advanced search, type filters, avatars, and server-side pagination.' },
+        detail: { t: 'Client Details', d: 'Comprehensive profile with personal data, linked documents, and quick actions. Seamless support for both individuals and companies.' },
+        documents: { t: 'Proposals & Policies', d: 'Document management with colored status badges, type and status filters, and highlighted expirations.' },
+        forms: { t: 'Smart Forms', d: 'Real-time validation via Zod, dynamic input masks, automatic zip code lookup, and conditional fields.' },
+        settings: { t: 'Settings', d: 'User and brokerage management with robust role-based access control (admin/user).' }
       },
       pt: {
-        dashboard: { title: 'Dashboard', text: 'Visão geral completa do negócio com KPIs em tempo real, vencimentos próximos e ações rápidas para o dia a dia.' },
-        clients: { title: 'Gestão de Clientes', text: 'Lista completa de clientes PF e PJ com busca avançada, filtros por tipo, avatares e paginação server-side.' },
-        detail: { title: 'Detalhes do Cliente', text: 'Perfil abrangente com dados pessoais, documentos vinculados e ações rápidas. Suporte fluido tanto para PF quanto PJ.' },
-        documents: { title: 'Propostas e Apólices', text: 'Gestão de documentos com badges de status coloridos, filtros por tipo e status, e vencimentos em destaque.' },
-        forms: { title: 'Formulários Inteligentes', text: 'Validação em tempo real via Zod, máscaras dinâmicas de input, busca automática de CEP e campos condicionais.' },
-        settings: { title: 'Configurações', text: 'Gestão de usuários e dados da corretora com controle de acesso robusto baseado em perfis (admin/usuário).' }
+        dashboard: { t: 'Dashboard', d: 'Visão geral completa do negócio com KPIs em tempo real, vencimentos próximos e ações rápidas para o dia a dia.' },
+        clients: { t: 'Gestão de Clientes', d: 'Lista completa de clientes PF e PJ com busca avançada, filtros por tipo, avatares e paginação server-side.' },
+        detail: { t: 'Detalhes do Cliente', d: 'Perfil abrangente com dados pessoais, documentos vinculados e ações rápidas. Suporte fluido tanto para PF quanto PJ.' },
+        documents: { t: 'Propostas e Apólices', d: 'Gestão de documentos com badges de status coloridos, filtros por tipo e status, e vencimentos em destaque.' },
+        forms: { t: 'Formulários Inteligentes', d: 'Validação em tempo real via Zod, máscaras dinâmicas de input, busca automática de CEP e campos condicionais.' },
+        settings: { t: 'Configurações', d: 'Gestão de usuários e dados da corretora com controle de acesso robusto baseado em perfis (admin/usuário).' }
       }
-    };
+    }
 
     let currentLang = 'en';
-    let currentFeature = 'dashboard';
-    let isDark = true;
-
     function setLang(lang) {
       currentLang = lang;
       document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (T[lang][key] !== undefined) el.textContent = T[lang][key];
+        const map = T[lang][el.dataset.i18n];
+        if (map) el.textContent = map;
       });
       document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const key = el.dataset.i18nHtml;
-        if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
+        const map = T[lang][el.dataset.i18nHtml];
+        if (map) el.innerHTML = map;
       });
-      updateFeature();
+      updateFeatureTab();
     }
 
-    function updateFeature() {
-      const data = featureI18n[currentLang][currentFeature];
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+
+    // Features Tabs Logic
+    let currentFeat = 'dashboard';
+    function updateFeatureTab() {
+      const data = featureText[currentLang][currentFeat];
+      document.getElementById('feature-title').textContent = data.t;
+      document.getElementById('feature-text').textContent = data.d;
       const img = document.getElementById('feature-img');
-      const title = document.getElementById('feature-title');
-      const text = document.getElementById('feature-text');
-      img.style.opacity = '0';
-      img.style.transform = 'scale(0.98)';
+      img.style.opacity = 0;
       setTimeout(() => {
         const imgMap = { detail: 'detail', forms: 'form' };
-        const imgName = imgMap[currentFeature] || currentFeature;
-        const theme = isDark ? 'dark' : 'light';
-        img.src = `images/${imgName}-${theme}.png`;
-        title.textContent = data.title;
-        text.textContent = data.text;
-        setTimeout(() => { img.style.opacity = '1'; img.style.transform = 'scale(1)'; }, 50);
-      }, 200);
+        const imgName = imgMap[currentFeat] || currentFeat;
+        img.src = `images/${imgName}-dark.png`;
+        img.style.opacity = 1;
+      }, 300);
     }
-
-    document.querySelectorAll('.feature-tab').forEach(tab => {
+    document.querySelectorAll('.tab-btn').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.feature-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-        currentFeature = tab.dataset.feature;
-        updateFeature();
+        currentFeat = tab.dataset.feature;
+        updateFeatureTab();
       });
     });
 
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeToggleDot = document.getElementById('theme-toggle-dot');
-    themeToggle.addEventListener('click', () => {
-      isDark = !isDark;
-      themeToggleDot.style.transform = isDark ? 'translateX(4px)' : 'translateX(28px)';
-      themeToggle.style.background = isDark ? '#1e293b' : '#3b82f6';
-      updateFeature();
-    });
-
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', () => setLang(btn.dataset.lang));
-    });
-
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => { nav.classList.toggle('nav-blur', window.scrollY > 50); });
-
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-    mobileMenu.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => mobileMenu.classList.add('hidden')); });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.section-fade, .section-fade-left, .section-fade-right, .section-fade-scale').forEach(el => observer.observe(el));
-
-    // Stat counter animation
-    let countersAnimated = false;
-    const counterObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !countersAnimated) {
-          countersAnimated = true;
-          document.querySelectorAll('[data-count]').forEach(el => {
-            const target = parseInt(el.dataset.count);
-            const suffix = el.dataset.suffix || '';
-            const duration = 1200;
-            const start = performance.now();
-            function tick(now) {
-              const elapsed = now - start;
-              const progress = Math.min(elapsed / duration, 1);
-              const eased = 1 - Math.pow(1 - progress, 3);
-              el.textContent = Math.round(eased * target) + suffix;
-              if (progress < 1) requestAnimationFrame(tick);
-            }
-            requestAnimationFrame(tick);
-          });
-        }
-      });
-    }, { threshold: 0.3 });
-    const statsSection = document.querySelector('.stagger-children');
-    if (statsSection) counterObserver.observe(statsSection);
-
-    // Mascot behavior
+    // Mascot
+    const mascotBubble = document.getElementById('mascot-bubble');
     const mascot = document.getElementById('mascot');
-    const bubble = document.getElementById('mascot-bubble');
     const pupils = document.querySelectorAll('.eye-pupil');
-    const mouthPath = document.querySelector('.mouth');
-    const hand = document.getElementById('mascot-hand');
-    const sections = ['hero','features','tech','architecture','cursor'];
-    const bubbleMessages = {
-      en: { hero: 'Hey there! 👋', stats: 'Just 2 days!', features: 'Check this out!', tech: 'Solid stack 💪', architecture: 'Clean layers!', cursor: 'Powered by AI ✨', auth: 'Secure! 🔒', footer: '⭐ Star us!' },
-      pt: { hero: 'E aí! 👋', stats: 'Só 2 dias!', features: 'Olha isso!', tech: 'Stack robusta 💪', architecture: 'Camadas limpas!', cursor: 'Movido a IA ✨', auth: 'Seguro! 🔒', footer: '⭐ Dê uma estrela!' }
+
+    const mascotMsgs = {
+      en: {
+        hero: 'Hi! I am Seg, your AI assistant.',
+        stats: 'Built in just 48 hours!',
+        features: 'Zod handles our validations.',
+        tech: 'Vite makes HMR incredibly fast.',
+        architecture: 'Use Cases isolated from the UI!',
+        themes: 'Dark mode is the way to go!',
+        mobile: 'Responsive from day one!',
+        quality: 'Zero bugs on SonarCloud!',
+        cursor: 'AI Skills are the secret sauce.',
+        auth: 'JWT + Refresh = secure!',
+        footer: 'Don\'t forget to star the repo!'
+      },
+      pt: {
+        hero: 'Olá! Sou o Seg, seu assistente.',
+        stats: 'Criado em apenas 48 horas!',
+        features: 'Zod garante validações seguras.',
+        tech: 'Vite deixa o reload instantâneo.',
+        architecture: 'Casos de Uso isolados da UI!',
+        themes: 'Dark mode é o caminho!',
+        mobile: 'Responsivo desde o dia um!',
+        quality: 'Zero bugs no SonarCloud!',
+        cursor: 'As Skills da IA são o segredo.',
+        auth: 'JWT + Refresh = segurança!',
+        footer: 'Deixe uma estrela no repo!'
+      }
     };
 
-    let currentSection = 'hero';
-    let bubbleTimeout = null;
+    const randomTips = {
+      en: ["I love Clean Architecture!", "Check my Tailwind v4 styles.", "Forms governed by Zod.", "Try hovering me!"],
+      pt: ["Amo Clean Architecture!", "Veja meus estilos Tailwind v4.", "Formulários regidos pelo Zod.", "Passe o mouse sobre mim!"]
+    };
 
-    function showBubble(section) {
-      const msgs = bubbleMessages[currentLang] || bubbleMessages.en;
-      const msg = msgs[section];
-      if (!msg) return;
-      clearTimeout(bubbleTimeout);
-      bubble.textContent = msg;
-      bubble.classList.add('show');
-      bubbleTimeout = setTimeout(() => bubble.classList.remove('show'), 2500);
+    let mascotTimeout;
+    function showMascotBubble(text, duration = 2500) {
+      if (!text) return;
+      mascotBubble.textContent = `[ ${text} ]`;
+      mascotBubble.classList.add('show');
+      if (mascotTimeout) clearTimeout(mascotTimeout);
+      mascotTimeout = setTimeout(() => mascotBubble.classList.remove('show'), duration);
     }
 
-    function updateMascotExpression(section) {
-      if (section === currentSection) return;
-      currentSection = section;
-      showBubble(section);
-
-      const expressions = {
-        hero:         { pupils: '0,0',   mouth: 'M34 48 Q40 54 46 48', hand: true },
-        stats:        { pupils: '0,-1',  mouth: 'M32 46 Q40 56 48 46', hand: false },
-        features:     { pupils: '2,0',   mouth: 'M34 48 Q40 53 46 48', hand: false },
-        tech:         { pupils: '-1,0',  mouth: 'M34 48 Q40 53 46 48', hand: false },
-        architecture: { pupils: '0,1',   mouth: 'M34 49 Q40 52 46 49', hand: false },
-        cursor:       { pupils: '0,-1',  mouth: 'M32 46 Q40 56 48 46', hand: false },
-        auth:         { pupils: '1,1',   mouth: 'M34 48 Q40 53 46 48', hand: false },
-        footer:       { pupils: '0,0',   mouth: 'M34 48 Q40 54 46 48', hand: true },
-      };
-      const expr = expressions[section] || expressions.hero;
-      const [px, py] = expr.pupils.split(',').map(Number);
-      pupils.forEach(p => { p.style.transform = `translate(${px}px, ${py}px)`; });
-      mouthPath.setAttribute('d', expr.mouth);
-      hand.style.opacity = expr.hand ? '1' : '0';
-    }
-
-    const sectionObserverForMascot = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          updateMascotExpression(entry.target.id || entry.target.dataset.mascotSection || 'hero');
+    const mObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const sec = e.target.dataset.mascotSection;
+          if (sec && mascotMsgs[currentLang][sec]) {
+            showMascotBubble(mascotMsgs[currentLang][sec], 3000);
+          }
         }
       });
-    }, { threshold: 0.3 });
-
-    document.querySelectorAll('section[id], [data-mascot-section]').forEach(s => sectionObserverForMascot.observe(s));
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-mascot-section]').forEach(el => mObs.observe(el));
 
     mascot.addEventListener('click', () => {
-      mascot.classList.remove('mascot-float');
-      mascot.classList.add('mascot-wiggle');
-      setTimeout(() => { mascot.classList.remove('mascot-wiggle'); mascot.classList.add('mascot-float'); }, 500);
+      mascot.style.transform = 'scale(1.2) rotate(-10deg)';
+      setTimeout(() => mascot.style.transform = '', 300);
+      const tips = randomTips[currentLang];
+      showMascotBubble(tips[Math.floor(Math.random() * tips.length)], 3000);
     });
 
-    // Mouse-follow for mascot pupils (subtle)
     document.addEventListener('mousemove', (e) => {
       const rect = mascot.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / window.innerWidth * 3;
       const dy = (e.clientY - cy) / window.innerHeight * 3;
+
       const clampedX = Math.max(-2.5, Math.min(2.5, dx));
       const clampedY = Math.max(-2.5, Math.min(2.5, dy));
-      pupils.forEach(p => { p.style.transform = `translate(${clampedX}px, ${clampedY}px)`; });
+
+      pupils.forEach(p => {
+        p.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+      });
     });
 
-    // Parallax hero glows on scroll
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      document.querySelectorAll('.hero-glow').forEach((glow, i) => {
-        const speed = 0.15 + i * 0.05;
-        glow.style.transform = `translateY(${y * speed}px)`;
-      });
-    }, { passive: true });
-
-    // Snake Game
-    const snakeTrigger = document.getElementById('snake-trigger');
-    const snakeOverlay = document.getElementById('snake-overlay');
-    const snakeCanvas = document.getElementById('snake-canvas');
-    const snakeCtx = snakeCanvas.getContext('2d');
-    const snakeScoreEl = document.getElementById('snake-score');
-    const snakeGameover = document.getElementById('snake-gameover');
-    const snakeFinalScore = document.getElementById('snake-final-score');
-    const snakePromptBox = document.getElementById('snake-prompt-box');
-    const CELL = 16;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let snakeActive = false, snakeLoop = null, snakeAudioCtx = null;
-    let snake = [], snakeDir = 'right', snakeNextDir = 'right', snakeScore = 0;
-    let foods = [], gridW = 0, gridH = 0, worldH = 0, bgBeatInterval = null;
-
-    const snakeFooterObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting && !snakeActive) snakeTrigger.classList.add('show'); });
-    }, { threshold: 0.2 });
-    const snakeFooterEl = document.querySelector('footer');
-    if (snakeFooterEl) snakeFooterObs.observe(snakeFooterEl);
-
-    function initSnakeAudio() {
-      if (snakeAudioCtx) return;
-      try { snakeAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
-    }
-
-    function snakeSound(type) {
-      if (!snakeAudioCtx || reducedMotion) return;
-      const g = snakeAudioCtx.createGain();
-      g.connect(snakeAudioCtx.destination);
-      const t = snakeAudioCtx.currentTime;
-      if (type === 'eat') {
-        g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-        const o = snakeAudioCtx.createOscillator(); o.type = 'sine';
-        o.frequency.setValueAtTime(400, t); o.frequency.exponentialRampToValueAtTime(800, t + 0.06);
-        o.connect(g); o.start(t); o.stop(t + 0.08);
-      } else if (type === 'turn') {
-        g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-        const o = snakeAudioCtx.createOscillator(); o.type = 'square'; o.frequency.setValueAtTime(600, t);
-        o.connect(g); o.start(t); o.stop(t + 0.02);
-      } else if (type === 'over') {
-        g.gain.setValueAtTime(0.1, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-        const o = snakeAudioCtx.createOscillator(); o.type = 'sine';
-        o.frequency.setValueAtTime(500, t); o.frequency.exponentialRampToValueAtTime(100, t + 0.4);
-        o.connect(g); o.start(t); o.stop(t + 0.4);
-      } else if (type === 'kick') {
-        g.gain.setValueAtTime(0.04, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-        const o = snakeAudioCtx.createOscillator(); o.type = 'sine';
-        o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(50, t + 0.04);
-        o.connect(g); o.start(t); o.stop(t + 0.05);
-      }
-    }
-
-    function scanPageElements() {
-      foods = [];
-      worldH = Math.ceil(document.body.scrollHeight / CELL);
-      gridW = Math.floor(window.innerWidth / CELL);
-      const colors = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#a855f7','#ec4899'];
-      const count = Math.min(80, Math.floor(worldH * gridW / 200));
-      const used = new Set();
-      for (let i = 0; i < count; i++) {
-        let gx, gy, key;
-        let tries = 0;
-        do {
-          gx = 2 + Math.floor(Math.random() * (gridW - 4));
-          gy = 5 + Math.floor(Math.random() * (worldH - 10));
-          key = gx + ',' + gy;
-          tries++;
-        } while (used.has(key) && tries < 50);
-        if (used.has(key)) continue;
-        used.add(key);
-        foods.push({ gx, gy, el: null, color: colors[Math.floor(Math.random() * colors.length)] });
-      }
-    }
-
-    function startSnake() {
-      if (snakeActive) return;
-      initSnakeAudio();
-      snakeCanvas.width = window.innerWidth;
-      snakeCanvas.height = window.innerHeight;
-      gridW = Math.floor(snakeCanvas.width / CELL);
-      gridH = Math.floor(snakeCanvas.height / CELL);
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      scanPageElements();
-      snakeActive = true;
-      snakeScore = 0;
-      snakeScoreEl.textContent = '0';
-      snakeDir = 'right'; snakeNextDir = 'right';
-      const cx = Math.floor(gridW / 2);
-      const cy = Math.floor(window.scrollY / CELL) + Math.floor(gridH / 2);
-      snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }];
-      snakeOverlay.classList.add('show');
-      snakeGameover.classList.remove('show');
-      snakePromptBox.classList.add('hidden');
-      mascot.style.display = 'none';
-      snakeTrigger.classList.remove('show');
-      document.activeElement?.blur();
-      bgBeatInterval = setInterval(() => snakeSound('kick'), 400);
-      snakeLoop = setInterval(snakeTick, 80);
-    }
-
-    function endSnake(showGameover) {
-      snakeActive = false;
-      clearInterval(snakeLoop); snakeLoop = null;
-      clearInterval(bgBeatInterval); bgBeatInterval = null;
-      if (showGameover) {
-        snakeSound('over');
-        snakeFinalScore.textContent = snakeScore;
-        snakeGameover.classList.add('show');
-      } else {
-        snakeOverlay.classList.remove('show');
-        mascot.style.display = '';
-      }
-    }
-
-    function moveHead() {
-      const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
-      if (snakeNextDir !== opposite[snakeDir]) snakeDir = snakeNextDir;
-      const head = { ...snake[0] };
-      const moves = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-      head.x += moves[snakeDir][0];
-      head.y += moves[snakeDir][1];
-      return head;
-    }
-
-    function checkCollision(head) {
-      if (head.x < 0 || head.x >= gridW || head.y < 0 || head.y >= worldH) return true;
-      return snake.some(s => s.x === head.x && s.y === head.y);
-    }
-
-    function followSnakeWithScroll(head) {
-      const headScreenY = head.y * CELL - window.scrollY;
-      if (headScreenY > window.innerHeight * 0.75) window.scrollBy(0, CELL);
-      else if (headScreenY < window.innerHeight * 0.25 && window.scrollY > 0) window.scrollBy(0, -CELL);
-    }
-
-    function tryEatFood(head) {
-      for (let i = foods.length - 1; i >= 0; i--) {
-        if (foods[i].gx === head.x && foods[i].gy === head.y) {
-          foods.splice(i, 1);
-          snakeScore++;
-          snakeScoreEl.textContent = snakeScore;
-          snakeSound('eat');
-          return true;
-        }
-      }
-      return false;
-    }
-
-    function snakeTick() {
-      const head = moveHead();
-      if (checkCollision(head)) { endSnake(true); return; }
-      snake.unshift(head);
-      followSnakeWithScroll(head);
-      if (!tryEatFood(head)) snake.pop();
-      if (foods.length === 0) { endSnake(true); return; }
-      renderSnake();
-    }
-
-    function renderSnake() {
-      const ctx = snakeCtx;
-      const scrollOff = window.scrollY;
-      ctx.clearRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-
-      foods.forEach(f => {
-        const fy = f.gy * CELL + CELL / 2 - scrollOff;
-        if (fy < -20 || fy > snakeCanvas.height + 20) return;
-        ctx.beginPath();
-        ctx.arc(f.gx * CELL + CELL / 2, fy, 5, 0, Math.PI * 2);
-        ctx.fillStyle = f.color;
-        ctx.globalAlpha = 0.7;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      });
-
-      snake.forEach((s, i) => {
-        const x = s.x * CELL + 1;
-        const y = s.y * CELL + 1 - scrollOff;
-        if (y < -CELL || y > snakeCanvas.height + CELL) return;
-        const size = i === 0 ? CELL - 1 : CELL - 2;
-        const t = i / Math.max(snake.length, 1);
-        const r = Math.round(37 + t * (167 - 37));
-        const g = Math.round(99 + t * (139 - 99));
-        const b = Math.round(235 + t * (246 - 235));
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
-        ctx.beginPath();
-        ctx.roundRect(x, y, size, size, 3);
-        ctx.fill();
-
-        if (i === 0) {
-          let ex1, ey1, ex2, ey2;
-          if (snakeDir === 'right') { ex1 = x + 10; ey1 = y + 4; ex2 = x + 10; ey2 = y + 10; }
-          else if (snakeDir === 'left') { ex1 = x + 4; ey1 = y + 4; ex2 = x + 4; ey2 = y + 10; }
-          else if (snakeDir === 'up') { ex1 = x + 4; ey1 = y + 4; ex2 = x + 10; ey2 = y + 4; }
-          else { ex1 = x + 4; ey1 = y + 10; ex2 = x + 10; ey2 = y + 10; }
-          ctx.fillStyle = '#fff';
-          ctx.beginPath(); ctx.arc(ex1, ey1, 2, 0, Math.PI * 2); ctx.fill();
-          ctx.beginPath(); ctx.arc(ex2, ey2, 2, 0, Math.PI * 2); ctx.fill();
-        }
-      });
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (!snakeActive && !snakeGameover.classList.contains('show')) return;
-      if (e.key === 'Escape') {
-        snakeGameover.classList.remove('show');
-        snakeOverlay.classList.remove('show');
-        snakeActive = false;
-        clearInterval(snakeLoop); clearInterval(bgBeatInterval);
-        mascot.style.display = '';
-        return;
-      }
-      if (!snakeActive) return;
-      const dirMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', KeyW: 'up', KeyS: 'down', KeyA: 'left', KeyD: 'right' };
-      if (dirMap[e.code] && dirMap[e.code] !== snakeNextDir) {
-        e.preventDefault();
-        snakeNextDir = dirMap[e.code];
-        snakeSound('turn');
-      }
-    });
-
-    let touchStartX = 0, touchStartY = 0;
-    snakeOverlay.addEventListener('touchstart', (e) => {
-      if (e.target.closest('button')) return;
-      touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    snakeOverlay.addEventListener('touchend', (e) => {
-      if (!snakeActive || e.target.closest('button')) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        snakeNextDir = dx > 0 ? 'right' : 'left';
-      } else {
-        snakeNextDir = dy > 0 ? 'down' : 'up';
-      }
-      snakeSound('turn');
-    }, { passive: true });
-
-    document.getElementById('snake-trigger-card').addEventListener('click', (e) => { e.stopPropagation(); startSnake(); });
-    document.getElementById('snake-exit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
-    document.getElementById('snake-replay-btn').addEventListener('click', (e) => { e.stopPropagation(); snakeGameover.classList.remove('show'); startSnake(); });
-    document.getElementById('snake-quit-btn').addEventListener('click', (e) => { e.stopPropagation(); endSnake(false); snakeOverlay.classList.remove('show'); mascot.style.display = ''; });
-    document.getElementById('snake-prompt-btn').addEventListener('click', (e) => { e.stopPropagation(); snakePromptBox.classList.toggle('hidden'); });
-    document.getElementById('snake-prompt-btn2').addEventListener('click', (e) => { e.stopPropagation(); snakePromptBox.classList.toggle('hidden'); });
-
-    window.addEventListener('resize', () => {
-      if (!snakeActive) return;
-      snakeCanvas.width = window.innerWidth;
-      snakeCanvas.height = window.innerHeight;
-      gridW = Math.floor(snakeCanvas.width / CELL);
-      gridH = Math.floor(snakeCanvas.height / CELL);
-    });
-
+    // Run translation initialization
     setLang('en');
   </script>
 </body>
+
 </html>

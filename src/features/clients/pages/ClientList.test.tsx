@@ -107,6 +107,7 @@ describe('ClientList page', () => {
 
   it('shows error on API failure', async () => {
     const user = userEvent.setup();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     getClientsMock.mockRejectedValueOnce(new Error('Network error'));
 
@@ -116,5 +117,7 @@ describe('ClientList page', () => {
     await waitFor(() => {
       expect(screen.getByText(/erro/i)).toBeInTheDocument();
     });
+
+    consoleSpy.mockRestore();
   });
 });

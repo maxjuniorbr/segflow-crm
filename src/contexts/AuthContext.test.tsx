@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
@@ -99,6 +99,7 @@ describe('AuthProvider', () => {
 
     it('login sets user with isAuthenticated', async () => {
         vi.mocked(api.get).mockResolvedValueOnce({});
+        const user = userEvent.setup();
 
         render(
             <AuthProvider>
@@ -110,9 +111,7 @@ describe('AuthProvider', () => {
             expect(screen.getByTestId('loading').textContent).toBe('false');
         });
 
-        await act(async () => {
-            await userEvent.click(screen.getByText('Login'));
-        });
+        await user.click(screen.getByText('Login'));
 
         expect(screen.getByTestId('user').textContent).toBe('new@test.com');
         expect(screen.getByTestId('auth').textContent).toBe('true');
@@ -124,6 +123,7 @@ describe('AuthProvider', () => {
         });
         vi.mocked(storageService.logout).mockResolvedValueOnce();
         sessionStorage.setItem('test-key', 'test-value');
+        const user = userEvent.setup();
 
         render(
             <AuthProvider>
@@ -135,9 +135,7 @@ describe('AuthProvider', () => {
             expect(screen.getByTestId('user').textContent).toBe('admin@test.com');
         });
 
-        await act(async () => {
-            await userEvent.click(screen.getByText('Logout'));
-        });
+        await user.click(screen.getByText('Logout'));
 
         expect(storageService.logout).toHaveBeenCalled();
         expect(sessionStorage.getItem('test-key')).toBeNull();
@@ -150,6 +148,7 @@ describe('AuthProvider', () => {
         });
         vi.mocked(storageService.logout).mockRejectedValueOnce(new Error('Network'));
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const user = userEvent.setup();
 
         render(
             <AuthProvider>
@@ -161,9 +160,7 @@ describe('AuthProvider', () => {
             expect(screen.getByTestId('user').textContent).toBe('admin@test.com');
         });
 
-        await act(async () => {
-            await userEvent.click(screen.getByText('Logout'));
-        });
+        await user.click(screen.getByText('Logout'));
 
         expect(screen.getByTestId('user').textContent).toBe('null');
         consoleSpy.mockRestore();

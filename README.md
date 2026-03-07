@@ -68,7 +68,7 @@ Models were rotated based on the complexity of each task:
 
 This repository keeps agent instructions compatible with both Cursor and Claude Code.
 
-**Project instructions** are defined in `.agent/rules/workflow-instructions.md`. They act as the project manual for the agent: code in English, UI in pt-BR, Clean Architecture in the backend, and the design system and UX patterns to preserve.
+**Project rules** live in `.agent/rules/`. Together they define the agent workflow, product conventions, backend architecture, and the synchronization rules for this README.
 
 **Skills** are maintained in `.agent/skills/` and referenced from the project instructions when relevant. They are specialized knowledge bases the agent queries on demand. The skills in this project were based on and adapted from the open ecosystem [skills.sh](https://skills.sh) (Vercel Labs), with technical reviews for the SegFlow context.
 
@@ -102,9 +102,9 @@ This repository keeps agent instructions compatible with both Cursor and Claude 
 
 | Rule | Scope | Description |
 |---|---|---|
-| `segflow-crm-instructions` | Always apply | UI conventions, messages, architecture, security, and project patterns |
-| `mcp-servers` | Always apply | Prioritizes MCP servers (GitHub) over CLIs for remote operations |
-| `readme-consistency` | Glob-based | Keeps this README synced when structural files change |
+| `segflow-crm-instructions` | Always apply | UI conventions, centralized messages, architecture, security, and testing expectations |
+| `workflow-instructions` | Always on | Cross-tool workflow and coding conventions for Claude Code sessions |
+| `readme-instructions` | Glob-based | Keeps this README synced when structural/configuration files change |
 
 </details>
 
@@ -119,7 +119,7 @@ Integration is done via REST API (`https://jules.googleapis.com/v1alpha`):
 
 To enable API queries from Cursor: create `.env.local` in the root with `JULES_API_KEY=<your-key>` (obtained at [jules.google.com/settings](https://jules.google.com/settings)). This file is already in `.gitignore`.
 
-**Setup script:** the file `jules-setup.sh` in the project root is the environment bootstrap used by Jules when running sessions. It installs PostgreSQL, creates the database, installs dependencies, initializes the schema, and runs the full test suite (backend + frontend). This script runs automatically inside Jules's sandboxed VM — it is not intended for local development. To configure it, go to [Repo config](https://jules.google.com/repos/github/maxjuniorbr/segflow-crm/config) on the Jules dashboard.
+**Execution environment:** Jules uses the repository bootstrap configured in the [Repo config](https://jules.google.com/repos/github/maxjuniorbr/segflow-crm/config) on the Jules dashboard. This repository does not currently version a local `jules-setup.sh`; any setup commands used by Jules live in that remote configuration.
 
 ### SonarCloud
 
@@ -240,15 +240,25 @@ Access: `http://localhost:5173`
 | Script | Description |
 |---|---|
 | `npm run dev` | Development server (frontend + backend) |
+| `npm run server` | Starts only the backend development server |
 | `npm run build` | Production build |
 | `npm run preview` | Local build preview |
-| `npm run test` | Tests (Vitest + Testing Library + vitest-axe) |
+| `npm run test` | Runs backend + frontend test suites |
+| `npm run test:backend` | Runs backend tests from the root |
+| `npm run test:frontend` | Runs frontend tests |
+| `npm run test:watch` | Frontend tests in watch mode |
+| `npm run test:ui` | Frontend Vitest UI |
+| `npm run test:backend:watch` | Backend tests in watch mode |
+| `npm run test:backend:ui` | Backend Vitest UI |
 
 ### Backend (`server/` folder)
 | Script | Description |
 |---|---|
+| `npm run start` | Starts the backend in production mode |
 | `npm run dev` | Backend server (auto reset/seed if `RESET_DB_ON_STARTUP=true`) |
 | `npm run test` | Unit, controller, functional, and security tests |
+| `npm run test:watch` | Backend tests in watch mode |
+| `npm run test:ui` | Backend Vitest UI |
 | `node scripts/dropDbLocal.js` | Drop local database |
 | `node scripts/initDbLocal.js` | Create tables |
 | `node scripts/seedDbLocal.js` | Populate with test data |

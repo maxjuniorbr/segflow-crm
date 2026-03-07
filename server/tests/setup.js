@@ -3,9 +3,9 @@ import path from 'node:path';
 import { vi } from 'vitest';
 import { setupTestDb } from './utils/testDbMock.js';
 
-// Load .env from server directory
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Load test env without polluting the test output with dotenv banners.
+dotenv.config({ path: path.resolve(__dirname, '../.env'), quiet: true });
 
 setupTestDb();
 
-vi.spyOn(console, 'error');
+vi.spyOn(console, 'error').mockImplementation(() => {});
