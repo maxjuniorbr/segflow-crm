@@ -2,6 +2,17 @@
   "name": "segflow-crm",
   "private": true,
   "version": "0.0.0",
+  "description": "Sistema de gestão e multicálculo para corretoras de seguros.",
+  "author": "Dianin",
+  "license": "MIT",
+  "homepage": "https://maxjuniorbr.github.io/segflow-crm/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxjuniorbr/segflow-crm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxjuniorbr/segflow-crm/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"vite\"",
@@ -46,5 +57,12 @@
     "vite": "^6.2.0",
     "vitest": "^4.0.18",
     "vitest-axe": "^0.1.0"
-  }
+  },
+  "keywords": [
+    "crm",
+    "insurance",
+    "brokerage",
+    "react",
+    "nodejs"
+  ]
 }

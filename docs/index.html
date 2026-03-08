@@ -4,25 +4,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SegFlow CRM // Systems</title>
-  <meta property="og:title" content="SegFlow CRM — Built with AI">
+  <title>SegFlow CRM | Gestão para corretoras de seguros</title>
+  <meta name="description"
+    content="Sistema de gestão e multicálculo para corretoras de seguros, com dashboard, autenticação, clientes, propostas e apólices.">
+  <meta property="og:title" content="SegFlow CRM | Gestão para corretoras de seguros">
   <meta property="og:description"
-    content="Full management and multi-quote system for insurance brokerages. 90% AI-generated code with Cursor IDE in just 2 days.">
+    content="Conheça o produto, a arquitetura e a qualidade técnica do SegFlow CRM em uma landing com conteúdo em PT-BR e EN.">
   <meta property="og:type" content="website">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;500;700&display=swap"
-    rel="stylesheet">
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
   <style>
+    @font-face {
+      font-family: 'JetBrains Mono';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('./fonts/jetbrains-mono-latin.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'JetBrains Mono';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('./fonts/jetbrains-mono-latin.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Space Grotesk';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Space Grotesk';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Space Grotesk';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+    }
+
     :root {
       --bg-color: #030305;
       --surface: #0a0a0f;
@@ -220,6 +252,21 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+    }
+
+    .logo-icon,
+    .inline-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .logo-icon svg,
+    .inline-icon svg {
+      width: 1em;
+      height: 1em;
+      display: block;
     }
 
     .nav-links {
@@ -681,6 +728,26 @@
       color: var(--text-muted);
     }
 
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .footer-link {
+      text-decoration: none;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.9rem;
+      transition: 0.3s;
+    }
+
+    .footer-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     /* Animations */
     .reveal {
       opacity: 0;
@@ -764,16 +831,21 @@
   <!-- NAV -->
   <nav>
     <div class="logo">
-      <i data-lucide="hexagon"></i> SEGFLOW<span class="text-accent">.SYS</span>
+      <span class="logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M7 3h10l5 9-5 9H7l-5-9z" />
+        </svg>
+      </span>
+      SEGFLOW<span class="text-accent">.SYS</span>
     </div>
     <div class="nav-links">
-      <a href="#story" class="nav-link" data-magnetic data-i18n="nav.story">Story</a>
-      <a href="#features" class="nav-link" data-magnetic data-i18n="nav.product">Product</a>
-      <a href="#tech" class="nav-link" data-magnetic data-i18n="nav.engineering">Engineering</a>
-      <a href="#cursor" class="nav-link" data-magnetic data-i18n="nav.process">Process</a>
+      <a href="#story" class="nav-link" data-magnetic data-i18n="nav.story">A História</a>
+      <a href="#features" class="nav-link" data-magnetic data-i18n="nav.product">O Produto</a>
+      <a href="#tech" class="nav-link" data-magnetic data-i18n="nav.engineering">Engenharia</a>
+      <a href="#cursor" class="nav-link" data-magnetic data-i18n="nav.process">O Processo</a>
       <div class="lang-switch">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="pt">PT</button>
+        <button class="lang-btn active" data-lang="pt">PT</button>
+        <button class="lang-btn" data-lang="en">EN</button>
       </div>
     </div>
   </nav>
@@ -782,7 +854,7 @@
   <section class="hero" id="hero" data-mascot-section="hero">
     <div class="hero-badge reveal">
       <div class="status-dot"></div>
-      <span data-i18n="hero.badge">90% AI-Generated Code</span>
+      <span data-i18n="hero.badge">CRM para corretoras de seguros</span>
     </div>
 
     <h1 class="reveal" style="transition-delay: 0.1s;">
@@ -790,18 +862,29 @@
     </h1>
 
     <p class="reveal font-mono text-accent" style="transition-delay: 0.2s;" data-i18n="hero.subtitle">
-      Management and multi-quote system for insurance brokerages
+      Sistema de gestão e multicálculo para corretoras de seguros
     </p>
     <p class="reveal" style="transition-delay: 0.3s;" data-i18n-html="hero.desc">
-      My journey building a production-ready management system from zero in 2 days using Cursor IDE.
+      Uma visão do produto, da arquitetura e das práticas de qualidade por trás do SegFlow CRM.
     </p>
 
     <div class="reveal" style="transition-delay: 0.4s; margin-top: 2rem; display: flex; gap: 1rem;">
       <a href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" class="btn btn-primary" data-magnetic>
-        <i data-lucide="github"></i> <span data-i18n="hero.github">View on GitHub</span>
+        <span class="inline-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.35 1.11 2.92.85.09-.67.35-1.11.64-1.37-2.22-.26-4.56-1.14-4.56-5.09 0-1.13.39-2.05 1.03-2.77-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.06A9.35 9.35 0 0 1 12 6.84c.85 0 1.71.12 2.51.36 1.91-1.34 2.75-1.06 2.75-1.06.55 1.42.2 2.47.1 2.73.64.72 1.03 1.64 1.03 2.77 0 3.96-2.35 4.82-4.58 5.08.36.32.68.93.68 1.88 0 1.36-.01 2.46-.01 2.8 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+          </svg>
+        </span>
+        <span data-i18n="hero.github">Ver projeto</span>
       </a>
       <a href="#stats" class="btn" data-magnetic>
-        <span data-i18n="hero.explore">Explore</span> <i data-lucide="arrow-down"></i>
+        <span data-i18n="hero.explore">Explorar</span>
+        <span class="inline-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14" />
+            <path d="m5 12 7 7 7-7" />
+          </svg>
+        </span>
       </a>
     </div>
   </section>
@@ -810,24 +893,24 @@
   <section id="stats" data-mascot-section="stats">
     <div class="grid">
       <div class="card reveal" style="border-top-color: var(--text-main);">
-        <div class="card-stat" data-count="2">0</div>
-        <div class="card-title font-mono" data-i18n="stats.days">days of development</div>
-        <div class="text-xs text-muted font-mono" data-i18n="stats.daysSub">zero → production</div>
+        <div class="card-stat" data-count="15" data-suffix="+">0</div>
+        <div class="card-title font-mono" data-i18n="stats.screens">telas principais</div>
+        <div class="text-xs text-muted font-mono" data-i18n="stats.screensSub">dashboard, auth e fluxos CRUD</div>
       </div>
       <div class="card reveal" style="border-top-color: var(--accent);">
-        <div class="card-stat text-accent" data-count="90" data-suffix="%">0%</div>
-        <div class="card-title font-mono" data-i18n="stats.ai">AI-generated code</div>
-        <div class="text-xs text-muted font-mono">cursor agent + chat</div>
+        <div class="card-stat text-accent" data-count="2">0</div>
+        <div class="card-title font-mono" data-i18n="stats.themes">temas</div>
+        <div class="text-xs text-muted font-mono" data-i18n="stats.themesSub">claro e escuro</div>
       </div>
       <div class="card reveal" style="border-top-color: var(--text-main);">
-        <div class="card-stat" data-count="15" data-suffix="+">0</div>
-        <div class="card-title font-mono" data-i18n="stats.screens">complete screens</div>
-        <div class="text-xs text-muted font-mono">CRUD + dashboard + auth</div>
+        <div class="card-stat" data-count="4">0</div>
+        <div class="card-title font-mono" data-i18n="stats.flows">áreas centrais</div>
+        <div class="text-xs text-muted font-mono" data-i18n="stats.flowsSub">clientes, documentos, usuários e corretora</div>
       </div>
       <div class="card reveal" style="border-top-color: var(--text-main);">
-        <div class="card-stat" data-count="17">0</div>
-        <div class="card-title font-mono" data-i18n="stats.skills">AI skills configured</div>
-        <div class="text-xs text-muted font-mono">.agent/skills/</div>
+        <div class="card-stat" data-count="100" data-suffix="%">0%</div>
+        <div class="card-title font-mono" data-i18n="stats.responsive">responsivo</div>
+        <div class="text-xs text-muted font-mono" data-i18n="stats.responsiveSub">desktop e mobile</div>
       </div>
     </div>
   </section>
@@ -835,36 +918,36 @@
   <!-- THE STORY -->
   <section id="story">
     <div class="section-header reveal">
-      <h2 data-i18n-html="story.title">From <span class="outline-text">zero</span> to a complete system</h2>
-      <p data-i18n="story.text">I already had the repository and the idea, but time was always the bottleneck. With
-        Cursor IDE, what seemed like weeks of work took just 2 days — delivering a management system with client
-        management, proposals, policies, authentication, and production-grade quality.</p>
+      <h2 data-i18n-html="story.title">De <span class="outline-text">zero</span> a um sistema completo</h2>
+      <p data-i18n="story.text">Eu já tinha o repositório e a ideia, mas o tempo sempre era o gargalo. Com o Cursor
+        IDE, o que parecia semanas de trabalho virou 2 dias para entregar um sistema de gestão com clientes,
+        propostas, apólices, autenticação e qualidade de nível produtivo.</p>
     </div>
     <div class="card reveal">
       <blockquote class="text-accent" style="font-size: 1.5rem; font-style: italic; margin-bottom: 2rem;"
-        data-i18n="story.quote">"Every feature, every component, every test — I generated and refined them with AI.
-        Cursor became my development partner throughout the entire process."</blockquote>
-      <p class="font-mono text-muted text-sm" data-i18n="story.author">— How I built this using Agent Mode, Rules,
-        Skills, and MCP Servers</p>
+        data-i18n="story.quote">"Cada funcionalidade, cada componente e cada teste foram gerados e refinados com IA.
+        O Cursor virou meu parceiro de desenvolvimento durante todo o processo."</blockquote>
+      <p class="font-mono text-muted text-sm" data-i18n="story.author">— Como eu construí isso com Agent Mode, Rules,
+        Skills e MCP Servers</p>
     </div>
   </section>
 
   <!-- FEATURES -->
   <section id="features" data-mascot-section="features">
     <div class="section-header reveal">
-      <h2 data-i18n-html="feat.title">Complete <span class="outline-text">Features</span></h2>
-      <p data-i18n="feat.sub">I carefully designed every screen with attention to UX, accessibility, and responsiveness.
+      <h2 data-i18n-html="feat.title">Recursos <span class="outline-text">completos</span></h2>
+      <p data-i18n="feat.sub">Cada tela foi desenhada com atenção a UX, acessibilidade e responsividade.
       </p>
     </div>
 
     <div class="reveal">
       <div class="tabs-nav">
         <button class="tab-btn active" data-feature="dashboard">Dashboard</button>
-        <button class="tab-btn" data-feature="clients" data-i18n="feat.tab.clients">Clients</button>
-        <button class="tab-btn" data-feature="detail" data-i18n="feat.tab.detail">Details</button>
-        <button class="tab-btn" data-feature="documents" data-i18n="feat.tab.docs">Documents</button>
-        <button class="tab-btn" data-feature="forms" data-i18n="feat.tab.forms">Forms</button>
-        <button class="tab-btn" data-feature="settings" data-i18n="feat.tab.settings">Settings</button>
+        <button class="tab-btn" data-feature="clients" data-i18n="feat.tab.clients">Clientes</button>
+        <button class="tab-btn" data-feature="detail" data-i18n="feat.tab.detail">Detalhes</button>
+        <button class="tab-btn" data-feature="documents" data-i18n="feat.tab.docs">Documentos</button>
+        <button class="tab-btn" data-feature="forms" data-i18n="feat.tab.forms">Formulários</button>
+        <button class="tab-btn" data-feature="settings" data-i18n="feat.tab.settings">Configurações</button>
       </div>
 
       <div class="browser-frame">
@@ -875,14 +958,14 @@
           <div class="browser-url">localhost:3000 / ui</div>
         </div>
         <div class="feature-img-container">
-          <img id="feature-img" src="images/dashboard-dark.png" class="feature-img" alt="Feature screenshot">
+          <img id="feature-img" src="images/dashboard-dark.png" class="feature-img" alt="Captura de tela do recurso">
         </div>
       </div>
 
       <div style="margin-top: 2rem; border: 1px solid var(--border); padding: 2rem; background: var(--surface);">
         <h3 class="font-mono text-accent mb-2" id="feature-title" style="margin-bottom: 1rem;">Dashboard</h3>
-        <p class="text-muted" id="feature-text">Complete business overview with real-time KPIs, upcoming expirations,
-          and quick actions for daily operations.</p>
+        <p class="text-muted" id="feature-text">Visão geral do negócio com KPIs em tempo real, vencimentos próximos e
+          ações rápidas para a rotina da corretora.</p>
       </div>
     </div>
   </section>
@@ -890,13 +973,13 @@
   <!-- AUTH FLOW -->
   <section id="auth" data-mascot-section="auth">
     <div class="section-header reveal">
-      <h2 data-i18n-html="auth.title">AUTHENTICATION <span class="outline-text">FLOW</span></h2>
-      <p data-i18n="auth.sub">Brokerage registration, secure login, and full access control.</p>
+      <h2 data-i18n-html="auth.title">Fluxo de <span class="outline-text">autenticação</span></h2>
+      <p data-i18n="auth.sub">Cadastro da corretora, login seguro e controle completo de acesso.</p>
     </div>
     <div class="grid-2col reveal">
       <div>
         <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
-          Login — Dark
+          Login — Escuro
         </div>
         <div class="browser-frame">
           <div class="browser-bar">
@@ -905,12 +988,12 @@
             <div class="browser-dot" style="background: #27c93f;"></div>
             <div class="browser-url">localhost:3000/#/login</div>
           </div>
-          <img src="images/login-dark.png" alt="Login page dark" loading="lazy" style="width:100%; display:block;">
+          <img src="images/login-dark.png" alt="Tela de login escura" loading="lazy" style="width:100%; display:block;">
         </div>
       </div>
       <div>
         <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
-          Login — Light
+          Login — Claro
         </div>
         <div class="browser-frame">
           <div class="browser-bar">
@@ -919,7 +1002,7 @@
             <div class="browser-dot" style="background: #27c93f;"></div>
             <div class="browser-url">localhost:3000/#/login</div>
           </div>
-          <img src="images/login-light.png" alt="Login page light" loading="lazy" style="width:100%; display:block;">
+          <img src="images/login-light.png" alt="Tela de login clara" loading="lazy" style="width:100%; display:block;">
         </div>
       </div>
     </div>
@@ -928,13 +1011,13 @@
   <!-- DARK & LIGHT MODE -->
   <section id="themes" data-mascot-section="themes">
     <div class="section-header reveal">
-      <h2>DARK & <span class="outline-text">LIGHT</span> MODE</h2>
-      <p data-i18n="theme.sub">I built a complete design system with CSS tokens for both themes — no workarounds.</p>
+      <h2>MODO <span class="outline-text">CLARO</span> E ESCURO</h2>
+      <p data-i18n="theme.sub">Foi criado um design system completo com tokens de CSS para os dois temas, sem atalhos.</p>
     </div>
     <div class="grid-2col reveal">
       <div>
         <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
-          Dashboard — Dark
+          Dashboard — Escuro
         </div>
         <div class="browser-frame">
           <div class="browser-bar">
@@ -943,13 +1026,13 @@
             <div class="browser-dot" style="background: #27c93f;"></div>
             <div class="browser-url">localhost:3000 / dashboard</div>
           </div>
-          <img src="images/dashboard-dark.png" alt="Dashboard dark mode" loading="lazy"
+          <img src="images/dashboard-dark.png" alt="Dashboard em modo escuro" loading="lazy"
             style="width:100%; display:block;">
         </div>
       </div>
       <div>
         <div style="margin-bottom: 0.8rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
-          Dashboard — Light
+          Dashboard — Claro
         </div>
         <div class="browser-frame">
           <div class="browser-bar">
@@ -958,7 +1041,7 @@
             <div class="browser-dot" style="background: #27c93f;"></div>
             <div class="browser-url">localhost:3000 / dashboard</div>
           </div>
-          <img src="images/dashboard-light.png" alt="Dashboard light mode" loading="lazy"
+          <img src="images/dashboard-light.png" alt="Dashboard em modo claro" loading="lazy"
             style="width:100%; display:block;">
         </div>
       </div>
@@ -969,27 +1052,26 @@
   <section id="mobile" data-mascot-section="mobile">
     <div class="section-header reveal">
       <h2>MOBILE <span class="outline-text">FIRST</span></h2>
-      <p data-i18n="mobile.sub">I seamlessly adapted every screen for mobile with optimized cards, navigation, and
-        forms.</p>
+      <p data-i18n="mobile.sub">Cada tela foi adaptada para mobile com cards, navegação e formulários otimizados.</p>
     </div>
     <div class="phone-group reveal">
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <img src="images/mobile-dashboard.png" alt="Mobile dashboard" loading="lazy">
+        <img src="images/mobile-dashboard.png" alt="Dashboard no mobile" loading="lazy">
         <div
           style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">
           Dashboard</div>
       </div>
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <img src="images/mobile-clients.png" alt="Mobile clients" loading="lazy">
+        <img src="images/mobile-clients.png" alt="Clientes no mobile" loading="lazy">
         <div
           style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);"
-          data-i18n="feat.tab.clients">Clients</div>
+          data-i18n="feat.tab.clients">Clientes</div>
       </div>
       <div class="phone-frame">
         <div class="phone-notch"></div>
-        <img src="images/mobile-login.png" alt="Mobile login" loading="lazy">
+        <img src="images/mobile-login.png" alt="Login no mobile" loading="lazy">
         <div
           style="text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">
           Login</div>
@@ -1000,8 +1082,8 @@
   <!-- TECH STACK -->
   <section id="tech" data-mascot-section="tech">
     <div class="section-header reveal">
-      <h2>TECH <span class="outline-text">STACK</span></h2>
-      <p data-i18n="tech.sub">I chose modern technologies for performance, DX, and maintainability.</p>
+      <h2>STACK <span class="outline-text">TÉCNICA</span></h2>
+      <p data-i18n="tech.sub">Foram escolhidas tecnologias modernas para performance, DX e manutenibilidade.</p>
     </div>
     <div class="grid">
       <div class="card reveal">
@@ -1035,7 +1117,7 @@
         </ul>
       </div>
       <div class="card reveal">
-        <h3 class="card-title text-accent" data-i18n="tech.quality">Quality & Sec</h3>
+        <h3 class="card-title text-accent" data-i18n="tech.quality">Qualidade e Seg.</h3>
         <ul class="font-mono text-sm text-muted space-y-2" style="list-style:none; line-height:2;">
           <li>-> SonarCloud</li>
           <li>-> Rate Limiting</li>
@@ -1050,28 +1132,28 @@
   <!-- ARCHITECTURE -->
   <section id="architecture" data-mascot-section="architecture">
     <div class="section-header reveal">
-      <h2 data-i18n-html="arch.title">CLEAN <span class="outline-text">ARCHITECTURE</span></h2>
-      <p data-i18n="arch.sub">I structured the backend in layers with a clear separation of responsibilities.</p>
+      <h2 data-i18n-html="arch.title">ARQUITETURA <span class="outline-text">LIMPA</span></h2>
+      <p data-i18n="arch.sub">O backend foi estruturado em camadas com separação clara de responsabilidades.</p>
     </div>
     <div class="reveal">
       <div class="arch-flow mb-8">
         <div class="arch-block">
           <div class="font-mono text-xs text-muted mb-2">INTERFACE</div>
-          <div class="text-accent font-bold">Routes & Controllers</div>
+          <div class="text-accent font-bold">Rotas e Controllers</div>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-block">
-          <div class="font-mono text-xs text-muted mb-2">APPLICATION</div>
-          <div class="text-white font-bold">Use Cases</div>
+          <div class="font-mono text-xs text-muted mb-2">APLICAÇÃO</div>
+          <div class="text-white font-bold">Casos de Uso</div>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-block">
-          <div class="font-mono text-xs text-muted mb-2">DOMAIN / INFRA</div>
-          <div class="text-accent font-bold">Entities & Repositories</div>
+          <div class="font-mono text-xs text-muted mb-2">DOMÍNIO / INFRA</div>
+          <div class="text-accent font-bold">Entidades e Repositórios</div>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-block">
-          <div class="font-mono text-xs text-muted mb-2">DATABASE</div>
+          <div class="font-mono text-xs text-muted mb-2">BANCO</div>
           <div class="text-white font-bold">PostgreSQL</div>
         </div>
       </div>
@@ -1081,40 +1163,40 @@
   <!-- QUALITY & SECURITY -->
   <section id="quality" data-mascot-section="quality">
     <div class="section-header reveal">
-      <h2 data-i18n-html="quality.title">QUALITY & <span class="outline-text">SECURITY</span></h2>
-      <p data-i18n="quality.sub">I applied professional security and code quality standards throughout the application.
+      <h2 data-i18n-html="quality.title">QUALIDADE E <span class="outline-text">SEGURANÇA</span></h2>
+      <p data-i18n="quality.sub">Padrões profissionais de segurança e qualidade de código foram aplicados em toda a aplicação.
       </p>
     </div>
     <div class="grid-3col reveal">
       <div class="card">
-        <h3 class="card-title font-mono text-accent" data-i18n="quality.jwt">JWT Authentication</h3>
-        <p class="card-desc" data-i18n="quality.jwtDesc">Access + Refresh tokens with automatic rotation. httpOnly
-          cookies. Rate limiting on auth routes.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.jwt">Autenticação JWT</h3>
+        <p class="card-desc" data-i18n="quality.jwtDesc">Access e Refresh tokens com rotação automática, cookies
+          `httpOnly` e rate limiting nas rotas de autenticação.</p>
       </div>
       <div class="card">
-        <h3 class="card-title font-mono text-accent" data-i18n="quality.zod">Zod Validation</h3>
-        <p class="card-desc" data-i18n="quality.zodDesc">Validation schemas on all inputs. Centralized middleware. Mass
-          assignment protection.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.zod">Validação com Zod</h3>
+        <p class="card-desc" data-i18n="quality.zodDesc">Schemas de validação em todas as entradas, middleware centralizado
+          e proteção contra mass assignment.</p>
       </div>
       <div class="card">
         <h3 class="card-title font-mono text-accent">SonarCloud</h3>
-        <p class="card-desc" data-i18n="quality.sonarDesc">Continuous static analysis. Zero bugs, zero vulnerabilities.
-          Quality Gate integrated into the pipeline.</p>
+        <p class="card-desc" data-i18n="quality.sonarDesc">Análise estática contínua, sem bugs nem vulnerabilidades, com
+          Quality Gate integrado ao pipeline.</p>
       </div>
       <div class="card">
-        <h3 class="card-title font-mono text-accent">SQL Injection-free</h3>
-        <p class="card-desc" data-i18n="quality.sqlDesc">Parameterized queries. IDOR protection via broker_id. Log
-          sanitization against injection.</p>
+        <h3 class="card-title font-mono text-accent">Sem SQL Injection</h3>
+        <p class="card-desc" data-i18n="quality.sqlDesc">Queries parametrizadas, proteção contra IDOR via `broker_id` e
+          sanitização de logs contra injeção.</p>
       </div>
       <div class="card">
         <h3 class="card-title font-mono text-accent">Design System</h3>
-        <p class="card-desc" data-i18n="quality.dsDesc">CSS tokens, CVA for variants, cn() for composition. Accessible
-          components with vitest-axe.</p>
+        <p class="card-desc" data-i18n="quality.dsDesc">Tokens de CSS, CVA para variantes, `cn()` para composição e
+          componentes acessíveis com `vitest-axe`.</p>
       </div>
       <div class="card">
-        <h3 class="card-title font-mono text-accent" data-i18n="quality.tests">Comprehensive Tests</h3>
-        <p class="card-desc" data-i18n="quality.testsDesc">Unit, integration, functional, and security tests.
-          Controllers, use cases, and React components covered.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="quality.tests">Testes Abrangentes</h3>
+        <p class="card-desc" data-i18n="quality.testsDesc">Testes unitários, de integração, funcionais e de segurança,
+          cobrindo controllers, use cases e componentes React.</p>
       </div>
     </div>
   </section>
@@ -1122,71 +1204,65 @@
   <!-- CURSOR JOURNEY -->
   <section id="cursor" data-mascot-section="cursor">
     <div class="section-header reveal">
-      <h2 data-i18n-html="cursor.title">MY <span class="outline-text">CURSOR</span> JOURNEY</h2>
-      <p data-i18n="cursor.sub">How I leveraged Cursor's features to build this project from the ground up.</p>
+      <h2 data-i18n-html="cursor.title">MINHA JORNADA COM <span class="outline-text">CURSOR</span></h2>
+      <p data-i18n="cursor.sub">Como os recursos do Cursor foram usados para construir este projeto desde a base.</p>
     </div>
     <div class="grid" style="grid-template-columns: 1fr;">
       <div class="card reveal">
-        <h3 class="card-title font-mono text-accent" data-i18n="cursor.agent">Agent Mode & Multi-Agents</h3>
-        <p class="card-desc" data-i18n="cursor.agentDesc">Complete features built autonomously with multi-agent
-          orchestration. Sub-agents handle focused subtasks in parallel — from database modeling to React components
-          with tests, all coordinated seamlessly.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.agent">Agent Mode e Multi-Agents</h3>
+        <p class="card-desc" data-i18n="cursor.agentDesc">Funcionalidades completas foram construídas com orquestração
+          multiagente, da modelagem do banco a componentes React com testes.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Agent Review</h3>
-        <p class="card-desc" data-i18n="cursor.reviewDesc">Dedicated review mode that analyzes code changes, identifies
-          potential issues, and suggests improvements — an AI code reviewer embedded in the development workflow.</p>
+        <p class="card-desc" data-i18n="cursor.reviewDesc">Modo de revisão dedicado para analisar mudanças, identificar
+          riscos e sugerir melhorias dentro do fluxo de desenvolvimento.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Rules System</h3>
-        <p class="card-desc" data-i18n="cursor.rulesDesc">Persistent rules that teach the AI about project conventions:
-          design system tokens, centralized messages, form patterns, backend architecture, security standards, and more.
+        <p class="card-desc" data-i18n="cursor.rulesDesc">Regras persistentes ensinaram a IA sobre as convenções do
+          projeto, como tokens de design system, padrões de formulário, arquitetura backend e requisitos de segurança.
         </p>
       </div>
       <div class="card reveal">
-        <h3 class="card-title font-mono text-accent" data-i18n="cursor.skills">Skills as Guides</h3>
-        <p class="card-desc" data-i18n="cursor.skillsDesc">17 specialized skills functioning as development guides,
-          loaded on demand. Each skill provides deep domain expertise the agent follows as reference.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.skills">Skills como Guias</h3>
+        <p class="card-desc" data-i18n="cursor.skillsDesc">Skills especializadas foram carregadas sob demanda para dar
+          contexto técnico profundo ao agente ao longo do desenvolvimento.</p>
       </div>
       <div class="card reveal">
-        <h3 class="card-title font-mono text-accent" data-i18n="cursor.models">AI Model Strategy</h3>
-        <p class="card-desc" data-i18n="cursor.modelsDesc">I experimented a lot with the Auto mode and its routing
-          choices were impressive. For specific tasks, I picked Opus for complex development and long contexts, and
-          Gemini for text review. Always on the latest versions available.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.models">Estratégia de Modelos de IA</h3>
+        <p class="card-desc" data-i18n="cursor.modelsDesc">O modo Auto foi combinado com escolhas específicas de modelo
+          conforme a tarefa, equilibrando contexto longo, revisão de texto e implementação.</p>
       </div>
       <div class="card reveal">
-        <h3 class="card-title font-mono text-accent" data-i18n="cursor.mcp">MCP Servers & Environment</h3>
-        <p class="card-desc" data-i18n="cursor.mcpDesc">Model Context Protocol integrates Cursor directly with GitHub,
-          SonarCloud, and Browser tools. Also instrumental in environment setup — configuring MCPs, libraries, Docker,
-          and development tooling.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.mcp">MCP Servers e Ambiente</h3>
+        <p class="card-desc" data-i18n="cursor.mcpDesc">O Model Context Protocol integrou o Cursor a GitHub, SonarCloud
+          e ferramentas de browser, além de apoiar a configuração do ambiente.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Jules (Google AI)</h3>
-        <p class="card-desc" data-i18n="cursor.julesDesc">Complementary Google AI code agent. Analyzes the repository,
-          suggests fixes, and generates patches. Integrated via REST API for pending issue verification.</p>
+        <p class="card-desc" data-i18n="cursor.julesDesc">Agente complementar da Google para analisar o repositório,
+          sugerir correções e gerar patches para pontos pendentes.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Plan Mode</h3>
-        <p class="card-desc" data-i18n="cursor.planDesc">I used Plan Mode whenever I needed to refactor or review large
-          parts of the codebase guided by skills. It gave me a clear picture of the full context — frontend, backend,
-          database, and tests — before touching any code.</p>
+        <p class="card-desc" data-i18n="cursor.planDesc">Plan Mode foi usado para refatorações e revisões maiores,
+          sempre com visão global de frontend, backend, banco e testes antes de alterar código.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Debug Mode</h3>
-        <p class="card-desc" data-i18n="cursor.debugDesc">I used Debug Mode mainly for investigating test failures. I
-          didn't go deeper with it because Agent Mode and Plan Mode already handled most issues within their own
-          context.</p>
+        <p class="card-desc" data-i18n="cursor.debugDesc">Debug Mode foi usado principalmente para investigar falhas em
+          testes, quando era necessário entrar no detalhe de um problema específico.</p>
       </div>
       <div class="card reveal">
         <h3 class="card-title font-mono text-accent">Chat & Tab</h3>
-        <p class="card-desc" data-i18n="cursor.chatDesc">Contextual autocomplete that understands the entire project.
-          Conversational code generation — from UI components to complex SQL queries.</p>
+        <p class="card-desc" data-i18n="cursor.chatDesc">Autocomplete contextual e geração conversacional de código, de
+          componentes de UI a consultas SQL mais complexas.</p>
       </div>
       <div class="card reveal">
-        <h3 class="card-title font-mono text-accent" data-i18n="cursor.inception">Meta Creation (This Page)</h3>
-        <p class="card-desc" data-i18n="cursor.inceptionDesc">This very showcase page was built entirely by Cursor in a
-          single prompt. It used MCP tools to read the directory, capture component structures, process images, and
-          generate the complete HTML/Tailwind implementation.</p>
+        <h3 class="card-title font-mono text-accent" data-i18n="cursor.inception">Esta Própria Página</h3>
+        <p class="card-desc" data-i18n="cursor.inceptionDesc">A própria landing foi construída com apoio do Cursor, com
+          leitura da estrutura do projeto, captura de referências visuais e geração da implementação final.</p>
       </div>
     </div>
   </section>
@@ -1194,18 +1270,26 @@
   <!-- FOOTER -->
   <footer>
     <div class="logo" style="font-size: 1rem;">
-      <i data-lucide="hexagon"></i> SEGFLOW<span class="text-accent">.SYS</span>
+      <span class="logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M7 3h10l5 9-5 9H7l-5-9z" />
+        </svg>
+      </span>
+      SEGFLOW<span class="text-accent">.SYS</span>
     </div>
-    <p data-i18n-html="footer.text">Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE
-      — 90% AI-generated code.</p>
-    <p style="font-size: 0.7rem;">© 2025 maxjuniorbr</p>
+    <p data-i18n-html="footer.text">Sistema de gestão e multicálculo para corretoras de seguros.<br>Frontend em React, backend em Node.js e foco em qualidade.</p>
+    <div class="footer-links">
+      <a class="footer-link" href="https://github.com/maxjuniorbr/segflow-crm" target="_blank" rel="noreferrer" data-i18n="footer.linkRepo">repositório</a>
+      <a class="footer-link" href="https://github.com/maxjuniorbr/segflow-crm/blob/main/README.md" target="_blank" rel="noreferrer" data-i18n="footer.linkReadme">readme</a>
+      <a class="footer-link" href="https://github.com/maxjuniorbr/segflow-crm/blob/main/PRIVACY.md" target="_blank" rel="noreferrer" data-i18n="footer.linkPrivacy">privacidade</a>
+      <a class="footer-link" href="https://github.com/maxjuniorbr/segflow-crm/blob/main/SECURITY.md" target="_blank" rel="noreferrer" data-i18n="footer.linkSecurity">segurança</a>
+      <a class="footer-link" href="https://github.com/maxjuniorbr/segflow-crm/blob/main/SUPPORT.md" target="_blank" rel="noreferrer" data-i18n="footer.linkSupport">suporte</a>
+    </div>
+    <p style="font-size: 0.7rem;">© 2026 Dianin</p>
   </footer>
 
   <!-- SCRIPTS -->
   <script>
-    // Init Icons
-    lucide.createIcons();
-
     // Cursor & Magnetics
     const cursorDot = document.getElementById('cursor-dot');
     const cursorOutline = document.getElementById('cursor-outline');
@@ -1259,7 +1343,7 @@
         if (e.isIntersecting && !countersAnimated) {
           countersAnimated = true;
           document.querySelectorAll('[data-count]').forEach(el => {
-            const target = parseInt(el.dataset.count);
+            const target = Number.parseInt(el.dataset.count, 10);
             const suffix = el.dataset.suffix || '';
             let count = 0;
             const inv = setInterval(() => {
@@ -1277,12 +1361,16 @@
     // Dictionary
     const T = {
       en: {
+        metaTitle: 'SegFlow CRM | Management for insurance brokerages',
+        metaDescription: 'Management and multi-quote system for insurance brokerages, with dashboard, authentication, clients, proposals, and policies.',
         'nav.story': 'The Story', 'nav.product': 'The Product', 'nav.engineering': 'Engineering', 'nav.process': 'The Process',
-        'hero.badge': '90% AI-Generated Code', 'hero.subtitle': 'Management and multi-quote system for insurance brokerages',
-        'hero.desc': 'My journey building a production-ready management system from zero in 2 days using Cursor IDE.',
+        'hero.badge': 'CRM for insurance brokerages', 'hero.subtitle': 'Management and multi-quote system for insurance brokerages',
+        'hero.desc': 'A product showcase covering the interface, architecture, and quality practices behind SegFlow CRM.',
         'hero.github': 'View Project', 'hero.explore': 'Explore',
-        'stats.days': 'days of development', 'stats.daysSub': 'zero → production',
-        'stats.ai': 'AI-generated code', 'stats.screens': 'complete screens', 'stats.skills': 'AI skills configured',
+        'stats.screens': 'main screens', 'stats.screensSub': 'dashboard, auth, and CRUD flows',
+        'stats.themes': 'themes', 'stats.themesSub': 'light and dark',
+        'stats.flows': 'core areas', 'stats.flowsSub': 'clients, documents, users, and brokerage',
+        'stats.responsive': 'responsive', 'stats.responsiveSub': 'desktop and mobile',
         'story.title': 'From <span class="outline-text">zero</span> to a complete system',
         'story.text': 'I already had the repository and the idea, but time was always the bottleneck. With Cursor IDE, what seemed like weeks of work took just 2 days — delivering a management system with client management, proposals, policies, authentication, and production-grade quality. Next step: multi-quote engine via insurer APIs.',
         'story.quote': '"Every feature, every component, every test — I generated and refined them with AI. Cursor became my development partner throughout the entire process."',
@@ -1319,15 +1407,24 @@
         'cursor.inception': 'Meta Creation (This Page)', 'cursor.inceptionDesc': 'This very showcase page was built entirely by Cursor in a single prompt. It used MCP tools to read the directory, capture component structures, process images, and generate the complete HTML/Tailwind implementation.',
         'auth.title': 'AUTHENTICATION <span class="outline-text">FLOW</span>',
         'auth.sub': 'Brokerage registration, secure login, and full access control.',
-        'footer.text': 'Management and multi-quote system for insurance brokerages.<br>Built with Cursor IDE — 90% AI-generated code.'
+        'footer.text': 'Management and multi-quote system for insurance brokerages.<br>React frontend, Node.js backend, and a focus on quality.',
+        'footer.linkRepo': 'repository',
+        'footer.linkReadme': 'readme',
+        'footer.linkPrivacy': 'privacy',
+        'footer.linkSecurity': 'security',
+        'footer.linkSupport': 'support'
       },
       pt: {
+        metaTitle: 'SegFlow CRM | Gestão para corretoras de seguros',
+        metaDescription: 'Sistema de gestão e multicálculo para corretoras de seguros, com dashboard, autenticação, clientes, propostas e apólices.',
         'nav.story': 'A História', 'nav.product': 'O Produto', 'nav.engineering': 'Engenharia', 'nav.process': 'O Processo',
-        'hero.badge': '90% Gerado por IA', 'hero.subtitle': 'Sistema de gestão e multicálculo para corretoras de seguros',
-        'hero.desc': 'Minha jornada desenvolvendo um sistema pronto para produção do zero em 2 dias usando o Cursor IDE.',
+        'hero.badge': 'CRM para corretoras de seguros', 'hero.subtitle': 'Sistema de gestão e multicálculo para corretoras de seguros',
+        'hero.desc': 'Uma visão do produto, da arquitetura e das práticas de qualidade por trás do SegFlow CRM.',
         'hero.github': 'Ver Projeto', 'hero.explore': 'Explorar',
-        'stats.days': 'dias de desenvolvimento', 'stats.daysSub': 'zero → produção',
-        'stats.ai': 'código gerado por IA', 'stats.screens': 'telas completas', 'stats.skills': 'skills de IA configuradas',
+        'stats.screens': 'telas principais', 'stats.screensSub': 'dashboard, auth e fluxos CRUD',
+        'stats.themes': 'temas', 'stats.themesSub': 'claro e escuro',
+        'stats.flows': 'áreas centrais', 'stats.flowsSub': 'clientes, documentos, usuários e corretora',
+        'stats.responsive': 'responsivo', 'stats.responsiveSub': 'desktop e mobile',
         'story.title': 'Do <span class="outline-text">zero</span> a um sistema completo',
         'story.text': 'Eu já tinha o repositório e a ideia, mas o tempo era sempre o gargalo. Com o Cursor IDE, o que parecia levar semanas levou apenas 2 dias — entregando um sistema de gestão com cadastro de clientes, propostas, apólices, autenticação e qualidade de produção. Próximo passo: motor de multicálculo via APIs de seguradoras.',
         'story.quote': '"Cada funcionalidade, cada componente, cada teste — eu gerei e refinei com IA. O Cursor se tornou meu parceiro de desenvolvimento durante todo o processo."',
@@ -1336,15 +1433,15 @@
         'feat.sub': 'Projetei cada tela com atenção a UX, acessibilidade e responsividade.',
         'feat.tab.clients': 'Clientes', 'feat.tab.detail': 'Detalhes', 'feat.tab.docs': 'Documentos', 'feat.tab.forms': 'Formulários', 'feat.tab.settings': 'Configurações',
         'tech.sub': 'Escolhi tecnologias modernas para performance, DX e manutenibilidade.',
-        'tech.testing': 'Testes', 'tech.quality': 'Qualidade',
+        'tech.testing': 'Testes', 'tech.quality': 'Qualidade e Seg.',
         'arch.title': 'ARQUITETURA <span class="outline-text">LIMPA</span>',
         'arch.sub': 'Estruturei o backend em camadas com separação clara de responsabilidades.',
         'theme.sub': 'Construí um design system completo com tokens CSS para ambos os temas — sem gambiarras.',
         'mobile.sub': 'Adaptei cada tela de forma fluida para mobile com cards otimizados, navegação e formulários.',
         'quality.title': 'QUALIDADE & <span class="outline-text">SEGURANÇA</span>',
         'quality.sub': 'Apliquei padrões profissionais de segurança e qualidade de código em toda a aplicação.',
-        'quality.jwt': 'Autenticação JWT', 'quality.jwtDesc': 'Tokens Access + Refresh com rotação automática. Cookies httpOnly. Rate limiting nas rotas de autenticação.',
-        'quality.zod': 'Validação Zod', 'quality.zodDesc': 'Schemas de validação em todos os inputs. Middleware centralizado. Proteção contra mass assignment.',
+        'quality.jwt': 'Autenticação JWT', 'quality.jwtDesc': 'Tokens Access + Refresh com rotação automática, cookies httpOnly e rate limiting nas rotas de autenticação.',
+        'quality.zod': 'Validação com Zod', 'quality.zodDesc': 'Schemas de validação em todos os inputs, middleware centralizado e proteção contra mass assignment.',
         'quality.sonarDesc': 'Análise estática contínua. Zero bugs, zero vulnerabilidades. Quality Gate integrado ao pipeline.',
         'quality.sqlDesc': 'Queries parametrizadas. Proteção IDOR via broker_id. Sanitização de logs contra injeção.',
         'quality.dsDesc': 'Tokens CSS, CVA para variantes, cn() para composição. Componentes acessíveis com vitest-axe.',
@@ -1364,7 +1461,12 @@
         'cursor.inception': 'Esta Própria Página', 'cursor.inceptionDesc': 'Eu construí até mesmo esta página de apresentação inteiramente pelo Cursor em um único prompt — usando MCP para capturar prints locais, ler a estrutura e gerar o código de uma só vez.',
         'auth.title': 'Fluxo de <span class="outline-text">Autenticação</span>',
         'auth.sub': 'Registro de corretora, login seguro e controle de acesso completo.',
-        'footer.text': 'Sistema de gestão e multicálculo para corretoras de seguros.<br>Construído com Cursor IDE — 90% do código gerado por IA.'
+        'footer.text': 'Sistema de gestão e multicálculo para corretoras de seguros.<br>Frontend em React, backend em Node.js e foco em qualidade.',
+        'footer.linkRepo': 'repositório',
+        'footer.linkReadme': 'readme',
+        'footer.linkPrivacy': 'privacidade',
+        'footer.linkSecurity': 'segurança',
+        'footer.linkSupport': 'suporte'
       }
     };
 
@@ -1387,10 +1489,16 @@
       }
     }
 
-    let currentLang = 'en';
+    const metaDescription = document.querySelector('meta[name="description"]');
+    const metaOgDescription = document.querySelector('meta[property="og:description"]');
+
+    let currentLang = 'pt';
     function setLang(lang) {
       currentLang = lang;
       document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      document.title = T[lang].metaTitle;
+      metaDescription?.setAttribute('content', T[lang].metaDescription);
+      metaOgDescription?.setAttribute('content', T[lang].metaDescription);
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const map = T[lang][el.dataset.i18n];
@@ -1512,7 +1620,7 @@
     });
 
     // Run translation initialization
-    setLang('en');
+    setLang('pt');
   </script>
 </body>
 
