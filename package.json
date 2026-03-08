@@ -2,7 +2,7 @@
   "name": "segflow-crm",
   "private": true,
   "version": "0.0.0",
-  "description": "Sistema de gestão e multicálculo para corretoras de seguros.",
+  "description": "Management and multi-quote system for insurance brokerages.",
   "author": "Dianin",
   "license": "MIT",
   "homepage": "https://maxjuniorbr.github.io/segflow-crm/",

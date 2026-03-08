@@ -1,22 +1,22 @@
-# Segurança
+# Security
 
-Se você encontrar uma vulnerabilidade no `SegFlow CRM`, não publique detalhes exploráveis em issue pública.
+If you identify a vulnerability in `SegFlow CRM`, do not publish exploitable details in a public issue.
 
-## Como reportar
+## How to Report
 
-- use a opção privada de vulnerabilidade do GitHub, se estiver disponível
-- se isso não estiver disponível, entre em contato pelo GitHub sem expor dados sensíveis, payloads completos ou segredos
+- use GitHub private vulnerability reporting if it is available
+- if it is not available, contact the project through GitHub without exposing sensitive data, full payloads, or secrets
 
-## O que incluir
+## What to Include
 
-- descrição objetiva do problema
-- impacto esperado
-- área afetada: frontend, backend, autenticação, banco ou deploy
-- passos para reproduzir
-- evidências mínimas, como logs ou capturas
+- a concise description of the issue
+- expected impact
+- affected area: frontend, backend, authentication, database, or deployment
+- steps to reproduce
+- minimal evidence, such as logs or screenshots
 
-## Escopo
+## Scope
 
-Este documento cobre vulnerabilidades no frontend, backend, documentação publicada e scripts versionados no repositório.
+This document covers vulnerabilities in the frontend, backend, published documentation, and versioned scripts in the repository.
 
-Para suporte geral, dúvidas de uso ou sugestões, consulte [SUPPORT.md](SUPPORT.md).
+For general support, usage questions, or suggestions, see [SUPPORT.md](SUPPORT.md).

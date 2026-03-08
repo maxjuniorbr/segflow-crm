@@ -1,37 +1,37 @@
-# Política de Privacidade
+# Privacy Policy
 
-`SegFlow CRM` é um sistema de gestão para corretoras. O projeto não embute analytics ou trackers por padrão, mas processa dados operacionais da aplicação na infraestrutura onde você fizer o deploy.
+`SegFlow CRM` is a management system for insurance brokerages. The repository does not enable analytics or trackers by default, but the application processes operational data inside the infrastructure where you deploy it.
 
-## Resumo
+## Summary
 
-- dados do CRM são armazenados no banco configurado pela instância do projeto
-- autenticação usa cookies `httpOnly` e refresh tokens rotativos
-- o frontend consulta a BrasilAPI para preencher endereço por CEP
-- quem opera a instância é responsável pelos dados processados no ambiente de produção
+- CRM data is stored in the database configured for the project instance
+- authentication uses `httpOnly` cookies and rotating refresh tokens
+- the frontend calls BrasilAPI to fill address data from zip codes
+- whoever operates the instance is responsible for the data processed in production
 
-## Dados tratados pela aplicação
+## Data Processed by the Application
 
-- dados cadastrais de corretoras, usuários e clientes
-- dados de propostas e apólices
-- credenciais e artefatos de autenticação necessários para manter a sessão
-- logs técnicos e mensagens de erro do ambiente
+- registration data for brokerages, users, and clients
+- proposal and policy data
+- credentials and authentication artifacts required to keep sessions active
+- technical logs and environment error messages
 
-## Serviços externos
+## External Services
 
-- `BrasilAPI`: consulta de CEP para preenchimento de endereço
+- `BrasilAPI`: zip code lookup used to fill address fields
 
-O repositório não ativa analytics, pixel de marketing ou coleta de uso por terceiros no app principal.
+The repository does not enable analytics, marketing pixels, or third-party usage tracking in the main app.
 
-## Armazenamento e segurança
+## Storage and Security
 
-- os dados persistem no PostgreSQL configurado pela instância
-- a autenticação usa JWT e refresh token com rotação
-- o backend aplica `helmet`, `cors`, validação de entrada e rate limiting
+- data is persisted in the PostgreSQL database configured for the instance
+- authentication uses JWT and rotating refresh tokens
+- the backend applies `helmet`, `cors`, input validation, and rate limiting
 
-## Responsabilidade do operador
+## Operator Responsibility
 
-Se você fizer deploy do `SegFlow CRM`, você passa a ser responsável por retenção, acesso, backup e conformidade legal dos dados processados na sua instância.
+If you deploy `SegFlow CRM`, you are responsible for retention, access, backup, and legal compliance for the data processed in your instance.
 
-## Contato
+## Contact
 
-Para suporte geral, consulte [SUPPORT.md](SUPPORT.md). Para relato de vulnerabilidades, consulte [SECURITY.md](SECURITY.md).
+For general support, see [SUPPORT.md](SUPPORT.md). To report vulnerabilities, see [SECURITY.md](SECURITY.md).

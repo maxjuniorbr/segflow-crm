@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SegFlow CRM | Gestão para corretoras de seguros</title>
+  <title>SegFlow CRM | Management for insurance brokerages</title>
   <meta name="description"
-    content="Sistema de gestão e multicálculo para corretoras de seguros, com dashboard, autenticação, clientes, propostas e apólices.">
-  <meta property="og:title" content="SegFlow CRM | Gestão para corretoras de seguros">
+    content="Management and multi-quote system for insurance brokerages, with dashboard, authentication, clients, proposals, and policies.">
+  <meta property="og:title" content="SegFlow CRM | Management for insurance brokerages">
   <meta property="og:description"
-    content="Conheça o produto, a arquitetura e a qualidade técnica do SegFlow CRM em uma landing com conteúdo em PT-BR e EN.">
+    content="Explore the product, architecture, and engineering quality behind SegFlow CRM in an EN and PT-BR landing page.">
   <meta property="og:type" content="website">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <script>document.documentElement.dataset.js = 'on';</script>
 
   <style>
+    html[data-js='on'] body[data-ready='false'] {
+      visibility: hidden;
+    }
+
     @font-face {
       font-family: 'JetBrains Mono';
       font-style: normal;
@@ -804,7 +809,7 @@
   </style>
 </head>
 
-<body>
+<body data-ready="false">
   <div class="noise"></div>
   <div class="grid-overlay"></div>
   <div class="ambient-glow"></div>
@@ -839,13 +844,13 @@
       SEGFLOW<span class="text-accent">.SYS</span>
     </div>
     <div class="nav-links">
-      <a href="#story" class="nav-link" data-magnetic data-i18n="nav.story">A História</a>
-      <a href="#features" class="nav-link" data-magnetic data-i18n="nav.product">O Produto</a>
-      <a href="#tech" class="nav-link" data-magnetic data-i18n="nav.engineering">Engenharia</a>
-      <a href="#cursor" class="nav-link" data-magnetic data-i18n="nav.process">O Processo</a>
+      <a href="#story" class="nav-link" data-magnetic data-i18n="nav.story">The Story</a>
+      <a href="#features" class="nav-link" data-magnetic data-i18n="nav.product">The Product</a>
+      <a href="#tech" class="nav-link" data-magnetic data-i18n="nav.engineering">Engineering</a>
+      <a href="#cursor" class="nav-link" data-magnetic data-i18n="nav.process">The Process</a>
       <div class="lang-switch">
-        <button class="lang-btn active" data-lang="pt">PT</button>
-        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="pt">PT-BR</button>
       </div>
     </div>
   </nav>
@@ -854,7 +859,7 @@
   <section class="hero" id="hero" data-mascot-section="hero">
     <div class="hero-badge reveal">
       <div class="status-dot"></div>
-      <span data-i18n="hero.badge">CRM para corretoras de seguros</span>
+      <span data-i18n="hero.badge">CRM for insurance brokerages</span>
     </div>
 
     <h1 class="reveal" style="transition-delay: 0.1s;">
@@ -862,10 +867,10 @@
     </h1>
 
     <p class="reveal font-mono text-accent" style="transition-delay: 0.2s;" data-i18n="hero.subtitle">
-      Sistema de gestão e multicálculo para corretoras de seguros
+      Management and multi-quote system for insurance brokerages
     </p>
     <p class="reveal" style="transition-delay: 0.3s;" data-i18n-html="hero.desc">
-      Uma visão do produto, da arquitetura e das práticas de qualidade por trás do SegFlow CRM.
+      A product showcase covering the interface, architecture, and quality practices behind SegFlow CRM.
     </p>
 
     <div class="reveal" style="transition-delay: 0.4s; margin-top: 2rem; display: flex; gap: 1rem;">
@@ -875,10 +880,10 @@
             <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.56 2.35 1.11 2.92.85.09-.67.35-1.11.64-1.37-2.22-.26-4.56-1.14-4.56-5.09 0-1.13.39-2.05 1.03-2.77-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.06A9.35 9.35 0 0 1 12 6.84c.85 0 1.71.12 2.51.36 1.91-1.34 2.75-1.06 2.75-1.06.55 1.42.2 2.47.1 2.73.64.72 1.03 1.64 1.03 2.77 0 3.96-2.35 4.82-4.58 5.08.36.32.68.93.68 1.88 0 1.36-.01 2.46-.01 2.8 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
           </svg>
         </span>
-        <span data-i18n="hero.github">Ver projeto</span>
+        <span data-i18n="hero.github">View project</span>
       </a>
       <a href="#stats" class="btn" data-magnetic>
-        <span data-i18n="hero.explore">Explorar</span>
+        <span data-i18n="hero.explore">Explore</span>
         <span class="inline-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v14" />
@@ -1490,14 +1495,16 @@
     }
 
     const metaDescription = document.querySelector('meta[name="description"]');
+    const metaOgTitle = document.querySelector('meta[property="og:title"]');
     const metaOgDescription = document.querySelector('meta[property="og:description"]');
 
-    let currentLang = 'pt';
+    let currentLang = 'en';
     function setLang(lang) {
       currentLang = lang;
       document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
       document.title = T[lang].metaTitle;
       metaDescription?.setAttribute('content', T[lang].metaDescription);
+      metaOgTitle?.setAttribute('content', T[lang].metaTitle);
       metaOgDescription?.setAttribute('content', T[lang].metaDescription);
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
       document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1620,7 +1627,8 @@
     });
 
     // Run translation initialization
-    setLang('pt');
+    setLang('en');
+    document.body.dataset.ready = 'true';
   </script>
 </body>
 

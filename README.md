@@ -1,44 +1,44 @@
 # SegFlow CRM
 
-Sistema de gestão e multicálculo para corretoras de seguros, com frontend em React, backend em Node.js e banco PostgreSQL.
+Management and multi-quote system for insurance brokerages, with a React frontend, a Node.js backend, and PostgreSQL.
 
-Página pública: https://maxjuniorbr.github.io/segflow-crm/
+Public page: https://maxjuniorbr.github.io/segflow-crm/
 
 ---
 
-## O que você precisa saber
+## What to Expect
 
-- centraliza clientes, propostas, apólices e usuários em uma única aplicação
-- separa frontend e backend, com API própria e banco PostgreSQL
-- usa autenticação com JWT e rotação de refresh token
-- mantém os docs oficiais em PT-BR; a landing pública está em PT-BR e EN
+- It centralizes clients, proposals, policies, and users in a single application.
+- It separates frontend and backend, with its own API and PostgreSQL database.
+- It uses JWT authentication with refresh token rotation.
+- Official repository documents default to English; the public landing is available in EN and PT-BR.
 
-## Principais recursos
+## Core Features
 
-- cadastro de corretora com usuário administrador
-- cadastro de clientes PF e PJ
-- gestão de propostas e apólices
-- dashboard com métricas principais
-- busca, filtros e paginação
-- busca de CEP via BrasilAPI
-- interface responsiva com tema claro e escuro
+- brokerage registration with an admin user
+- client management for individuals and companies
+- proposal and policy management
+- dashboard with key metrics
+- search, filters, and pagination
+- zip code lookup through BrasilAPI
+- responsive interface with light and dark themes
 
-## Stack e arquitetura
+## Stack and Architecture
 
-- Frontend: React 19, TypeScript, Vite e Tailwind CSS v4
-- Backend: Node.js, Express, PostgreSQL, Zod e JWT
-- Testes: Vitest, Testing Library, vitest-axe e testes backend dedicados
-- Qualidade: SonarCloud, Dependabot e validação de build
-- Arquitetura: rotas, controllers, use cases, entidades e repositórios
+- Frontend: React 19, TypeScript, Vite, and Tailwind CSS v4
+- Backend: Node.js, Express, PostgreSQL, Zod, and JWT
+- Tests: Vitest, Testing Library, vitest-axe, and dedicated backend suites
+- Quality: SonarCloud, Dependabot, and build validation
+- Architecture: routes, controllers, use cases, entities, and repositories
 
-## Como rodar localmente
+## Run Locally
 
-Pré-requisitos:
+Requirements:
 
 - Node.js 18+
 - PostgreSQL 14+
 
-Instalação:
+Installation:
 
 ```bash
 git clone https://github.com/maxjuniorbr/segflow-crm.git
@@ -50,49 +50,49 @@ cp .env.example .env
 cd ..
 ```
 
-Execução:
+Run:
 
 ```bash
 npm run dev
 ```
 
-Aplicação web: `http://localhost:5173`
+Web app: `http://localhost:5173`
 
-## Scripts principais
+## Main Scripts
 
-Na raiz:
+At the repository root:
 
 ```bash
-npm run dev            # frontend + backend em desenvolvimento
-npm run build          # build de produção do frontend
-npm run preview        # preview local do build
-npm test               # suíte completa
-npm run test:backend   # testes do backend
-npm run test:frontend  # testes do frontend
+npm run dev            # frontend + backend in development
+npm run build          # frontend production build
+npm run preview        # local preview of the build
+npm test               # full test suite
+npm run test:backend   # backend tests
+npm run test:frontend  # frontend tests
 ```
 
-No backend:
+In the backend:
 
 ```bash
 cd server
-npm run dev            # bootstrap local + servidor
-npm run test           # testes do backend
+npm run dev            # local bootstrap + server
+npm run test           # backend tests
 ```
 
-## Qualidade e validação
+## Quality and Validation
 
 - `npm test`
 - `npm run build`
 - `npm exec tsc --noEmit`
-- SonarCloud com Quality Gate no nível `A`
+- SonarCloud with an `A` Quality Gate target
 
-## Documentos do projeto
+## Project Documents
 
-- Página pública: https://maxjuniorbr.github.io/segflow-crm/
-- Suporte: [SUPPORT.md](SUPPORT.md)
-- Privacidade: [PRIVACY.md](PRIVACY.md)
-- Segurança: [SECURITY.md](SECURITY.md)
+- Public page: https://maxjuniorbr.github.io/segflow-crm/
+- Support: [SUPPORT.md](SUPPORT.md)
+- Privacy: [PRIVACY.md](PRIVACY.md)
+- Security: [SECURITY.md](SECURITY.md)
 
-## Licença
+## License
 
-MIT. Veja [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

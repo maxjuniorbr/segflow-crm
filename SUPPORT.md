@@ -1,9 +1,9 @@
-# Suporte
+# Support
 
-Para reportar bugs, pedir ajuda ou sugerir melhorias no `SegFlow CRM`:
+To report bugs, ask for help, or suggest improvements for `SegFlow CRM`:
 
-- abra uma issue em: https://github.com/maxjuniorbr/segflow-crm/issues
-- inclua sistema operacional, navegador e passos para reproduzir
-- se o problema envolver backend, informe também variáveis relevantes, logs e o fluxo executado
+- open an issue at: https://github.com/maxjuniorbr/segflow-crm/issues
+- include operating system, browser, and steps to reproduce
+- if the issue involves the backend, also include relevant variables, logs, and the executed flow
 
-Se o caso estiver relacionado a segurança, não use issue pública. Consulte [SECURITY.md](SECURITY.md).
+If the case is related to security, do not use a public issue. See [SECURITY.md](SECURITY.md).
